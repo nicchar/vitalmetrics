@@ -510,6 +510,52 @@ ul { list-style: none; }
 .recipe-steps-list { list-style: decimal; padding-left: 18px; font-size: 14px; color: var(--text); line-height: 1.8; }
 .recipe-steps-list li { margin-bottom: 4px; }
 
+/* ── Dashboard v2 ── */
+.dash-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 20px 20px 8px; }
+.health-score-bar {
+  display: flex; align-items: center; gap: 16px;
+  background: linear-gradient(135deg, #1a7a6e 0%, #21938a 100%);
+  border-radius: 16px; margin: 0 16px 16px; padding: 18px 20px;
+  color: #fff;
+}
+.health-score-ring { position: relative; width: 64px; height: 64px; flex-shrink: 0; }
+.health-score-ring svg { width: 56px; height: 56px; }
+.health-score-num { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  font-size: 15px; font-weight: 800; color: #fff; line-height: 1; }
+.health-score-num small { font-size: 9px; font-weight: 600; }
+.health-score-detail { flex: 1; }
+.health-score-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+.health-score-sub { font-size: 12px; color: rgba(255,255,255,0.8); margin-bottom: 8px; }
+.health-score-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.hsp { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
+.hsp.ok { background: rgba(255,255,255,0.25); color: #fff; }
+.hsp.low { background: #FFA726; color: #fff; }
+.hsp.high { background: #EF5350; color: #fff; }
+.empty-score { background: var(--surface); border-radius: 12px; margin: 0 16px 16px; padding: 16px; text-align: center; color: var(--text-secondary); font-size: 14px; }
+
+/* ── Category Tabs ── */
+.dash-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 0 16px 12px; scrollbar-width: none; }
+.dash-tabs::-webkit-scrollbar { display: none; }
+.dash-tab {
+  flex-shrink: 0; background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 20px; padding: 7px 14px; font-size: 13px; font-weight: 600;
+  color: var(--text-secondary); cursor: pointer; transition: all 0.2s; white-space: nowrap;
+}
+.dash-tab:hover { border-color: var(--primary); color: var(--primary); }
+.dash-tab.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+/* ── Biomarker Card v2 ── */
+.biomarker-card.v2 {
+  border-radius: 14px; padding: 14px; border-left: 4px solid #ccc;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07); cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.biomarker-card.v2:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+.card-top { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.card-emoji { font-size: 16px; flex-shrink: 0; }
+.card-value-v2 { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 2px; letter-spacing: -0.5px; }
+.card-value-v2.locked-value { font-size: 15px; color: var(--text-hint); font-weight: 600; }
+
 /* ── Amazon Affiliate Box ── */
 .affiliate-box {
   background: linear-gradient(135deg, #FFF8E1 0%, #FFF3CD 100%);
@@ -528,7 +574,16 @@ ul { list-style: none; }
   box-shadow: 0 2px 6px rgba(255,153,0,0.35); transition: background 0.2s;
 }
 .affiliate-btn:hover { background: #e68900; }
+.affiliate-btn-group { display: flex; gap: 8px; flex-shrink: 0; flex-wrap: wrap; }
+.affiliate-btn-test { background: #1a7a6e; box-shadow: 0 2px 6px rgba(26,122,110,0.3); }
+.affiliate-btn-test:hover { background: #155f56; }
 .affiliate-disclaimer { font-size: 10px; color: var(--text-hint); margin-top: 6px; width: 100%; }
+
+/* ── Legal Links in Profile ── */
+.legal-links { display: flex; align-items: center; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+.legal-link { font-size: 13px; color: var(--primary); text-decoration: none; }
+.legal-link:hover { text-decoration: underline; }
+.legal-sep { color: var(--text-hint); font-size: 13px; }
 
 /* ── HIGH Value Caution Box ── */
 .high-value-warning {
@@ -1100,10 +1155,35 @@ const SUPPLEMENT_LINKS = {
   chrom:        { label: 'Chrom Kapseln', q: 'Chrom+Kapseln+Nahrungsergaenzung' },
   phosphor:     { label: 'Phosphor Kapseln', q: 'Phosphor+Kapseln+Nahrungsergaenzung' },
 };
+
+// ── Amazon Schnelltest / Home Test Kit Links ──
+const TEST_LINKS = {
+  vitamin_d:   'Vitamin+D+Selbsttest+Schnelltest',
+  vitamin_b12: 'Vitamin+B12+Bluttest+Heimtest',
+  eisen:       'Ferritin+Eisen+Selbsttest+Heimtest',
+  omega3:      'Omega+3+Index+Test+Heimtest',
+  zink:        'Zink+Bluttest+Selbsttest',
+  folsaeure:   'Folsaeure+Bluttest+Heimtest',
+  cholesterin: 'Cholesterin+Schnelltest+Heimtest',
+  blutzucker:  'Blutzucker+Messgeraet+Teststreifen',
+  blutdruck:   'Blutdruckmessgeraet+Oberarm',
+  selen:       'Selen+Bluttest+Heimtest',
+  cortisol:    'Cortisol+Test+Speicheltest',
+  testosteron: 'Testosteron+Heimtest+Speicheltest',
+  haemoglobin: 'Haemoglobin+Bluttest+Heimtest',
+  hba1c:       'HbA1c+Selbsttest+Heimtest',
+  magnesium:   'Magnesium+Bluttest+Heimtest',
+  calcium:     'Calcium+Bluttest+Heimtest',
+};
 function getAffiliateLink(bmId) {
   const s = SUPPLEMENT_LINKS[bmId];
   if (!s) return null;
   return `https://www.amazon.de/s?k=${s.q}&tag=${AFFILIATE_TAG}`;
+}
+function getTestLink(bmId) {
+  const q = TEST_LINKS[bmId];
+  if (!q) return null;
+  return `https://www.amazon.de/s?k=${q}&tag=${AFFILIATE_TAG}`;
 }
 
 const RECIPES = [
@@ -2269,6 +2349,10 @@ function renderOnboarding(c) {
 // ══════════════════════════════════════════════════════════
 // SCREEN: DASHBOARD
 // ══════════════════════════════════════════════════════════
+const CAT_ICONS = { vitamins:'🧬', minerals:'⚗️', body:'⚖️', blood:'🩸', hormones:'⚡', other:'💊' };
+const STATUS_BG = { ok:'linear-gradient(135deg,#E8F5E9,#F1F8F2)', low:'linear-gradient(135deg,#FFF8E1,#FFFDE7)', high:'linear-gradient(135deg,#FBE9E7,#FFF3E0)', unknown:'var(--surface)' };
+const STATUS_EMOJI = { ok:'✅', low:'⬇️', high:'⬆️', unknown:'➕' };
+
 function renderDashboard(c) {
   const profile=profileRepo.get();
   const latestAll=measurementRepo.getLatestAll();
@@ -2285,66 +2369,105 @@ function renderDashboard(c) {
   const okC=statuses.filter(s=>s==='ok').length;
   const lowC=statuses.filter(s=>s==='low').length;
   const highC=statuses.filter(s=>s==='high').length;
+  const totalTracked=trackedBms.length;
+  const scoreVal=totalTracked>0?Math.round((okC/totalTracked)*100):null;
 
-  let html=`<div class="screen dashboard-screen">
-    <div class="screen-header">
-      <h1 class="app-title">VitalMetrics</h1>
-      <p class="app-subtitle">${profile.name?'Hallo '+profile.name+' · ':''}Deine Übersicht</p>
-    </div>`;
+  // ── Health Score ──
+  const scoreHtml = scoreVal!==null ? `
+    <div class="health-score-bar">
+      <div class="health-score-ring" style="--score:${scoreVal}">
+        <svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="23" fill="none" stroke="#E8F5E9" stroke-width="5"/>
+        <circle cx="28" cy="28" r="23" fill="none" stroke="${scoreVal>=80?'#43A047':scoreVal>=50?'#FFA726':'#EF5350'}" stroke-width="5"
+          stroke-dasharray="${Math.round(scoreVal*1.445)} 144.5" stroke-linecap="round" transform="rotate(-90 28 28)"/></svg>
+        <span class="health-score-num">${scoreVal}<small>%</small></span>
+      </div>
+      <div class="health-score-detail">
+        <div class="health-score-title">Gesundheitsscore</div>
+        <div class="health-score-sub">${okC} von ${totalTracked} Werten im Normalbereich</div>
+        <div class="health-score-pills">
+          <span class="hsp ok">${okC} Normal</span>
+          ${lowC>0?'<span class="hsp low">'+lowC+' Niedrig</span>':''}
+          ${highC>0?'<span class="hsp high">'+highC+' Hoch</span>':''}
+        </div>
+      </div>
+    </div>` : `<div class="empty-score"><p>Trage deinen ersten Wert ein, um deinen Gesundheitsscore zu sehen.</p></div>`;
 
-  if (!isPremium) html+=`<div class="premium-banner"><span>⭐ 4 Werte gratis · <strong>Alle 30 Werte mit Premium</strong></span><button class="btn-upgrade-sm" id="btn-upg-banner">Upgrade</button></div>`;
-
-  if (trackedBms.length>0) html+=`<div class="summary-bar">
-    <div class="summary-item ok"><span class="summary-count">${okC}</span><span class="summary-label">Normal</span></div>
-    <div class="summary-item low"><span class="summary-count">${lowC}</span><span class="summary-label">Zu niedrig</span></div>
-    <div class="summary-item high"><span class="summary-count">${highC}</span><span class="summary-label">Zu hoch</span></div>
+  // ── Category Tabs ──
+  const catKeys=Object.keys(grouped);
+  const tabsHtml=`<div class="dash-tabs" id="dash-tabs">
+    ${catKeys.map(k=>`<button class="dash-tab" data-cat="${k}">${CAT_ICONS[k]||'📊'} ${CATALOG.categories[k]}</button>`).join('')}
   </div>`;
 
+  let html=`<div class="screen dashboard-screen">
+    <div class="dash-header">
+      <div>
+        <h1 class="app-title">VitalMetrics</h1>
+        <p class="app-subtitle">${profile.name?'Hallo, '+profile.name+' 👋':'Deine persönliche Übersicht'}</p>
+      </div>
+    </div>`;
+
+  if (!isPremium) html+=`<div class="premium-banner"><span>⭐ 4 Werte gratis · <strong>Alle 30 mit Premium</strong></span><button class="btn-upgrade-sm" id="btn-upg-banner">Upgrade</button></div>`;
+
+  html += scoreHtml;
+  html += tabsHtml;
+
   for (const [catKey, bms] of Object.entries(grouped)) {
-    html+=`<div class="category-section"><h2 class="category-title">${CATALOG.categories[catKey]}</h2><div class="biomarker-grid">`;
+    html+=`<div class="category-section" id="cat-${catKey}">
+      <h2 class="category-title">${CAT_ICONS[catKey]||'📊'} ${CATALOG.categories[catKey]}</h2>
+      <div class="biomarker-grid">`;
     for (const bm of bms) {
       const canTrack=entitlements.canTrack(bm.id);
       const latest=latestAll[bm.id];
       const status=latest?getStatus(latest.value,bm,profile):'unknown';
-      const color=canTrack?getStatusColor(status):'#E0E0E0';
+      const color=canTrack?getStatusColor(status):'#9E9E9E';
       const valueLabel=latest?latest.value+' '+bm.unit:'– –';
       const refLabel=getRefRangeLabel(bm,profile);
+      const bg=canTrack?(STATUS_BG[status]||STATUS_BG.unknown):STATUS_BG.unknown;
+      const emoji=STATUS_EMOJI[status]||'➕';
       if (canTrack) {
-        const isBmi = bm.id==='bmi';
-        const bmiCalculatedFrom = isBmi ? profile.height : null;
-        html+=`<div class="biomarker-card" data-id="${bm.id}" style="border-left:4px solid ${color}">
-          <div class="card-header">
-            <span class="card-name">${bm.name}${isBmi?'<span class="bmi-auto-badge">📐 Auto</span>':''}</span>
-            <span class="status-dot" style="background:${color}"></span>
+        const isBmi=bm.id==='bmi';
+        html+=`<div class="biomarker-card v2" data-id="${bm.id}" style="background:${bg};border-left:4px solid ${color}">
+          <div class="card-top">
+            <span class="card-emoji">${emoji}</span>
+            <span class="card-name">${bm.name}${isBmi?'<span class="bmi-auto-badge">Auto</span>':''}</span>
           </div>
-          <div class="card-value">${valueLabel}</div>
+          <div class="card-value-v2">${valueLabel}</div>
           <div class="card-ref">Ref: ${refLabel}</div>
-          ${isBmi&&bmiCalculatedFrom?'<div class="bmi-info-note">Berechnet aus Gewicht + '+bmiCalculatedFrom+' cm Größe</div>':''}
-          ${isBmi&&!bmiCalculatedFrom?'<div class="no-height-warning" style="margin-top:6px;font-size:12px">📏 Größe im Profil eintragen für automatische Berechnung</div>':''}
-          ${bm.selfTestAvailable?'<div class="self-test-badge">🧪 Heimtest verfügbar</div>':''}
+          ${isBmi&&!profile.height?'<div class="no-height-warning" style="font-size:11px;margin-top:4px">📏 Größe im Profil eintragen</div>':''}
           <div class="card-actions">
             ${isBmi
-              ? (latest?'<button class="btn-card btn-trend" data-id="'+bm.id+'">📈 BMI-Verlauf</button>':'<button class="btn-card btn-entry" data-id="gewicht">+ Gewicht eintragen</button>')
-              : '<button class="btn-card btn-entry" data-id="'+bm.id+'">+ Eintragen</button>'+(latest?'<button class="btn-card btn-trend" data-id="'+bm.id+'">📈 Verlauf</button>':'')
+              ? (latest?'<button class="btn-card btn-trend" data-id="'+bm.id+'">📈 Verlauf</button>':'<button class="btn-card btn-entry" data-id="gewicht">+ Gewicht</button>')
+              : '<button class="btn-card btn-entry" data-id="'+bm.id+'">+ Eintragen</button>'+(latest?'<button class="btn-card btn-trend" data-id="'+bm.id+'">📈</button>':'')
             }
-          </div></div>`;
+          </div>
+        </div>`;
       } else {
-        html+=`<div class="biomarker-card biomarker-locked" data-id="${bm.id}">
-          <div class="card-header"><span class="card-name">${bm.name}</span><span class="lock-icon">🔒</span></div>
-          <div class="card-value locked-value">Premium</div>
+        html+=`<div class="biomarker-card v2 biomarker-locked" data-id="${bm.id}">
+          <div class="card-top"><span class="card-emoji">🔒</span><span class="card-name">${bm.name}</span></div>
+          <div class="card-value-v2 locked-value">Premium</div>
           <div class="card-ref">Ref: ${refLabel}</div>
-          <div class="card-actions"><button class="btn-card btn-unlock" data-id="${bm.id}">⭐ Freischalten</button></div>
+          <div class="card-actions"><button class="btn-card btn-unlock">⭐ Freischalten</button></div>
         </div>`;
       }
     }
     html+=`</div></div>`;
   }
-  html+=`<div class="disclaimer"><p>ℹ️ VitalMetrics ist kein Medizinprodukt. Referenzwerte nach DGE${profile.sex?' ('+( profile.sex==='f'?'♀ weiblich':'♂ männlich')+')':''}. Ersetzt keine ärztliche Beratung.</p></div></div>`;
+  html+=`<div class="disclaimer"><p>ℹ️ Kein Medizinprodukt. Referenzwerte nach DGE${profile.sex?' ('+( profile.sex==='f'?'♀':'♂')+')':''}. Ersetzt keine ärztliche Beratung.</p></div></div>`;
   c.innerHTML=html;
+
+  // Tab scroll navigation
+  c.querySelectorAll('.dash-tab').forEach(tab=>{
+    tab.addEventListener('click',()=>{
+      const target=document.getElementById('cat-'+tab.dataset.cat);
+      if(target) target.scrollIntoView({behavior:'smooth',block:'start'});
+      c.querySelectorAll('.dash-tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
 
   c.querySelectorAll('.btn-entry').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();navigate('entry',b.dataset.id);}));
   c.querySelectorAll('.btn-trend').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();navigate('trend',b.dataset.id);}));
-  c.querySelectorAll('.biomarker-card:not(.biomarker-locked)').forEach(card=>card.addEventListener('click',()=>navigate('trend',card.dataset.id)));
+  c.querySelectorAll('.biomarker-card.v2:not(.biomarker-locked)').forEach(card=>card.addEventListener('click',()=>navigate('trend',card.dataset.id)));
   c.querySelectorAll('.btn-unlock,.btn-upgrade-sm,#btn-upg-banner').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();navigate('premium');}));
 }
 
@@ -2542,16 +2665,24 @@ function renderFoodsSection(bm, status) {
     </div>`;
   }).join('');
 
-  // ── Affiliate box for LOW values ──
-  const affLink = (status === 'low') ? getAffiliateLink(bm.id) : null;
+  // ── Affiliate box for LOW and NORMAL values (not HIGH) ──
+  const affLink = (status !== 'high') ? getAffiliateLink(bm.id) : null;
+  const testLink = getTestLink(bm.id);
+  const suppTitle = status === 'low' ? `💊 Supplement empfohlen` : `💊 Supplement entdecken`;
+  const suppDesc  = status === 'low'
+    ? `Dein ${bm.name}-Wert ist niedrig. Ein hochwertiges Präparat kann helfen, den Spiegel zu erhöhen.`
+    : `Dein ${bm.name}-Wert ist im Normalbereich. Mit einem guten Supplement kannst du ihn gezielt halten.`;
   const affiliateHtml = affLink ? `
     <div class="affiliate-box">
       <div class="affiliate-box-text">
-        <strong>💊 Supplement empfohlen</strong>
-        <small>Dein ${bm.name}-Wert ist niedrig. Ein hochwertiges Präparat kann helfen, den Spiegel zu erhöhen.</small>
+        <strong>${suppTitle}</strong>
+        <small>${suppDesc}</small>
       </div>
-      <a href="${affLink}" target="_blank" rel="noopener sponsored" class="affiliate-btn">🛒 Bei Amazon ansehen</a>
-      <span class="affiliate-disclaimer">* Affiliate-Link – bei Kauf erhalten wir eine kleine Provision, für dich ohne Mehrkosten. Bitte Rücksprache mit Arzt halten.</span>
+      <div class="affiliate-btn-group">
+        <a href="${affLink}" target="_blank" rel="noopener sponsored" class="affiliate-btn">🛒 Supplement</a>
+        ${testLink ? `<a href="${testLink}" target="_blank" rel="noopener sponsored" class="affiliate-btn affiliate-btn-test">🧪 Schnelltest</a>` : ''}
+      </div>
+      <span class="affiliate-disclaimer">* Affiliate-Links – bei Kauf erhalten wir eine kleine Provision, für dich ohne Mehrkosten. Bitte Rücksprache mit Arzt halten.</span>
     </div>` : '';
 
   return `<div class="info-section">
@@ -2623,6 +2754,11 @@ function renderProfile(c) {
       <h3>Über VitalMetrics</h3>
       <p class="disclaimer-text">⚠️ Diese App ist kein Medizinprodukt und ersetzt keine ärztliche Beratung. Referenzwerte nach DGE (D-A-CH 2021/2024).</p>
       <p class="version-text">Version 1.0.0</p>
+      <div class="legal-links">
+        <a href="impressum.html" target="_blank" class="legal-link">Impressum</a>
+        <span class="legal-sep">·</span>
+        <a href="datenschutzerklaerung.html" target="_blank" class="legal-link">Datenschutzerklärung</a>
+      </div>
     </div>
   </div>`;
 
