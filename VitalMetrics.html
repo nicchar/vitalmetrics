@@ -1,0 +1,2627 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1a7a6e">
+<title>VitalMetrics</title>
+<style>
+/* ============================================================
+   VitalMetrics – Mobile-first Stylesheet
+   Design: Clean Health App, Teal primary color
+   ============================================================ */
+
+:root {
+  --primary:       #1a7a6e;
+  --primary-light: #e8f5f3;
+  --primary-dark:  #145f56;
+  --bg:            #f4f6f8;
+  --surface:       #ffffff;
+  --border:        #e0e0e0;
+  --text:          #212121;
+  --text-secondary:#616161;
+  --text-hint:     #9e9e9e;
+  --ok:            #43A047;
+  --low:           #E53935;
+  --high:          #FB8C00;
+  --unknown:       #9E9E9E;
+  --nav-height:    64px;
+  --radius:        12px;
+  --shadow:        0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.5; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; }
+input, select, textarea { font-family: inherit; }
+ul { list-style: none; }
+
+/* ── App Shell ── */
+#app { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+#screen-container {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(var(--nav-height) + 16px);
+}
+
+/* ── Screen Base ── */
+.screen { padding: 16px; max-width: 600px; margin: 0 auto; }
+
+/* ── Screen Header ── */
+.screen-header { margin-bottom: 20px; }
+
+.app-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: -0.5px;
+}
+.app-subtitle { color: var(--text-secondary); font-size: 14px; margin-top: 2px; }
+.screen-title { font-size: 22px; font-weight: 700; color: var(--text); }
+
+/* ── Summary Bar ── */
+.summary-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.summary-item {
+  flex: 1;
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 12px 8px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+.summary-item.ok .summary-count { color: var(--ok); }
+.summary-item.low .summary-count { color: var(--low); }
+.summary-item.high .summary-count { color: var(--high); }
+.summary-count { display: block; font-size: 28px; font-weight: 700; }
+.summary-label { font-size: 11px; color: var(--text-secondary); }
+
+/* ── Category Section ── */
+.category-section { margin-bottom: 24px; }
+.category-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+/* ── Biomarker Grid ── */
+.biomarker-grid { display: flex; flex-direction: column; gap: 10px; }
+
+.biomarker-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.biomarker-card:active { transform: scale(0.98); }
+
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.card-name { font-size: 15px; font-weight: 600; }
+.status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.card-value { font-size: 22px; font-weight: 700; color: var(--text); }
+.card-ref { font-size: 12px; color: var(--text-hint); margin-top: 2px; }
+.card-actions { display: flex; gap: 8px; margin-top: 10px; }
+
+.btn-card {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.btn-entry {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.btn-trend {
+  background: #f0f0f0;
+  color: var(--text-secondary);
+}
+
+/* ── Bottom Navigation ── */
+.bottom-nav {
+  height: var(--nav-height);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 8px;
+  color: var(--text-hint);
+  transition: color 0.2s;
+}
+.nav-item.active { color: var(--primary); }
+.nav-icon { font-size: 22px; }
+.nav-label { font-size: 11px; font-weight: 500; }
+
+/* ── Forms ── */
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+
+.form-control {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 16px;
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.form-control:focus { outline: none; border-color: var(--primary); }
+
+.input-with-unit { display: flex; gap: 8px; align-items: center; }
+.input-with-unit .form-control { flex: 1; }
+.unit-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  min-width: 40px;
+}
+
+.form-hint { font-size: 12px; color: var(--text-hint); margin-top: 5px; }
+.error-msg { color: var(--low); font-size: 13px; margin-bottom: 10px; }
+
+/* ── Buttons ── */
+.btn-primary {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  background: var(--primary);
+  color: white;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 10px;
+  transition: background 0.2s;
+}
+.btn-primary:active { background: var(--primary-dark); }
+
+.btn-secondary {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: #f0f0f0;
+  color: var(--text);
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.btn-danger {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: #ffeaea;
+  color: var(--low);
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ── Entry Screen ── */
+.entry-screen { }
+.entry-form-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+}
+.biomarker-info-card {
+  background: var(--primary-light);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.biomarker-info-card h3 { color: var(--primary); margin-bottom: 8px; }
+.bm-description { font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; }
+.bm-function { font-size: 14px; margin-bottom: 10px; }
+
+/* ── Trend Screen ── */
+.trend-screen { }
+.trend-selector-row { margin-bottom: 0; }
+.trend-select { font-weight: 600; font-size: 15px; }
+
+.status-banner {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+}
+.status-text { font-weight: 600; font-size: 15px; }
+.latest-value { font-size: 22px; font-weight: 700; margin-left: auto; }
+.ref-text { font-size: 12px; color: var(--text-secondary); width: 100%; }
+
+.chart-container {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+}
+
+.no-data-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 32px 20px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+}
+.no-data-card p { margin-bottom: 16px; color: var(--text-secondary); }
+
+/* ── History Table ── */
+.measurements-history {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+}
+.measurements-history h3 { margin-bottom: 12px; font-size: 16px; }
+
+.history-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.history-table th { text-align: left; padding: 6px 8px; color: var(--text-secondary); font-size: 12px; border-bottom: 1px solid var(--border); }
+.history-table td { padding: 10px 8px; border-bottom: 1px solid var(--border); }
+.history-table tr:last-child td { border-bottom: none; }
+
+.status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.btn-delete { background: none; border: none; font-size: 16px; padding: 4px; opacity: 0.6; }
+.btn-delete:hover { opacity: 1; }
+
+/* ── Foods & Recipes ── */
+.info-section {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+}
+.info-section h3 { margin-bottom: 12px; font-size: 16px; }
+
+.foods-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.food-tag {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.symptoms-box {
+  background: #fff3f3;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-left: 3px solid var(--low);
+}
+.symptoms-box h4 { font-size: 13px; margin-bottom: 6px; color: var(--low); }
+.symptoms-box ul { padding-left: 16px; list-style: disc; }
+.symptoms-box li { font-size: 13px; margin-bottom: 3px; }
+
+.tips-section { margin-bottom: 14px; }
+.tips-section h4 { font-size: 13px; margin-bottom: 6px; }
+.tip-text { font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; }
+
+.recipe-card {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 10px;
+}
+.recipe-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+.recipe-title { font-weight: 600; font-size: 14px; }
+.recipe-duration { font-size: 12px; color: var(--text-secondary); }
+.recipe-highlight { font-size: 13px; color: var(--text-secondary); }
+
+.btn-add-entry { margin-top: 8px; }
+
+/* ── Profile Screen ── */
+.profile-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+}
+.profile-card h3 { margin-bottom: 14px; font-size: 17px; }
+.hint-text { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; }
+.disclaimer-text { font-size: 13px; color: var(--text-secondary); margin: 10px 0; line-height: 1.5; }
+.version-text { font-size: 12px; color: var(--text-hint); margin-top: 8px; }
+.about-card .disclaimer-text { border-left: 3px solid var(--primary); padding-left: 10px; }
+
+/* ── Tips section ── */
+.tips-section ul { padding-left: 16px; list-style: disc; }
+.tips-section li { font-size: 13px; color: var(--text-secondary); margin-bottom: 5px; }
+
+/* ── Disclaimer ── */
+.disclaimer {
+  background: #fff9e6;
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-top: 8px;
+  border-left: 4px solid #f0ad4e;
+}
+.disclaimer p { font-size: 12px; color: var(--text-secondary); }
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: calc(var(--nav-height) + 16px);
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(33,33,33,0.92);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-size: 14px;
+  opacity: 0;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  z-index: 999;
+  white-space: nowrap;
+}
+.toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Locked Biomarker Cards ── */
+.biomarker-locked { opacity: 0.65; border-left: 4px solid #E0E0E0 !important; }
+.lock-icon { font-size: 16px; }
+.locked-value { font-size: 14px; font-weight: 500; color: #9E9E9E; }
+.btn-unlock { background: #FFF8E1; color: #F57F17; font-size: 12px; }
+.self-test-badge { font-size: 11px; color: var(--primary); background: var(--primary-light); border-radius: 8px; padding: 2px 8px; display: inline-block; margin-bottom: 6px; }
+.self-test-hint { font-size: 12px; color: var(--primary); margin-top: 4px; }
+
+/* ── Premium Banner ── */
+.premium-banner {
+  display: flex; align-items: center; justify-content: space-between;
+  background: linear-gradient(135deg, #1a7a6e, #2196F3);
+  color: white; border-radius: var(--radius); padding: 12px 16px;
+  margin-bottom: 16px; gap: 10px;
+}
+.premium-banner span { font-size: 13px; }
+.btn-upgrade-sm {
+  background: white; color: var(--primary); border-radius: 20px;
+  padding: 5px 12px; font-size: 12px; font-weight: 700; white-space: nowrap;
+}
+
+/* ── Onboarding Screen ── */
+.onboarding-screen {
+  display: flex; flex-direction: column; align-items: center;
+  min-height: 100vh; padding: 40px 24px 32px; background: var(--bg);
+}
+.onboarding-logo { font-size: 56px; margin-bottom: 12px; }
+.onboarding-title { font-size: 28px; font-weight: 800; text-align: center; color: var(--text); margin-bottom: 8px; line-height: 1.2; }
+.onboarding-title .brand { color: var(--primary); }
+.onboarding-sub { text-align: center; color: var(--text-secondary); font-size: 15px; margin-bottom: 24px; }
+.onboarding-card { width: 100%; background: var(--surface); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow); }
+.onboarding-card h2 { font-size: 16px; margin-bottom: 6px; }
+.step-hint { font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; }
+.sex-buttons, .age-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+.sex-btn, .age-btn {
+  flex: 1; min-width: 80px; padding: 10px 8px; border: 2px solid var(--border);
+  border-radius: 10px; font-size: 14px; font-weight: 500; background: var(--bg);
+  transition: all 0.2s; text-align: center;
+}
+.sex-btn.selected, .age-btn.selected { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+.btn-onboarding-done { width: 100%; margin-top: 8px; }
+.btn-onboarding-done:disabled { background: #BDBDBD; }
+.onboarding-disclaimer { font-size: 11px; color: var(--text-hint); margin-top: 12px; text-align: center; }
+
+/* ── Premium Screen ── */
+.premium-screen { padding-bottom: 32px; }
+.premium-hero { text-align: center; padding: 32px 16px 24px; }
+.premium-icon { font-size: 52px; margin-bottom: 8px; }
+.premium-title { font-size: 26px; font-weight: 800; color: var(--text); }
+.premium-sub { font-size: 15px; color: var(--text-secondary); margin-top: 4px; }
+.price-card { display: flex; gap: 12px; margin-bottom: 16px; }
+.price-option {
+  flex: 1; border: 2px solid var(--border); border-radius: var(--radius);
+  padding: 16px 12px; text-align: center; cursor: pointer; transition: all 0.2s;
+}
+.price-option.selected { border-color: var(--primary); background: var(--primary-light); }
+.price-label { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.badge-best { background: var(--primary); color: white; border-radius: 10px; padding: 1px 6px; font-size: 10px; margin-left: 4px; }
+.price-amount { font-size: 22px; font-weight: 800; color: var(--text); }
+.price-period { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+.price-sub { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+.btn-purchase { font-size: 17px; padding: 16px; margin-bottom: 8px; }
+.restore-text { text-align: center; margin-bottom: 16px; }
+.btn-link { background: none; color: var(--primary); font-size: 13px; text-decoration: underline; }
+.features-card, .free-card, .premium-active-card {
+  background: var(--surface); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow);
+}
+.premium-active-card { background: var(--primary-light); border: 2px solid var(--primary); text-align: center; }
+.premium-active-card p { margin-bottom: 12px; font-weight: 500; color: var(--primary); }
+.features-card h3, .free-card h3 { font-size: 16px; margin-bottom: 14px; }
+.feature-list { display: flex; flex-direction: column; gap: 10px; }
+.feature-item { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; }
+.feature-check { font-size: 16px; flex-shrink: 0; }
+.legal-text { font-size: 11px; color: var(--text-hint); text-align: center; padding: 0 16px; margin-top: 8px; }
+
+/* ── Recipe Card Expand ── */
+.recipe-card {
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px; margin-bottom: 10px; background: var(--surface);
+  cursor: pointer; transition: box-shadow 0.2s;
+}
+.recipe-card:hover { box-shadow: var(--shadow); }
+.recipe-card.expanded { border-color: var(--primary); }
+.recipe-header { display: flex; justify-content: space-between; align-items: center; }
+.recipe-title { font-weight: 600; font-size: 15px; color: var(--text); }
+.recipe-duration { font-size: 12px; color: var(--text-secondary); flex-shrink: 0; margin-left: 8px; }
+.recipe-highlight { font-size: 13px; color: var(--text-secondary); margin-top: 6px; }
+.recipe-expand-icon { font-size: 12px; color: var(--text-hint); margin-top: 4px; transition: transform 0.2s; display: block; }
+.recipe-card.expanded .recipe-expand-icon { transform: rotate(180deg); }
+.recipe-body { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+.recipe-card.expanded .recipe-body { display: block; }
+.recipe-body h5 { font-size: 13px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; margin-top: 12px; }
+.recipe-body h5:first-child { margin-top: 0; }
+.recipe-ingredients-list { list-style: disc; padding-left: 18px; font-size: 14px; color: var(--text); line-height: 1.8; }
+.recipe-steps-list { list-style: decimal; padding-left: 18px; font-size: 14px; color: var(--text); line-height: 1.8; }
+.recipe-steps-list li { margin-bottom: 4px; }
+
+/* ── HIGH Value Caution Box ── */
+.high-value-warning {
+  background: #FFF3E0; border-left: 4px solid #FB8C00;
+  border-radius: var(--radius); padding: 16px; margin-bottom: 16px;
+}
+.high-value-warning h4 { color: #E65100; font-size: 15px; margin-bottom: 6px; }
+.high-value-warning p { font-size: 14px; color: #BF360C; line-height: 1.5; }
+.high-value-warning .consult-note { font-size: 13px; color: var(--text-secondary); margin-top: 8px; font-style: italic; }
+
+/* ── 3-option Price Card ── */
+.price-card { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.price-option {
+  border: 2px solid var(--border); border-radius: var(--radius);
+  padding: 14px 16px; cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.price-option.selected { border-color: var(--primary); background: var(--primary-light); }
+.price-option-left { text-align: left; }
+.price-label { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.price-sub { font-size: 12px; color: var(--text-secondary); }
+.price-amount { font-size: 22px; font-weight: 800; color: var(--text); }
+.price-period { font-size: 13px; font-weight: 400; color: var(--text-secondary); }
+
+/* ── BMI / Height ── */
+.bmi-auto-badge { font-size: 11px; color: var(--primary); background: var(--primary-light); border-radius: 8px; padding: 2px 7px; font-weight: 600; margin-left: 4px; }
+.bmi-info-note { font-size: 12px; color: var(--text-secondary); margin-top: 6px; font-style: italic; }
+.height-row { display: flex; gap: 10px; align-items: center; }
+.height-row input { flex: 1; }
+.height-row .unit-label { color: var(--text-secondary); font-size: 14px; flex-shrink: 0; }
+.onboarding-card .height-input { width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 10px; font-size: 16px; text-align: center; transition: border-color 0.2s; }
+.onboarding-card .height-input:focus { border-color: var(--primary); outline: none; }
+.no-height-warning { background: #FFF8E1; border-left: 4px solid #FFC107; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #795548; margin-bottom: 8px; }
+
+/* ── Scrollbar ── */
+#screen-container::-webkit-scrollbar { width: 0; }
+
+/* ── Responsive ── */
+@media (min-width: 600px) {
+  .biomarker-grid { display: grid; grid-template-columns: 1fr 1fr; }
+  .summary-bar { gap: 16px; }
+}
+
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+<div id="app">
+  <main id="screen-container"></main>
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-screen="dashboard">
+      <span class="nav-icon">🏠</span><span class="nav-label">Übersicht</span>
+    </button>
+    <button class="nav-item" data-screen="entry">
+      <span class="nav-icon">➕</span><span class="nav-label">Eintragen</span>
+    </button>
+    <button class="nav-item" data-screen="trend">
+      <span class="nav-icon">📈</span><span class="nav-label">Verlauf</span>
+    </button>
+    <button class="nav-item" data-screen="profile">
+      <span class="nav-icon">👤</span><span class="nav-label">Profil</span>
+    </button>
+  </nav>
+</div>
+<div id="vm-toast" class="toast"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────
+const CATALOG = {
+  "categories": {
+    "fat_soluble": "Fettlösliche Vitamine",
+    "water_soluble": "Wasserlösliche Vitamine",
+    "trace_elements": "Spurenelemente",
+    "lab_values": "Laborwerte",
+    "body": "Körpermesswerte"
+  },
+  "biomarkers": [
+    {
+      "id": "vitamin_a",
+      "name": "Vitamin A",
+      "category": "fat_soluble",
+      "unit": "µg",
+      "refMin": 750, "refMax": 1000,
+      "refByGender": { "m": { "min": 850, "max": 1000 }, "f": { "min": 700, "max": 900 } },
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Fettlösliches Vitamin, wichtig für Sehkraft und Immunsystem",
+      "function": "Sehkraft (v. a. Dämmerungssehen), Haut und Schleimhäute, Immunsystem",
+      "foods": ["Leber", "Karotten", "Süßkartoffeln", "Spinat", "Kürbis", "Paprika"],
+      "deficiencySymptoms": ["Nachtblindheit", "Trockene Augen", "Trockene Haut", "Erhöhte Infektanfälligkeit", "Schleimhautveränderungen"],
+      "tips": ["Vitamin A aus tierischen Quellen (Retinol) wird besser aufgenommen als pflanzliches Beta-Carotin.", "Fett verbessert die Aufnahme – Karotten am besten mit etwas Öl essen."]
+    },
+    {
+      "id": "vitamin_d",
+      "name": "Vitamin D",
+      "category": "fat_soluble",
+      "unit": "µg",
+      "refMin": 20, "refMax": 50,
+      "refByGender": { "m": { "min": 20, "max": 50 }, "f": { "min": 20, "max": 50 } },
+      "premium": false,
+      "selfTestAvailable": true,
+      "selfTestNote": "Heimtest verfügbar (z. B. cerascreen, BIOGENA) · Empfehlung: 1–2× jährlich",
+      "description": "Das Sonnenvitamin – wird hauptsächlich durch UV-Strahlung in der Haut gebildet",
+      "function": "Knochen- und Zahnstabilität, Calciumaufnahme, Muskelfunktion, Immunsystem",
+      "foods": ["Lachs", "Hering", "Makrele", "Eigelb", "Rinderleber", "Champignons"],
+      "deficiencySymptoms": ["Knochenschmerzen", "Muskelschwäche", "Erhöhtes Frakturrisiko", "Müdigkeit", "Infektanfälligkeit", "Depressive Verstimmung"],
+      "tips": ["Im Winter (Oktober–März) reicht die Sonneneinstrahlung in Deutschland oft nicht für die Vitamin-D-Synthese.", "Regelmäßiges Blutbild prüfen lassen, besonders im Winter."]
+    },
+    {
+      "id": "vitamin_e",
+      "name": "Vitamin E",
+      "category": "fat_soluble",
+      "unit": "mg",
+      "refMin": 12, "refMax": 15,
+      "refByGender": { "m": { "min": 15, "max": 20 }, "f": { "min": 12, "max": 17 } },
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Starkes Antioxidans, schützt Zellmembranen vor oxidativem Stress",
+      "function": "Zellschutz (Antioxidans), Schutz der Zellmembranen, Immunsystem",
+      "foods": ["Weizenkeimöl", "Sonnenblumenöl", "Mandeln", "Haselnüsse", "Sonnenblumenkerne", "Avocado"],
+      "deficiencySymptoms": ["Muskelschwäche", "Neurologische Störungen", "Koordinationsprobleme"],
+      "tips": ["Vitamin E ist in Nüssen und Pflanzenölen reichlich enthalten.", "Ein echter Mangel ist bei ausgewogener Ernährung selten."]
+    },
+    {
+      "id": "vitamin_k",
+      "name": "Vitamin K",
+      "category": "fat_soluble",
+      "unit": "µg",
+      "refMin": 60, "refMax": 80,
+      "refByGender": { "m": { "min": 70, "max": 90 }, "f": { "min": 60, "max": 80 } },
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Essentiell für die Blutgerinnung und den Knochenstoffwechsel",
+      "function": "Blutgerinnung, Knochengesundheit",
+      "foods": ["Grünkohl", "Spinat", "Brokkoli", "Rosenkohl", "Salat", "Petersilie"],
+      "deficiencySymptoms": ["Blutungsneigung", "Hämatome", "Verzögerte Wundheilung", "Erhöhtes Osteoporose-Risiko"],
+      "tips": ["Grünes Blattgemüse täglich essen deckt den Bedarf zuverlässig.", "Achtung bei Einnahme von Blutverdünnern – Arzt konsultieren."]
+    },
+    {
+      "id": "vitamin_c",
+      "name": "Vitamin C",
+      "category": "water_soluble",
+      "unit": "mg",
+      "refMin": 95, "refMax": 110,
+      "refByGender": { "m": { "min": 110, "max": 150 }, "f": { "min": 95, "max": 135 } },
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Wasserlösliches Vitamin mit starker antioxidativer Wirkung",
+      "function": "Immunsystem, Wundheilung, Eisenaufnahme, Antioxidans",
+      "foods": ["Paprika", "Zitrusfrüchte", "Kiwi", "Erdbeeren", "Brokkoli", "Sanddorn"],
+      "deficiencySymptoms": ["Müdigkeit", "Zahnfleischbluten", "Schlechte Wundheilung", "Infektanfälligkeit"],
+      "tips": ["Vitamin C verbessert die Aufnahme von pflanzlichem Eisen – kombiniere Hülsenfrüchte mit Zitronensaft.", "Hitze zerstört Vitamin C – rohes Gemüse bevorzugen."]
+    },
+    {
+      "id": "vitamin_b1",
+      "name": "Vitamin B1 (Thiamin)",
+      "category": "water_soluble",
+      "unit": "mg",
+      "refMin": 1.0, "refMax": 1.2,
+      "refByGender": { "m": { "min": 1.2, "max": 1.5 }, "f": { "min": 1.0, "max": 1.3 } },
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Wichtig für den Energiestoffwechsel und das Nervensystem",
+      "function": "Energiestoffwechsel, Nervenfunktion, Herzfunktion",
+      "foods": ["Vollkornbrot", "Haferflocken", "Hülsenfrüchte", "Schweinefleisch", "Weizenkeime", "Sonnenblumenkerne"],
+      "deficiencySymptoms": ["Müdigkeit", "Konzentrationsstörungen", "Kribbeln/Taubheit", "Muskelschwäche"],
+      "tips": ["Alkohol hemmt die Aufnahme und Speicherung von B1 erheblich.", "Vollkornprodukte sind die beste pflanzliche Quelle."]
+    },
+    {
+      "id": "vitamin_b2",
+      "name": "Vitamin B2 (Riboflavin)",
+      "category": "water_soluble",
+      "unit": "mg",
+      "refMin": 1.1, "refMax": 1.4,
+      "refByGender": { "m": { "min": 1.4, "max": 1.8 }, "f": { "min": 1.1, "max": 1.5 } },
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Beteiligt am Energiestoffwechsel und am Schutz der Zellen",
+      "function": "Energiestoffwechsel, Haut, Augen, Nervensystem",
+      "foods": ["Milch", "Joghurt", "Käse", "Eier", "Mandeln", "Rinderleber"],
+      "deficiencySymptoms": ["Rissige Mundwinkel", "Entzündete Zunge", "Hautveränderungen", "Lichtempfindlichkeit"],
+      "tips": ["Milchprodukte und Eier sind die besten Quellen.", "Licht zerstört Riboflavin – Milch nicht im Sonnenlicht lagern."]
+    },
+    {
+      "id": "vitamin_b3",
+      "name": "Vitamin B3 (Niacin)",
+      "category": "water_soluble",
+      "unit": "mg",
+      "refMin": 13, "refMax": 16,
+      "refByGender": { "m": { "min": 16, "max": 20 }, "f": { "min": 13, "max": 17 } },
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Wichtig für Energiegewinnung und DNA-Reparatur",
+      "function": "Energiestoffwechsel, Haut, Nervensystem, DNA-Reparatur",
+      "foods": ["Fleisch", "Fisch", "Erdnüsse", "Pilze", "Vollkorn", "Geflügel"],
+      "deficiencySymptoms": ["Hautentzündungen", "Durchfall", "Psychische Veränderungen"],
+      "tips": ["Kann aus der Aminosäure Tryptophan selbst gebildet werden.", "Fleischesser decken ihren Bedarf meist problemlos."]
+    },
+    {
+      "id": "vitamin_b5",
+      "name": "Vitamin B5 (Pantothensäure)",
+      "category": "water_soluble",
+      "unit": "mg",
+      "refMin": 5, "refMax": 6,
+      "refByGender": { "m": { "min": 5, "max": 6 }, "f": { "min": 5, "max": 6 } },
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Wichtig für Hormonproduktion und Energiestoffwechsel",
+      "function": "Hormonbildung, Energiestoffwechsel, Wundheilung",
+      "foods": ["Pilze", "Avocado", "Hülsenfrüchte", "Eier", "Lachs", "Brokkoli"],
+      "deficiencySymptoms": ["Selten: Müdigkeit", "Kopfschmerzen", "Reizbarkeit"],
+      "tips": ["Ein Mangel ist bei ausgewogener Ernährung sehr selten.", "Pantothensäure steckt in fast allen Lebensmitteln."]
+    },
+    {
+      "id": "vitamin_b6",
+      "name": "Vitamin B6",
+      "category": "water_soluble",
+      "unit": "mg",
+      "refMin": 1.4, "refMax": 1.6,
+      "refByGender": { "m": { "min": 1.6, "max": 2.0 }, "f": { "min": 1.4, "max": 1.8 } },
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Essentiell für Eiweißstoffwechsel und Blutbildung",
+      "function": "Eiweißstoffwechsel, Nervenfunktion, Blutbildung, Hormonsynthese",
+      "foods": ["Lachs", "Thunfisch", "Kartoffeln", "Bananen", "Geflügel", "Kichererbsen"],
+      "deficiencySymptoms": ["Reizbarkeit", "Depressive Verstimmung", "Blutarmut", "Nervenschäden"],
+      "tips": ["Besonders wichtig in der Schwangerschaft.", "Hohe Dosen als Supplement (>100 mg/Tag) können Nervenschäden verursachen."]
+    },
+    {
+      "id": "vitamin_b7",
+      "name": "Vitamin B7 (Biotin)",
+      "category": "water_soluble",
+      "unit": "µg",
+      "refMin": 30, "refMax": 60,
+      "refByGender": { "m": { "min": 30, "max": 60 }, "f": { "min": 30, "max": 60 } },
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Das 'Schönheitsvitamin' für Haare, Haut und Nägel",
+      "function": "Haut, Haare, Nägel, Fett- und Kohlenhydratstoffwechsel",
+      "foods": ["Eier", "Nüsse", "Haferflocken", "Erdnüsse", "Pilze", "Hülsenfrüchte"],
+      "deficiencySymptoms": ["Haarausfall", "Hautausschläge", "Brüchige Nägel", "Müdigkeit"],
+      "tips": ["Rohes Eiweiß bindet Biotin und hemmt seine Aufnahme – Eier besser gekocht essen.", "Ein echter Mangel ist selten, da Darmbakterien Biotin produzieren."]
+    },
+    {
+      "id": "vitamin_b9",
+      "name": "Vitamin B9 (Folat)",
+      "category": "water_soluble",
+      "unit": "µg",
+      "refMin": 300, "refMax": 400,
+      "refByGender": { "m": { "min": 300, "max": 400 }, "f": { "min": 300, "max": 400 } },
+      "premium": true,
+      "selfTestAvailable": true,
+      "selfTestNote": "Heimtest verfügbar (z. B. cerascreen Folat-Test) · Empfehlung: 1× jährlich",
+      "description": "Essentiell für Zellteilung und Blutbildung, besonders in der Schwangerschaft",
+      "function": "Zellteilung, Blutbildung, DNA-Synthese, Entwicklung des Nervensystems",
+      "foods": ["Spinat", "Grünkohl", "Linsen", "Kichererbsen", "Spargel", "Weizenkeime", "Orangen"],
+      "deficiencySymptoms": ["Blutarmut", "Müdigkeit", "Konzentrationsprobleme", "In Schwangerschaft: Fehlbildungen"],
+      "tips": ["Bei Kinderwunsch und in der Schwangerschaft: 400 µg/Tag empfohlen.", "Folat ist hitzeempfindlich – rohes grünes Gemüse bevorzugen."]
+    },
+    {
+      "id": "vitamin_b12",
+      "name": "Vitamin B12",
+      "category": "water_soluble",
+      "unit": "µg",
+      "refMin": 4.0, "refMax": 8.0,
+      "refByGender": { "m": { "min": 4.0, "max": 8.0 }, "f": { "min": 4.0, "max": 8.0 } },
+      "premium": false,
+      "selfTestAvailable": true,
+      "selfTestNote": "Aktiver Holotranscobalamin-Test verfügbar (z. B. cerascreen, Aportha) · Empfehlung: 1× jährlich",
+      "description": "Wichtig für Blutbildung und Nervensystem; kommt nur in tierischen Produkten vor",
+      "function": "Blutbildung, Nervensystem, DNA-Synthese",
+      "foods": ["Rindfleisch", "Lachs", "Makrele", "Eier", "Milch", "Käse"],
+      "deficiencySymptoms": ["Blutarmut", "Kribbeln/Taubheit in Händen und Füßen", "Gangunsicherheit", "Gedächtnis- und Konzentrationsstörungen", "Depression"],
+      "tips": ["Veganer und Vegetarier sollten B12 supplementieren.", "Magensäuremangel (oft im Alter) reduziert die Aufnahme stark."]
+    },
+    {
+      "id": "eisen",
+      "name": "Eisen",
+      "category": "trace_elements",
+      "unit": "mg",
+      "refMin": 11, "refMax": 16,
+      "refByGender": { "m": { "min": 11, "max": 14 }, "f": { "min": 16, "max": 20 } },
+      "premium": false,
+      "selfTestAvailable": true,
+      "selfTestNote": "Ferritin-Selbsttest verfügbar (z. B. cerascreen, meinlabtest.de) · Empfehlung: 1–2× jährlich",
+      "description": "Essentiell für den Sauerstofftransport im Blut – Frauen haben deutlich höheren Bedarf",
+      "function": "Sauerstofftransport im Blut, Leistungsfähigkeit, Immunsystem",
+      "foods": ["Rotes Fleisch", "Leber", "Linsen", "Spinat", "Kürbiskerne", "Quinoa"],
+      "deficiencySymptoms": ["Müdigkeit und Erschöpfung", "Blässe", "Kurzatmigkeit", "Kalte Hände und Füße", "Brüchige Nägel", "Diffuser Haarausfall"],
+      "tips": ["Pflanzliches Eisen zusammen mit Vitamin C essen – das verbessert die Aufnahme deutlich.", "Kaffee und Tee hemmen die Eisenaufnahme – mindestens 30 Minuten Abstand zu Mahlzeiten."]
+    },
+    {
+      "id": "zink",
+      "name": "Zink",
+      "category": "trace_elements",
+      "unit": "mg",
+      "refMin": 8, "refMax": 14,
+      "refByGender": { "m": { "min": 14, "max": 18 }, "f": { "min": 8, "max": 11 } },
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Wichtig für Immunsystem, Wundheilung und viele Enzymreaktionen",
+      "function": "Immunsystem, Wundheilung, Enzyme, Hautgesundheit",
+      "foods": ["Rindfleisch", "Käse", "Kürbiskerne", "Linsen", "Haferflocken", "Cashewkerne"],
+      "deficiencySymptoms": ["Infektanfälligkeit", "Schlechte Wundheilung", "Haarausfall", "Hautveränderungen", "Appetitlosigkeit"],
+      "tips": ["Tierisches Zink wird besser aufgenommen als pflanzliches.", "Vegetarier und Veganer haben erhöhten Bedarf."]
+    },
+    {
+      "id": "jod",
+      "name": "Jod",
+      "category": "trace_elements",
+      "unit": "µg",
+      "refMin": 150, "refMax": 200,
+      "refByGender": { "m": { "min": 150, "max": 200 }, "f": { "min": 150, "max": 200 } },
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Unentbehrlich für die Produktion von Schilddrüsenhormonen",
+      "function": "Schilddrüsenhormone, Stoffwechsel, Wachstum",
+      "foods": ["Jodsalz", "Kabeljau", "Lachs", "Meeresfrüchte", "Milch", "Joghurt"],
+      "deficiencySymptoms": ["Schilddrüsenvergrößerung (Kropf)", "Müdigkeit", "Gewichtszunahme", "Konzentrationsprobleme", "Kältegefühl"],
+      "tips": ["Deutschland ist ein Jodmangelgebiet – konsequente Verwendung von Jodsalz ist wichtig.", "Schwangere und Stillende haben erhöhten Bedarf."]
+    },
+    {
+      "id": "selen",
+      "name": "Selen",
+      "category": "trace_elements",
+      "unit": "µg",
+      "refMin": 60, "refMax": 70,
+      "refByGender": { "m": { "min": 70, "max": 90 }, "f": { "min": 60, "max": 80 } },
+      "premium": true,
+      "selfTestAvailable": true,
+      "selfTestNote": "Selbsttest verfügbar (z. B. cerascreen Selen-Test) · Empfehlung: 1× jährlich",
+      "description": "Starkes Antioxidans, wichtig für Schilddrüse und Immunsystem",
+      "function": "Antioxidativer Schutz, Schilddrüse, Immunsystem",
+      "foods": ["Paranüsse", "Thunfisch", "Lachs", "Eier", "Hülsenfrüchte", "Vollkornbrot"],
+      "deficiencySymptoms": ["Muskelschwäche", "Erhöhte Infektanfälligkeit", "Schilddrüsenprobleme", "Müdigkeit"],
+      "tips": ["Schon 2–3 Paranüsse pro Tag decken den Selenbedarf.", "Böden in Deutschland sind selenarm – Supplementierung oft sinnvoll."]
+    },
+    {
+      "id": "kupfer",
+      "name": "Kupfer",
+      "category": "trace_elements",
+      "unit": "mg",
+      "refMin": 1.0, "refMax": 1.5,
+      "refByGender": { "m": { "min": 1.0, "max": 1.5 }, "f": { "min": 1.0, "max": 1.5 } },
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Wichtig für Eisenstoffwechsel, Bindegewebe und Nervenfunktion",
+      "function": "Eisenstoffwechsel, Bindegewebe, Immunsystem",
+      "foods": ["Nüsse", "Kakao", "Hülsenfrüchte", "Leber", "Meeresfrüchte", "Pilze"],
+      "deficiencySymptoms": ["Blutarmut", "Knochenveränderungen", "Infektanfälligkeit", "Nervenprobleme"],
+      "tips": ["Kupfermangel ist selten, kann aber bei sehr einseitiger Ernährung auftreten.", "Übermäßige Zinkzufuhr hemmt die Kupferaufnahme."]
+    },
+    {
+      "id": "mangan",
+      "name": "Mangan",
+      "category": "trace_elements",
+      "unit": "mg",
+      "refMin": 2, "refMax": 5,
+      "refByGender": { "m": { "min": 2, "max": 5 }, "f": { "min": 2, "max": 5 } },
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Wichtig für Knochenstoffwechsel und antioxidative Enzyme",
+      "function": "Knochenstoffwechsel, Enzyme, Blutgerinnung",
+      "foods": ["Vollkornprodukte", "Nüsse", "Hülsenfrüchte", "Tee", "Ananas", "Blattgemüse"],
+      "deficiencySymptoms": ["Selten: Knochenveränderungen", "Wachstumsstörungen"],
+      "tips": ["Mangan kommt in pflanzlichen Lebensmitteln reichlich vor.", "Ein Mangel ist bei ausgewogener Ernährung sehr selten."]
+    },
+    {
+      "id": "magnesium",
+      "name": "Magnesium",
+      "category": "trace_elements",
+      "unit": "mg",
+      "refMin": 300, "refMax": 400,
+      "refByGender": { "m": { "min": 400, "max": 450 }, "f": { "min": 300, "max": 350 } },
+      "premium": true,
+      "selfTestAvailable": true,
+      "selfTestNote": "Selbsttest verfügbar (z. B. cerascreen Magnesium-Test) · Empfehlung: 1× jährlich",
+      "description": "Mengenelement, wichtig für Muskeln, Nerven und über 300 Enzymreaktionen",
+      "function": "Muskelentspannung, Nervenfunktion, Energiestoffwechsel, Schlaf",
+      "foods": ["Nüsse", "Samen", "Vollkornprodukte", "Hülsenfrüchte", "Bananen", "Dunkle Schokolade"],
+      "deficiencySymptoms": ["Muskelkrämpfe (Wadenkrämpfe)", "Nervosität", "Schlafprobleme", "Kopfschmerzen", "Herzrasen"],
+      "tips": ["Wadenkrämpfe nachts können ein erstes Zeichen für Magnesiummangel sein.", "Stress erhöht den Magnesiumbedarf deutlich."]
+    },
+    {
+      "id": "chrom",
+      "name": "Chrom",
+      "category": "trace_elements",
+      "unit": "µg",
+      "refMin": 30, "refMax": 100,
+      "refByGender": { "m": { "min": 30, "max": 100 }, "f": { "min": 30, "max": 100 } },
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Unterstützt die Insulinwirkung und Blutzuckerregulation",
+      "function": "Blutzuckerregulation, Insulinsensitivität, Energiestoffwechsel",
+      "foods": ["Vollkornprodukte", "Brokkoli", "Fleisch", "Käse", "Hülsenfrüchte", "Bierhefe"],
+      "deficiencySymptoms": ["Erhöhter Blutzucker", "Heißhunger auf Süßes", "Gewichtszunahme"],
+      "tips": ["Raffinierter Zucker und Weißmehl erhöhen den Chrombedarf.", "Vollkornprodukte statt Weißbrot wählen."]
+    },
+    {
+      "id": "molybdaen",
+      "name": "Molybdän",
+      "category": "trace_elements",
+      "unit": "µg",
+      "refMin": 50, "refMax": 100,
+      "refByGender": { "m": { "min": 50, "max": 100 }, "f": { "min": 50, "max": 100 } },
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Bestandteil wichtiger Enzyme im Stoffwechsel",
+      "function": "Enzymfunktionen, Entgiftung, Harnsäurestoffwechsel",
+      "foods": ["Hülsenfrüchte", "Getreideprodukte", "Nüsse", "Leber", "Milchprodukte"],
+      "deficiencySymptoms": ["Extrem selten: Kopfschmerzen", "Herzrasen", "Sehstörungen"],
+      "tips": ["Molybdän steckt in vielen Lebensmitteln – ein Mangel ist sehr selten."]
+    },
+    {
+      "id": "fluorid",
+      "name": "Fluorid",
+      "category": "trace_elements",
+      "unit": "mg",
+      "refMin": 3, "refMax": 4,
+      "refByGender": { "m": { "min": 3.8, "max": 4.5 }, "f": { "min": 3.1, "max": 3.8 } },
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Schützt den Zahnschmelz und stärkt die Knochen",
+      "function": "Zahnschmelz, Kariesprophylaxe, Knochengesundheit",
+      "foods": ["Fluoridiertes Mineralwasser", "Schwarzer Tee", "Meeresfisch", "Vollkornprodukte"],
+      "deficiencySymptoms": ["Erhöhtes Kariesrisiko", "Schwächere Knochen"],
+      "tips": ["Fluoridierte Zahnpasta deckt einen großen Teil des Bedarfs."]
+    },
+    {
+      "id": "omega3",
+      "name": "Omega-3-Index",
+      "category": "lab_values",
+      "unit": "%",
+      "refMin": 8, "refMax": 12,
+      "refByGender": { "m": { "min": 8, "max": 12 }, "f": { "min": 8, "max": 12 } },
+      "premium": true,
+      "selfTestAvailable": true,
+      "selfTestNote": "Heimtest verfügbar (z. B. NORSAN, cerascreen, verisana) · Empfehlung: 1× jährlich",
+      "description": "Anteil von EPA und DHA in den roten Blutkörperchen – Herzrisiko-Marker",
+      "function": "Herzgesundheit, Entzündungshemmung, Gehirnfunktion, Stimmung",
+      "foods": ["Lachs", "Makrele", "Hering", "Sardinen", "Walnüsse", "Leinöl", "Chiasamen"],
+      "deficiencySymptoms": ["Erhöhtes Herzrisiko", "Entzündungsneigung", "Konzentrationsprobleme", "Trockene Haut", "Depressive Stimmung"],
+      "tips": ["Ein Omega-3-Index unter 4 % gilt als kritisch erhöhtes Herzrisiko.", "Fetter Seefisch 2× pro Woche kann den Index deutlich verbessern."]
+    },
+    {
+      "id": "ferritin",
+      "name": "Ferritin (Eisenspeicher)",
+      "category": "lab_values",
+      "unit": "µg/L",
+      "refMin": 20, "refMax": 200,
+      "refByGender": { "m": { "min": 30, "max": 300 }, "f": { "min": 15, "max": 150 } },
+      "premium": true,
+      "selfTestAvailable": true,
+      "selfTestNote": "Ferritin-Heimtest verfügbar (z. B. cerascreen, meinlabtest.de) · Empfehlung: 1–2× jährlich",
+      "description": "Misst den Eisenspeicher im Körper – präziser als einfacher Eisen-Wert",
+      "function": "Eisenspeicher, Frühindikator für Eisenmangel vor Anämie",
+      "foods": ["Rotes Fleisch", "Leber", "Hülsenfrüchte", "Kürbiskerne", "Vollkorn"],
+      "deficiencySymptoms": ["Müdigkeit", "Haarausfall", "Konzentrationsprobleme", "Kurzatmigkeit", "Kalte Extremitäten"],
+      "tips": ["Ferritin sinkt früher als Hämoglobin – daher als Frühindikator optimal.", "Werte unter 30 µg/L gelten als funktioneller Eisenmangel."]
+    },
+    {
+      "id": "homocystein",
+      "name": "Homocystein",
+      "category": "lab_values",
+      "unit": "µmol/L",
+      "refMin": 0, "refMax": 10,
+      "refByGender": { "m": { "min": 0, "max": 12 }, "f": { "min": 0, "max": 10 } },
+      "premium": true,
+      "selfTestAvailable": true,
+      "selfTestNote": "Heimtest verfügbar (z. B. cerascreen Homocystein-Test) · Empfehlung: 1× jährlich",
+      "description": "Frühindikator für Mangel an B12, B6 und Folat – und für Herzrisiko",
+      "function": "Indikator für B-Vitamin-Status, Herzrisiko-Marker",
+      "foods": ["Hülsenfrüchte", "Spinat", "Fleisch", "Fisch", "Milchprodukte"],
+      "deficiencySymptoms": ["Erhöhter Wert: Herzrisiko", "B-Vitamin-Mangel", "Kognitive Beeinträchtigungen"],
+      "tips": ["Ein Homocystein-Wert unter 10 µmol/L ist optimal.", "Erhöhte Werte sprechen oft auf B12+B6+Folat-Supplementierung an.", "Ein einzelner Test gibt Auskunft über drei B-Vitamine gleichzeitig."]
+    },
+    {
+      "id": "tsh",
+      "name": "TSH (Schilddrüse)",
+      "category": "lab_values",
+      "unit": "mIU/L",
+      "refMin": 0.4, "refMax": 4.0,
+      "refByGender": { "m": { "min": 0.4, "max": 4.0 }, "f": { "min": 0.4, "max": 4.0 } },
+      "premium": true,
+      "selfTestAvailable": true,
+      "selfTestNote": "TSH-Heimtest verfügbar (z. B. cerascreen, Aportha) · Empfehlung: 1× jährlich",
+      "description": "Schilddrüsen-Stimulationshormon – Hinweis auf Schilddrüsenfunktion",
+      "function": "Reguliert den gesamten Stoffwechsel, Energie, Gewicht, Stimmung",
+      "foods": ["Jodsalz", "Seefisch", "Milchprodukte"],
+      "deficiencySymptoms": ["Zu hoch: Unterfunktion – Müdigkeit, Gewichtszunahme, Kälteempfindlichkeit", "Zu niedrig: Überfunktion – Herzrasen, Gewichtsabnahme, Nervosität"],
+      "tips": ["TSH ist ein Screening-Wert. Bei Auffälligkeiten sollte ein Arzt fT3 und fT4 prüfen.", "Jodmangel ist eine häufige Ursache für Schilddrüsenstörungen in Deutschland."]
+    },
+    {
+      "id": "gewicht",
+      "name": "Gewicht",
+      "category": "body",
+      "unit": "kg",
+      "refMin": null, "refMax": null,
+      "refByGender": null,
+      "premium": false,
+      "selfTestAvailable": false,
+      "description": "Körpergewicht – der Verlauf zeigt deine Gewichtsentwicklung über Zeit",
+      "function": "Körpergewicht tracken und Entwicklung beobachten",
+      "foods": [],
+      "deficiencySymptoms": [],
+      "tips": ["Setze dir ein Zielgewicht in den Einstellungen, um deinen Fortschritt zu sehen.", "Wiege dich immer zur gleichen Tageszeit für verlässliche Vergleichswerte."]
+    },
+    {
+      "id": "bmi",
+      "name": "BMI",
+      "category": "body",
+      "unit": "kg/m²",
+      "refMin": 18.5, "refMax": 25.0,
+      "refByGender": { "m": { "min": 18.5, "max": 25.0 }, "f": { "min": 18.5, "max": 25.0 } },
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Body-Mass-Index: Verhältnis von Gewicht zu Körpergröße",
+      "function": "Orientierungswert für Gewichtsstatus",
+      "foods": [],
+      "deficiencySymptoms": [],
+      "tips": ["BMI Unter 18,5 = Untergewicht, 18,5–25 = Normalgewicht, 25–30 = Übergewicht, über 30 = Adipositas.", "Der BMI berücksichtigt nicht die Muskelmasse – Sportler können höhere Werte haben."]
+    },
+    {
+      "id": "taillenumfang",
+      "name": "Taillenumfang",
+      "category": "body",
+      "unit": "cm",
+      "refMin": 60, "refMax": 88,
+      "refByGender": { "m": { "min": 60, "max": 94 }, "f": { "min": 60, "max": 80 } },
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Bauchumfang als Risikofaktor für Herz-Kreislauf-Erkrankungen",
+      "function": "Messung von Bauchfett als Risikofaktor",
+      "foods": [],
+      "deficiencySymptoms": [],
+      "tips": ["WHO-Grenzwerte: Männer >94 cm, Frauen >80 cm = erhöhtes Risiko.", "Messung morgens, auf Bauchhöhe (zwischen unterster Rippe und Hüftknochen)."]
+    }
+  ]
+};
+const RECIPES = [
+  {
+    "id": "lachsfilet_spinat",
+    "title": "Lachsfilet auf Spinatbett",
+    "duration": "25 Min.",
+    "servings": 2,
+    "tags": ["vitamin_d", "vitamin_b12", "eisen", "selen", "omega3", "jod"],
+    "ingredients": ["2 Lachsfilets (je 150 g)", "300 g frischer Blattspinat", "2 Knoblauchzehen", "1 EL Olivenöl", "Saft einer Zitrone", "Salz, Pfeffer"],
+    "steps": ["Lachs mit Zitronensaft, Salz und Pfeffer würzen.", "Lachs in einer Pfanne mit etwas Öl von jeder Seite 3–4 Min. braten.", "Knoblauch hacken, in Öl andünsten, Spinat dazugeben und zusammenfallen lassen.", "Spinat mit Salz und Pfeffer abschmecken.", "Lachs auf dem Spinatbett anrichten und servieren."],
+    "highlight": "Reich an Vitamin D, B12 und Selen – ideal bei mehreren Mängeln gleichzeitig."
+  },
+  {
+    "id": "linsensuppe_zitrone",
+    "title": "Rote Linsensuppe mit Zitrone",
+    "duration": "30 Min.",
+    "servings": 3,
+    "tags": ["eisen", "vitamin_c", "vitamin_b9", "vitamin_b1", "ferritin"],
+    "ingredients": ["200 g rote Linsen", "1 Zwiebel", "2 Karotten", "1 Dose Tomaten (400 g)", "800 ml Gemüsebrühe", "1 Zitrone (Saft)", "Kreuzkümmel, Kurkuma, Salz, Pfeffer", "1 EL Olivenöl"],
+    "steps": ["Zwiebel und Karotten würfeln, in Öl andünsten.", "Gewürze kurz mitrösten.", "Linsen, Tomaten und Brühe dazugeben.", "20 Min. köcheln lassen bis Linsen weich sind.", "Mit Zitronensaft abschmecken – das steigert die Eisenaufnahme!"],
+    "highlight": "Die Kombination aus Eisen (Linsen) + Vitamin C (Zitrone) maximiert die Eisenaufnahme."
+  },
+  {
+    "id": "spinat_omelett",
+    "title": "Spinat-Omelett mit Käse",
+    "duration": "15 Min.",
+    "servings": 1,
+    "tags": ["vitamin_b2", "vitamin_b7", "vitamin_b12", "vitamin_k", "eisen", "ferritin"],
+    "ingredients": ["3 Eier", "100 g frischer Spinat", "30 g geriebener Käse", "1 TL Butter", "Salz, Pfeffer, Muskat"],
+    "steps": ["Eier verquirlen, mit Salz und Pfeffer würzen.", "Butter in Pfanne schmelzen, Spinat kurz andünsten.", "Ei-Masse darüber gießen.", "Käse auf einer Hälfte verteilen, Omelett zusammenklappen.", "2 Min. stocken lassen und servieren."],
+    "highlight": "Schnelles Powerfrühstück mit Biotin, B12, Eisen und Vitamin K."
+  },
+  {
+    "id": "karotten_ingwer_suppe",
+    "title": "Karotten-Ingwer-Suppe",
+    "duration": "25 Min.",
+    "servings": 2,
+    "tags": ["vitamin_a", "vitamin_c"],
+    "ingredients": ["500 g Karotten", "1 Stück Ingwer (2 cm)", "1 Orange (Saft)", "500 ml Gemüsebrühe", "1 EL Kokosöl", "Salz, Pfeffer"],
+    "steps": ["Karotten schälen und grob würfeln.", "Ingwer reiben, mit Karotten in Kokosöl andünsten.", "Brühe dazugeben, 15 Min. kochen.", "Pürieren, Orangensaft untermischen.", "Mit Salz und Pfeffer abschmecken."],
+    "highlight": "Beta-Carotin aus Karotten + Fett (Kokosöl) = optimale Vitamin-A-Aufnahme."
+  },
+  {
+    "id": "vollkorn_bowl",
+    "title": "Vollkorn-Power-Bowl",
+    "duration": "20 Min.",
+    "servings": 1,
+    "tags": ["vitamin_b1", "vitamin_b3", "eisen", "zink", "mangan", "magnesium"],
+    "ingredients": ["80 g Quinoa oder Vollkorn-Bulgur", "1 Handvoll Kichererbsen (aus Dose)", "1 Avocado", "Handvoll Rucola", "Kürbiskerne", "Olivenöl, Zitronensaft, Salz"],
+    "steps": ["Quinoa nach Packungsanweisung kochen.", "Kichererbsen abtropfen und würzen.", "Avocado würfeln.", "Alles in einer Schüssel anrichten.", "Mit Olivenöl und Zitronensaft beträufeln, Kürbiskerne darüber streuen."],
+    "highlight": "Vollgepackt mit B-Vitaminen, Eisen und Zink – perfekt als Mittagessen."
+  },
+  {
+    "id": "paranuss_smoothie",
+    "title": "Selen-Booster-Smoothie",
+    "duration": "5 Min.",
+    "servings": 1,
+    "tags": ["selen", "vitamin_c", "vitamin_e", "magnesium"],
+    "ingredients": ["2–3 Paranüsse", "1 Banane", "150 g gefrorene Erdbeeren", "200 ml Hafermilch", "1 TL Mandelmus"],
+    "steps": ["Alle Zutaten in den Mixer geben.", "Cremig mixen.", "Sofort trinken."],
+    "highlight": "Nur 2–3 Paranüsse decken den Tagesbedarf an Selen vollständig."
+  },
+  {
+    "id": "brokkoli_lachs_pfanne",
+    "title": "Brokkoli-Lachs-Pfanne",
+    "duration": "20 Min.",
+    "servings": 2,
+    "tags": ["vitamin_d", "vitamin_k", "vitamin_c", "selen", "jod", "omega3"],
+    "ingredients": ["2 Lachsfilets", "1 Brokkoli (in Röschen)", "2 Knoblauchzehen", "1 EL Sojasoße", "1 TL Sesam", "Olivenöl"],
+    "steps": ["Lachs in Stücke schneiden, kurz anbraten.", "Brokkoli in der Pfanne mit Knoblauch 5 Min. dünsten.", "Lachs wieder dazugeben.", "Mit Sojasoße ablöschen.", "Mit Sesam bestreuen und servieren."],
+    "highlight": "Kombination aus Vitamin D, K und Selen – ideal für Knochen und Immunsystem."
+  },
+  {
+    "id": "erdbeeren_joghurt_bowl",
+    "title": "Erdbeer-Joghurt-Bowl",
+    "duration": "5 Min.",
+    "servings": 1,
+    "tags": ["vitamin_c", "vitamin_b2", "vitamin_b7", "jod"],
+    "ingredients": ["200 g Naturjoghurt", "200 g Erdbeeren", "2 EL Haferflocken", "1 EL Honig", "Handvoll Nüsse"],
+    "steps": ["Joghurt in eine Schüssel geben.", "Erdbeeren waschen und halbieren.", "Alle Zutaten obenauf anrichten.", "Mit Honig beträufeln."],
+    "highlight": "Schnelles Frühstück mit Vitamin C, B2 und Biotin für Haut und Energie."
+  },
+  {
+    "id": "avocado_toast_ei",
+    "title": "Avocado-Toast mit pochiertem Ei",
+    "duration": "15 Min.",
+    "servings": 1,
+    "tags": ["vitamin_b6", "vitamin_b7", "vitamin_e", "vitamin_k"],
+    "ingredients": ["2 Scheiben Vollkornbrot", "1 reife Avocado", "2 Eier", "1 EL Weißweinessig", "Chiliflocken, Salz, Pfeffer", "Frischer Schnittlauch"],
+    "steps": ["Wasser in einem Topf erhitzen, Essig hinzugeben, leicht sieden lassen.", "Eier einzeln in eine Tasse geben, vorsichtig ins Wasser gleiten lassen.", "4 Min. pochieren, herausheben.", "Avocado zerdrücken, auf das getoastete Brot streichen.", "Pochierte Eier darauflegen, mit Chiliflocken und Schnittlauch würzen."],
+    "highlight": "Avocado liefert Vitamin E und gesunde Fette – das Ei bringt Biotin und B6."
+  },
+  {
+    "id": "haferbrei_beeren",
+    "title": "Haferbrei mit Beeren und Walnüssen",
+    "duration": "10 Min.",
+    "servings": 1,
+    "tags": ["vitamin_b1", "vitamin_b3", "magnesium", "omega3", "eisen"],
+    "ingredients": ["80 g Haferflocken", "300 ml Hafermilch", "1 Handvoll gemischte Beeren (frisch oder TK)", "1 EL Walnüsse", "1 TL Honig", "1 Prise Salz"],
+    "steps": ["Haferflocken mit Hafermilch und Salz aufkochen.", "Unter Rühren 3–4 Min. köcheln lassen bis der Brei cremig ist.", "In eine Schüssel geben.", "Mit Beeren, Walnüssen und Honig toppen."],
+    "highlight": "Walnüsse liefern Omega-3, Hafer deckt den Tagesbedarf an B1 zu einem Drittel."
+  },
+  {
+    "id": "quinoa_fruehstueck",
+    "title": "Warme Quinoa-Frühstücksbowl",
+    "duration": "20 Min.",
+    "servings": 1,
+    "tags": ["eisen", "magnesium", "vitamin_b2", "zink"],
+    "ingredients": ["70 g Quinoa", "200 ml Mandelmilch", "1 Banane", "1 EL Mandelmus", "1 EL Kürbiskerne", "1 TL Zimt"],
+    "steps": ["Quinoa mit Mandelmilch und Zimt aufkochen.", "15 Min. bei kleiner Hitze köcheln.", "In eine Schüssel füllen.", "Banane in Scheiben schneiden, mit Mandelmus und Kürbiskernen anrichten."],
+    "highlight": "Quinoa enthält alle essentiellen Aminosäuren plus Eisen und Magnesium."
+  },
+  {
+    "id": "griechischer_joghurt_walnuss",
+    "title": "Griechischer Joghurt mit Walnüssen und Honig",
+    "duration": "5 Min.",
+    "servings": 1,
+    "tags": ["vitamin_b12", "jod", "omega3", "vitamin_b2"],
+    "ingredients": ["200 g griechischer Joghurt (10 % Fett)", "3 EL Walnüsse", "1 EL Honig", "1 TL Leinsamen", "Frische Feigen oder Beeren nach Wahl"],
+    "steps": ["Joghurt in eine Schüssel geben.", "Walnüsse grob hacken und darüberstreuen.", "Leinsamen und Früchte dazu.", "Mit Honig beträufeln und servieren."],
+    "highlight": "Joghurt ist eine Top-Jodquelle; Walnüsse liefern pflanzliches Omega-3."
+  },
+  {
+    "id": "ruhrei_lachs",
+    "title": "Rührei mit Räucherlachs und Schnittlauch",
+    "duration": "10 Min.",
+    "servings": 1,
+    "tags": ["vitamin_d", "vitamin_b12", "jod", "selen", "omega3"],
+    "ingredients": ["3 Eier", "80 g Räucherlachs", "2 EL Frischkäse", "1 EL Butter", "Frischer Schnittlauch", "Salz, Pfeffer"],
+    "steps": ["Eier verquirlen, mit Salz und Pfeffer würzen.", "Butter in Pfanne schmelzen, Eimasse bei niedriger Hitze cremig rühren.", "Frischkäse unterheben.", "Auf Teller geben, Räucherlachs und Schnittlauch darüber verteilen."],
+    "highlight": "Lachs + Ei = doppelter Vitamin-D-Schub für ein optimales Frühstück."
+  },
+  {
+    "id": "chia_pudding",
+    "title": "Chia-Pudding mit Mango und Kokosmilch",
+    "duration": "10 Min. + 4 h quellen",
+    "servings": 2,
+    "tags": ["omega3", "magnesium", "vitamin_c", "eisen"],
+    "ingredients": ["4 EL Chiasamen", "400 ml Kokosmilch", "1 reife Mango", "1 TL Vanilleextrakt", "1 EL Ahornsirup"],
+    "steps": ["Chiasamen mit Kokosmilch, Vanille und Ahornsirup verrühren.", "Mindestens 4 Stunden oder über Nacht quellen lassen.", "Mango würfeln.", "Pudding in Gläser füllen, mit Mango toppen."],
+    "highlight": "Chiasamen sind eine der besten pflanzlichen Omega-3-Quellen."
+  },
+  {
+    "id": "buchweizenpfannkuchen",
+    "title": "Buchweizenpfannkuchen mit Beeren",
+    "duration": "20 Min.",
+    "servings": 2,
+    "tags": ["magnesium", "vitamin_b2", "eisen", "vitamin_b3"],
+    "ingredients": ["150 g Buchweizenmehl", "2 Eier", "250 ml Milch", "1 TL Backpulver", "1 Prise Salz", "Butter zum Braten", "Gemischte Beeren zum Servieren", "Naturjoghurt"],
+    "steps": ["Buchweizenmehl, Eier, Milch, Backpulver und Salz zu einem glatten Teig rühren.", "10 Min. quellen lassen.", "Butter in Pfanne erhitzen, Pfannkuchen portionsweise braten.", "Mit Beeren und Joghurt servieren."],
+    "highlight": "Buchweizenmehl ist glutenfrei und liefert Magnesium, Eisen und Rutosid."
+  },
+  {
+    "id": "birchermueli",
+    "title": "Birchermüsli mit Nüssen und Apfel",
+    "duration": "10 Min. + 1 h quellen",
+    "servings": 2,
+    "tags": ["magnesium", "vitamin_e", "vitamin_b1", "eisen"],
+    "ingredients": ["100 g Haferflocken", "200 ml Naturjoghurt", "150 ml Apfelsaft", "1 Apfel (gerieben)", "2 EL Haselnüsse", "1 EL Rosinen", "1 TL Zitronensaft"],
+    "steps": ["Haferflocken mit Joghurt und Apfelsaft mischen.", "Apfel reiben, sofort mit Zitronensaft mischen und unterrühren.", "Mindestens 1 Stunde kalt quellen lassen.", "Mit Nüssen und Rosinen toppen und servieren."],
+    "highlight": "Klassiker nach Dr. Bircher-Benner – reich an Magnesium und Vitamin E aus Nüssen."
+  },
+  {
+    "id": "thunfisch_salat",
+    "title": "Thunfisch-Salat mit Kichererbsen und Paprika",
+    "duration": "10 Min.",
+    "servings": 2,
+    "tags": ["omega3", "eisen", "vitamin_b3", "vitamin_b12", "selen"],
+    "ingredients": ["1 Dose Thunfisch in Wasser (150 g)", "1 Dose Kichererbsen (400 g)", "1 rote Paprika", "1 Gurke", "1/2 rote Zwiebel", "2 EL Olivenöl", "Zitronensaft, Salz, Pfeffer", "Frische Petersilie"],
+    "steps": ["Thunfisch abtropfen und in eine Schüssel geben.", "Kichererbsen abspülen, Gemüse würfeln.", "Alles mischen.", "Mit Olivenöl, Zitronensaft, Salz und Pfeffer abschmecken.", "Frische Petersilie darüber streuen."],
+    "highlight": "Thunfisch ist einer der besten Niacin- und B12-Lieferanten überhaupt."
+  },
+  {
+    "id": "huehnchen_gemuese_pfanne",
+    "title": "Hühnchen-Gemüse-Pfanne mit Ingwer",
+    "duration": "25 Min.",
+    "servings": 2,
+    "tags": ["vitamin_b3", "vitamin_b6", "selen", "zink"],
+    "ingredients": ["2 Hähnchenbrustfilets", "1 Zucchini", "1 Paprika", "200 g Pilze (Champignons)", "2 Knoblauchzehen", "1 Stück Ingwer (2 cm)", "2 EL Sojasoße", "1 EL Sesamöl"],
+    "steps": ["Hähnchen in Streifen schneiden, in Öl scharf anbraten.", "Herausnehmen, Gemüse und Pilze anbraten.", "Knoblauch und Ingwer hinzufügen.", "Hähnchen wieder dazugeben.", "Mit Sojasoße ablöschen, servieren."],
+    "highlight": "Hähnchenbrust deckt fast den gesamten Tagesbedarf an Niacin (B3)."
+  },
+  {
+    "id": "linsen_dal",
+    "title": "Rotes Linsen-Dal mit Spinat",
+    "duration": "30 Min.",
+    "servings": 3,
+    "tags": ["eisen", "vitamin_b9", "vitamin_b1", "vitamin_b6", "magnesium"],
+    "ingredients": ["250 g rote Linsen", "200 g Blattspinat", "1 Zwiebel", "2 Knoblauchzehen", "1 Dose Kokosmilch", "1 EL Currypaste", "1 TL Garam Masala", "500 ml Gemüsebrühe", "Olivenöl"],
+    "steps": ["Zwiebel und Knoblauch in Öl andünsten.", "Currypaste und Garam Masala mitrösten.", "Linsen, Kokosmilch und Brühe dazugeben, 20 Min. köcheln.", "Spinat einrühren und zusammenfallen lassen.", "Mit Zitronensaft und Salz abschmecken."],
+    "highlight": "Linsen liefern Eisen, Folat und B1 – eine der nährstoffreichsten Hülsenfrüchte."
+  },
+  {
+    "id": "sardinen_toast",
+    "title": "Sardinen-Toast mit Rucola",
+    "duration": "10 Min.",
+    "servings": 1,
+    "tags": ["vitamin_d", "omega3", "jod", "selen", "vitamin_b12", "eisen"],
+    "ingredients": ["1 Dose Sardinnenfilets (in Olivenöl)", "2 Scheiben Sauerteigbrot", "1 Handvoll Rucola", "1 Zitrone", "1/2 rote Zwiebel", "Kapern", "Schwarzer Pfeffer"],
+    "steps": ["Brot toasten.", "Sardinen auf dem Toast anrichten.", "Rucola, dünne Zwiebelringe und Kapern darüber verteilen.", "Mit frischem Zitronensaft und Pfeffer würzen."],
+    "highlight": "Sardinen sind die günstigste und nachhaltigste Omega-3- und Vitamin-D-Quelle."
+  },
+  {
+    "id": "makrelensalat_orange",
+    "title": "Makrelensalat mit Orangenfilets",
+    "duration": "15 Min.",
+    "servings": 2,
+    "tags": ["omega3", "vitamin_d", "vitamin_c", "selen", "vitamin_b12"],
+    "ingredients": ["2 Makrelenfilets (geräuchert)", "2 Orangen (filetiert)", "Gemischter Salat", "1 rote Zwiebel", "2 EL Walnussöl", "1 EL Weißweinessig", "Salz, Pfeffer"],
+    "steps": ["Salat waschen und zupfen.", "Makrelenfilets in Stücke brechen.", "Orangen filetieren.", "Alles auf Tellern anrichten.", "Mit Walnussöl und Essig beträufeln, würzen."],
+    "highlight": "Makrele enthält pro 100 g fast doppelt so viel Vitamin D wie Lachs."
+  },
+  {
+    "id": "kuerbissuppe",
+    "title": "Kürbissuppe mit Kürbiskernen",
+    "duration": "30 Min.",
+    "servings": 3,
+    "tags": ["vitamin_a", "zink", "magnesium", "vitamin_c"],
+    "ingredients": ["800 g Hokkaido-Kürbis", "1 Zwiebel", "2 Knoblauchzehen", "700 ml Gemüsebrühe", "200 ml Kokosmilch", "1 EL Kürbiskernöl", "3 EL Kürbiskerne", "Salz, Pfeffer, Muskat"],
+    "steps": ["Kürbis würfeln (Schale bei Hokkaido belassen).", "Zwiebel und Knoblauch in Öl andünsten.", "Kürbis und Brühe dazugeben, 20 Min. kochen.", "Kokosmilch hinzufügen, pürieren.", "Mit Kürbiskernöl und Kernen servieren."],
+    "highlight": "Hokkaido-Kürbis liefert sehr viel Beta-Carotin, Kürbiskerne sind Zink-Bomben."
+  },
+  {
+    "id": "falafel_wrap",
+    "title": "Falafel-Wrap mit Tahini-Sauce",
+    "duration": "35 Min.",
+    "servings": 2,
+    "tags": ["eisen", "vitamin_b9", "vitamin_b6", "vitamin_c", "zink"],
+    "ingredients": ["400 g Kichererbsen (Dose)", "1 Zwiebel", "2 Knoblauchzehen", "1 Bund Petersilie", "2 TL Kreuzkümmel", "2 EL Mehl", "2 Vollkorn-Wraps", "Salat, Tomaten, Gurke", "3 EL Tahini", "Zitronensaft"],
+    "steps": ["Kichererbsen, Zwiebel, Knoblauch, Petersilie und Gewürze im Mixer grob zerkleinern.", "Mehl untermengen, zu Bällchen formen.", "Im Ofen bei 200 °C 20 Min. backen.", "Tahini mit Zitronensaft und Wasser zu Sauce rühren.", "Falafels mit Salat und Sauce in den Wrap rollen."],
+    "highlight": "Kichererbsen liefern pflanzliches Eisen und Folat in idealer Kombination."
+  },
+  {
+    "id": "rote_bete_salat",
+    "title": "Rote-Bete-Salat mit Ziegenkäse und Walnüssen",
+    "duration": "15 Min.",
+    "servings": 2,
+    "tags": ["vitamin_b9", "vitamin_c", "eisen", "omega3"],
+    "ingredients": ["4 vorgekochte Rote Beten", "100 g Ziegenkäse", "40 g Walnüsse", "Rucola", "2 EL Balsamico", "3 EL Olivenöl", "Salz, Pfeffer"],
+    "steps": ["Rote Bete in Scheiben schneiden.", "Rucola auf Tellern verteilen.", "Rote Bete und Ziegenkäse-Stücke darauflegen.", "Walnüsse grob hacken und darüberstreuen.", "Mit Balsamico und Olivenöl beträufeln."],
+    "highlight": "Rote Bete ist besonders reich an Folat; Walnüsse liefern pflanzliches Omega-3."
+  },
+  {
+    "id": "erbsensuppe",
+    "title": "Herzhafte Erbsensuppe mit Speck",
+    "duration": "40 Min.",
+    "servings": 4,
+    "tags": ["vitamin_b1", "eisen", "vitamin_b9", "magnesium", "zink"],
+    "ingredients": ["400 g getrocknete Erbsen", "200 g Speck (gewürfelt)", "1 Sellerie", "2 Karotten", "1 Stange Lauch", "1,5 L Gemüsebrühe", "Majoran, Salz, Pfeffer"],
+    "steps": ["Erbsen über Nacht einweichen, abgießen.", "Speck in Topf anbraten, Gemüse würfeln und mitdünsten.", "Erbsen und Brühe dazugeben.", "40 Min. kochen bis Erbsen weich sind.", "Mit Majoran abschmecken, teilweise pürieren."],
+    "highlight": "Erbsen sind unter allen Gemüsesorten besonders reich an Vitamin B1."
+  },
+  {
+    "id": "tabouleh",
+    "title": "Taboulé mit Granatapfel und Minze",
+    "duration": "20 Min.",
+    "servings": 2,
+    "tags": ["vitamin_b9", "vitamin_c", "eisen", "vitamin_k"],
+    "ingredients": ["150 g Bulgur", "1 Granatapfel (Kerne)", "1 Bund Petersilie", "1 Bund Minze", "3 Tomaten", "1 Gurke", "4 EL Olivenöl", "Saft von 2 Zitronen", "Salz"],
+    "steps": ["Bulgur mit kochendem Wasser übergießen, 10 Min. quellen lassen.", "Petersilie und Minze fein hacken.", "Tomaten und Gurke würfeln.", "Alles mischen.", "Mit Olivenöl, Zitronensaft und Salz abschmecken."],
+    "highlight": "Petersilie enthält pro 100 g fünfmal so viel Vitamin C wie Zitronen – und viel Folat."
+  },
+  {
+    "id": "hering_senfsauce",
+    "title": "Hering in Senfsauce mit Kartoffeln",
+    "duration": "30 Min.",
+    "servings": 2,
+    "tags": ["omega3", "vitamin_d", "jod", "selen", "vitamin_b12"],
+    "ingredients": ["4 Heringsfilets (Bismarckhering)", "500 g Kartoffeln", "2 EL Vollkornsenf", "150 g Sauerrahm", "1 Apfel", "1/2 rote Zwiebel", "Frischer Dill"],
+    "steps": ["Kartoffeln kochen und pellen.", "Senfsauce aus Sauerrahm und Senf rühren.", "Apfel und Zwiebel fein würfeln, untermengen.", "Heringsfilets anrichten.", "Sauce darübergeben, mit Dill und warmen Kartoffeln servieren."],
+    "highlight": "Hering ist nach Makrele die Vitamin-D- und Omega-3-reichste heimische Fischart."
+  },
+  {
+    "id": "rinderfilet_brokkoli",
+    "title": "Rinderfilet mit Brokkoli und Kartoffeln",
+    "duration": "35 Min.",
+    "servings": 2,
+    "tags": ["vitamin_b12", "vitamin_k", "eisen", "zink", "vitamin_b3", "ferritin"],
+    "ingredients": ["2 Rinderfiletsteaks (je 150 g)", "1 Brokkoli", "400 g Kartoffeln", "2 EL Olivenöl", "2 Knoblauchzehen", "Rosmarin, Salz, Pfeffer"],
+    "steps": ["Kartoffeln kochen.", "Steak würzen und in heißer Pfanne 3–4 Min. je Seite braten.", "Ruhen lassen.", "Brokkoli in Röschen mit Knoblauch in Öl 6 Min. andünsten.", "Alles anrichten und servieren."],
+    "highlight": "Rindfilet liefert hochwertiges Eisen (Hämeisen) – das der Körper am besten aufnimmt."
+  },
+  {
+    "id": "garnelen_wok",
+    "title": "Garnelen-Wok mit Pak Choi und Ingwer",
+    "duration": "20 Min.",
+    "servings": 2,
+    "tags": ["jod", "selen", "vitamin_b3", "zink", "vitamin_b12"],
+    "ingredients": ["300 g Garnelen (roh)", "2 Pak Choi", "1 Paprika", "100 g Glasnudeln", "2 EL Sojasoße", "1 EL Austernsauce", "1 Stück Ingwer", "2 Knoblauchzehen", "Sesamöl"],
+    "steps": ["Glasnudeln nach Packung einweichen.", "Wok oder große Pfanne stark erhitzen, Garnelen braten.", "Gemüse dazugeben, kurz mitbraten.", "Glasnudeln und Saucen hinzufügen.", "Mit Sesamöl abschließen."],
+    "highlight": "Garnelen sind eine erstklassige Jodquelle und liefern viel Selen und B12."
+  },
+  {
+    "id": "kichererbsen_curry",
+    "title": "Kichererbsen-Spinat-Curry",
+    "duration": "25 Min.",
+    "servings": 3,
+    "tags": ["eisen", "vitamin_b6", "magnesium", "vitamin_b9", "vitamin_c"],
+    "ingredients": ["2 Dosen Kichererbsen (à 400 g)", "300 g Blattspinat", "1 Dose Tomaten", "1 Zwiebel", "3 Knoblauchzehen", "1 EL Currypulver", "1 TL Kurkuma", "1 TL Kreuzkümmel", "200 ml Kokosmilch", "Zitronensaft", "Olivenöl"],
+    "steps": ["Zwiebel und Knoblauch in Öl andünsten.", "Gewürze mitrösten.", "Tomaten und Kichererbsen hinzufügen, 10 Min. köcheln.", "Kokosmilch einrühren.", "Spinat unterheben bis er zusammenfällt, mit Zitrone abschmecken."],
+    "highlight": "Kichererbsen liefern Eisen und Vitamin B6 – Vitamin C aus Tomaten steigert die Aufnahme."
+  },
+  {
+    "id": "forelle_gemuese",
+    "title": "Forelle auf Gemüsebett mit Zitronenbutter",
+    "duration": "30 Min.",
+    "servings": 2,
+    "tags": ["vitamin_d", "omega3", "selen", "vitamin_b12", "jod"],
+    "ingredients": ["2 Forellenfilets", "2 Karotten", "1 Zucchini", "1 Fenchelknolle", "3 EL Butter", "1 Zitrone", "Frischer Thymian", "Salz, Pfeffer"],
+    "steps": ["Gemüse in feine Streifen schneiden und in Butter 8 Min. dünsten.", "Forellenfilets salzen und pfeffern.", "Auf Gemüse legen, bei 180 °C 15 Min. backen.", "Zitronenbutter zubereiten (Butter + Zitronensaft + Thymian erhitzen).", "Zum Servieren darübergießen."],
+    "highlight": "Forelle ist eine ausgezeichnete, heimische Vitamin-D-Quelle."
+  },
+  {
+    "id": "truthahn_pilze",
+    "title": "Putenschnitzel mit Pilz-Rahmsauce",
+    "duration": "30 Min.",
+    "servings": 2,
+    "tags": ["vitamin_b3", "vitamin_b5", "selen", "vitamin_b6"],
+    "ingredients": ["2 Putenschnitzel", "300 g gemischte Pilze", "1 Zwiebel", "150 ml Sahne", "100 ml Hühnerbrühe", "1 EL Mehl", "Petersilie", "Butter, Salz, Pfeffer"],
+    "steps": ["Schnitzel klopfen, würzen und in Butter 3 Min. je Seite braten.", "Herausnehmen und warm halten.", "Zwiebel und Pilze in der gleichen Pfanne anbraten.", "Mit Mehl bestäuben, mit Brühe und Sahne ablöschen.", "10 Min. köcheln, Schnitzel servieren."],
+    "highlight": "Pilze sind die wichtigste pflanzliche Quelle für Vitamin B5 (Pantothensäure)."
+  },
+  {
+    "id": "vegane_bolognese",
+    "title": "Vegane Linsen-Bolognese",
+    "duration": "35 Min.",
+    "servings": 3,
+    "tags": ["eisen", "vitamin_b9", "vitamin_b6", "vitamin_c", "magnesium"],
+    "ingredients": ["250 g braune Linsen (oder aus Dose)", "1 Dose Tomaten", "1 Zwiebel", "2 Karotten", "2 Stangen Sellerie", "3 Knoblauchzehen", "1 EL Tomatenmark", "Rotwein (100 ml, optional)", "Oregano, Basilikum, Salz, Pfeffer", "Vollkornpasta zum Servieren"],
+    "steps": ["Zwiebel, Karotten und Sellerie würfeln, in Öl 8 Min. andünsten.", "Knoblauch und Tomatenmark dazugeben.", "Rotwein einrühren und einkochen lassen.", "Linsen und Tomaten hinzufügen, 25 Min. köcheln.", "Mit Kräutern und Pasta servieren."],
+    "highlight": "Linsen-Bolognese liefert mehr Eisen als viele Fleischgerichte – bei 0 % Cholesterin."
+  },
+  {
+    "id": "walnuss_feigen_salat",
+    "title": "Walnuss-Feigen-Salat mit Blauschimmelkäse",
+    "duration": "10 Min.",
+    "servings": 2,
+    "tags": ["omega3", "vitamin_b6", "magnesium", "vitamin_k"],
+    "ingredients": ["Gemischte Salatblätter", "4 frische Feigen", "50 g Walnüsse", "50 g Gorgonzola oder Roquefort", "3 EL Walnussöl", "1 EL Apfelessig", "Honig, Salz, Pfeffer"],
+    "steps": ["Salat auf Tellern verteilen.", "Feigen vierteln und darauflegen.", "Käse zerkrümeln und Walnüsse grob hacken.", "Auf dem Salat verteilen.", "Dressing aus Öl, Essig, Honig, Salz, Pfeffer mischen und darübergeben."],
+    "highlight": "Walnüsse sind die omega-3-reichste Nusssorte – schon 3–4 Walnüsse decken den Tagesbedarf."
+  },
+  {
+    "id": "gruenkohl_salat",
+    "title": "Grünkohl-Salat mit Cranberries und Kürbiskernen",
+    "duration": "15 Min.",
+    "servings": 2,
+    "tags": ["vitamin_k", "vitamin_c", "eisen", "magnesium", "vitamin_a"],
+    "ingredients": ["200 g junger Grünkohl", "3 EL getrocknete Cranberries", "3 EL Kürbiskerne", "50 g Parmesan", "3 EL Olivenöl", "2 EL Zitronensaft", "1 TL Honig", "Salz"],
+    "steps": ["Grünkohl waschen, grob hacken.", "Mit Zitronensaft und einer Prise Salz 3 Min. massieren.", "Dressing aus Olivenöl, Zitronensaft und Honig rühren.", "Über Grünkohl geben.", "Cranberries, Kürbiskerne und Parmesan darüber streuen."],
+    "highlight": "Grünkohl ist das Vitamin-K-reichste Gemüse – einer der nährstoffdichtesten Lebensmittel."
+  },
+  {
+    "id": "hummus",
+    "title": "Selbst gemachter Hummus mit Gemüsesticks",
+    "duration": "15 Min.",
+    "servings": 4,
+    "tags": ["eisen", "vitamin_b9", "vitamin_b6", "magnesium", "zink"],
+    "ingredients": ["400 g Kichererbsen (Dose)", "3 EL Tahini", "2 Knoblauchzehen", "Saft einer Zitrone", "3 EL Olivenöl", "1 TL Kreuzkümmel", "Paprikapulver", "Karotten, Gurken zum Dippen"],
+    "steps": ["Kichererbsen abspülen.", "Mit Tahini, Knoblauch, Zitronensaft und Kreuzkümmel in Mixer geben.", "Unter Zugabe von 3–4 EL Eiswasser cremig mixen.", "Mit Olivenöl und Paprikapulver abschließen.", "Mit Gemüsesticks servieren."],
+    "highlight": "Kichererbsen + Tahini = komplettes Aminosäureprofil plus Eisen, Folat und Zink."
+  },
+  {
+    "id": "trail_mix_paranuss",
+    "title": "Nuss-Samen-Mix mit Paranüssen",
+    "duration": "5 Min.",
+    "servings": 4,
+    "tags": ["selen", "vitamin_e", "magnesium", "zink", "omega3"],
+    "ingredients": ["3 EL Paranüsse", "50 g Walnüsse", "50 g Cashewkerne", "3 EL Sonnenblumenkerne", "2 EL Leinsamen", "2 EL Trockenfrüchte (Aprikosen, Rosinen)"],
+    "steps": ["Alle Zutaten mischen.", "In einem luftdichten Behälter aufbewahren.", "Als Snack oder über Joghurt/Müsli servieren."],
+    "highlight": "2–3 Paranüsse decken den gesamten Tagesbedarf an Selen – ein Nuss-Mix schlägt viele Supplemente."
+  },
+  {
+    "id": "gruener_smoothie",
+    "title": "Grüner Power-Smoothie",
+    "duration": "5 Min.",
+    "servings": 1,
+    "tags": ["vitamin_k", "vitamin_c", "eisen", "vitamin_b9", "magnesium"],
+    "ingredients": ["1 große Handvoll Spinat", "1/2 reife Mango", "1 Banane", "1 TL Spirulina (optional)", "300 ml Wasser oder Kokoswasser", "Saft einer Limette"],
+    "steps": ["Alle Zutaten in den Hochleistungsmixer geben.", "1–2 Minuten cremig mixen.", "Sofort trinken."],
+    "highlight": "Spinat + Mango = Vitamin K, Folat und Eisen trifft auf Vitamin C für optimale Aufnahme."
+  },
+  {
+    "id": "rote_bete_smoothie",
+    "title": "Rote-Bete-Ingwer-Smoothie",
+    "duration": "5 Min.",
+    "servings": 1,
+    "tags": ["vitamin_b9", "eisen", "vitamin_c", "magnesium"],
+    "ingredients": ["1 vorgekochte Rote Bete", "1 Apfel", "1 Stück Ingwer (1 cm)", "1/2 Zitrone (Saft)", "200 ml Wasser", "1 TL Leinsamen"],
+    "steps": ["Rote Bete würfeln.", "Apfel entkernen und grob schneiden.", "Mit allen anderen Zutaten mixen.", "Durch Sieb geben oder direkt trinken."],
+    "highlight": "Rote Bete senkt nachweislich den Blutdruck und ist top bei Folat-Mangel."
+  },
+  {
+    "id": "goldene_milch",
+    "title": "Goldene Milch mit Kurkuma und Zimt",
+    "duration": "5 Min.",
+    "servings": 1,
+    "tags": ["magnesium", "vitamin_b2"],
+    "ingredients": ["250 ml Hafermilch oder Kuhmilch", "1 TL Kurkuma", "1/2 TL Zimt", "1 Prise schwarzer Pfeffer", "1 TL Honig", "1 TL Ingwerpulver"],
+    "steps": ["Milch in einem Topf erhitzen (nicht kochen).", "Alle Gewürze einrühren.", "Mit Honig süßen.", "In eine Tasse geben und genießen."],
+    "highlight": "Schwarzer Pfeffer erhöht die Bioverfügbarkeit von Kurkumin (Curcumin) um bis zu 2.000 %."
+  },
+  {
+    "id": "avocado_bananen_smoothie",
+    "title": "Avocado-Bananen-Smoothie",
+    "duration": "5 Min.",
+    "servings": 1,
+    "tags": ["vitamin_b6", "magnesium", "vitamin_e", "vitamin_k"],
+    "ingredients": ["1/2 reife Avocado", "1 Banane", "200 ml Mandelmilch", "1 EL Mandelmus", "1 TL Kakaopulver (roh)", "Eiswürfel"],
+    "steps": ["Alle Zutaten in den Mixer geben.", "Cremig mixen.", "Mit Eiswürfeln servieren."],
+    "highlight": "Avocado + Banane = die beste pflanzliche B6-Kombination für Nerven und Hormonhaushalt."
+  },
+  {
+    "id": "kakao_mandelmus_shake",
+    "title": "Kakao-Mandelmus-Shake",
+    "duration": "5 Min.",
+    "servings": 1,
+    "tags": ["magnesium", "vitamin_b2", "kupfer", "eisen"],
+    "ingredients": ["2 EL Kakaopulver (ungesüßt)", "2 EL Mandelmus", "1 Banane", "300 ml Hafermilch", "1 Medjool-Dattel", "1 Prise Salz"],
+    "steps": ["Alle Zutaten in den Mixer geben.", "Cremig mixen.", "Sofort trinken."],
+    "highlight": "Kakao ist eine der reichsten Magnesiumquellen – und liefert dabei Kupfer und Eisen."
+  },
+  {
+    "id": "granola_selbst",
+    "title": "Nussiges Granola selbst gemacht",
+    "duration": "30 Min.",
+    "servings": 8,
+    "tags": ["zink", "magnesium", "vitamin_b1", "vitamin_e", "eisen"],
+    "ingredients": ["200 g Haferflocken", "50 g Kürbiskerne", "50 g Sonnenblumenkerne", "40 g Walnüsse", "3 EL Ahornsirup", "3 EL Kokosöl", "1 TL Zimt", "1 Prise Salz"],
+    "steps": ["Ofen auf 160 °C vorheizen.", "Trockene Zutaten mischen.", "Ahornsirup und Kokosöl unterrühren.", "Auf Backblech verteilen, 20–25 Min. goldbraun backen.", "Vollständig abkühlen lassen und in Gläser füllen."],
+    "highlight": "Selbst gemachtes Granola ohne Zucker-Zusätze – Kürbiskerne machen es zur Zink-Bombe."
+  },
+  {
+    "id": "schwarze_bohnen_suppe",
+    "title": "Schwarze-Bohnen-Suppe mit Mais",
+    "duration": "30 Min.",
+    "servings": 3,
+    "tags": ["eisen", "vitamin_b1", "magnesium", "vitamin_b9", "zink"],
+    "ingredients": ["2 Dosen schwarze Bohnen", "1 Dose Mais", "1 Zwiebel", "3 Knoblauchzehen", "1 Dose Tomaten", "700 ml Gemüsebrühe", "1 TL Kreuzkümmel", "1 TL Paprikapulver (geräuchert)", "Koriander, Zitrone"],
+    "steps": ["Zwiebel und Knoblauch in Öl andünsten.", "Gewürze mitrösten.", "Bohnen, Mais, Tomaten und Brühe hinzufügen.", "15 Min. köcheln lassen.", "Püriere ein Drittel der Suppe für Cremigkeit. Mit Koriander und Zitrone servieren."],
+    "highlight": "Schwarze Bohnen haben mehr Eisen als rotes Fleisch – und 0 g gesättigte Fettsäuren."
+  },
+  {
+    "id": "lammcurry_spinat",
+    "title": "Lammfleisch-Spinat-Curry",
+    "duration": "50 Min.",
+    "servings": 3,
+    "tags": ["eisen", "vitamin_b12", "vitamin_b6", "zink", "ferritin"],
+    "ingredients": ["500 g Lammfleisch (gewürfelt)", "300 g Blattspinat", "2 Zwiebeln", "1 Dose Tomaten", "200 ml Joghurt", "3 Knoblauchzehen", "1 EL Garam Masala", "1 TL Kurkuma", "1 TL Koriander", "Öl, Salz"],
+    "steps": ["Zwiebeln in Öl goldbraun braten.", "Knoblauch und Gewürze mitrösten.", "Lammfleisch anbraten.", "Tomaten und Joghurt einrühren.", "30 Min. köcheln, Spinat am Schluss unterheben."],
+    "highlight": "Lammfleisch hat besonders viel Hämeisen und Vitamin B12 – perfekt bei Eisenmangel."
+  },
+  {
+    "id": "pilz_risotto",
+    "title": "Pilz-Risotto mit Parmesan",
+    "duration": "40 Min.",
+    "servings": 2,
+    "tags": ["vitamin_b3", "vitamin_b5", "vitamin_d", "selen"],
+    "ingredients": ["250 g Risottoreis (Arborio)", "400 g gemischte Pilze", "1 Zwiebel", "100 ml Weißwein", "800 ml Gemüsebrühe (heiß)", "50 g Parmesan", "2 EL Butter", "2 EL Olivenöl", "Salz, Pfeffer"],
+    "steps": ["Zwiebel in Öl andünsten, Reis dazugeben und glasig rühren.", "Mit Wein ablöschen.", "Brühe kellenweise eingießen, ständig rühren.", "Pilze separat in Butter anbraten.", "Pilze zum Risotto geben, Parmesan einrühren."],
+    "highlight": "Getrocknete Pilze (z. B. Shiitake) enthalten als einzige pflanzliche Quelle Vitamin D2."
+  },
+  {
+    "id": "jakobsmuscheln_spinat",
+    "title": "Jakobsmuscheln auf Spinat-Kartoffelbett",
+    "duration": "25 Min.",
+    "servings": 2,
+    "tags": ["vitamin_b12", "jod", "zink", "selen", "vitamin_b3"],
+    "ingredients": ["8 Jakobsmuscheln", "300 g Blattspinat", "4 Kartoffeln (festkochend)", "2 EL Butter", "1 Knoblauchzehe", "Zitronensaft", "Salz, Pfeffer", "Frischer Dill"],
+    "steps": ["Kartoffeln kochen.", "Spinat mit Knoblauch in Butter kurz andünsten.", "Jakobsmuscheln mit Salz und Pfeffer würzen.", "In sehr heißer Pfanne 1–2 Min. je Seite braten.", "Auf Spinat und Kartoffeln anrichten."],
+    "highlight": "Jakobsmuscheln haben den höchsten Zinkgehalt aller Meeresfrüchte."
+  },
+  {
+    "id": "schweinelende_aepfel",
+    "title": "Schweinelende mit Äpfeln und Sauerkraut",
+    "duration": "45 Min.",
+    "servings": 3,
+    "tags": ["vitamin_b1", "vitamin_b3", "vitamin_b6", "zink"],
+    "ingredients": ["600 g Schweinelende", "2 Äpfel", "400 g Sauerkraut", "1 Zwiebel", "200 ml Fleischbrühe", "1 EL Senf", "Kümmel, Salz, Pfeffer", "Öl"],
+    "steps": ["Schweinelende würzen, in Öl rundherum anbraten.", "Zwiebel dazugeben, anbraten.", "Äpfel und Sauerkraut dazugeben.", "Brühe angießen, 30 Min. bei mittlerer Hitze schmoren.", "Fleisch aufschneiden und servieren."],
+    "highlight": "Schweinefleisch ist die beste natürliche Quelle für Vitamin B1 (Thiamin)."
+  },
+  {
+    "id": "wildlachs_quinoa",
+    "title": "Wildlachs mit Quinoa-Kräuter-Salat",
+    "duration": "30 Min.",
+    "servings": 2,
+    "tags": ["omega3", "vitamin_d", "magnesium", "selen", "vitamin_b12"],
+    "ingredients": ["2 Wildlachsfilets", "150 g Quinoa", "1 Gurke", "2 Tomaten", "1 Bund Kräuter (Minze, Petersilie)", "3 EL Olivenöl", "Zitronensaft", "Salz, Pfeffer"],
+    "steps": ["Quinoa kochen und abkühlen lassen.", "Gemüse und Kräuter hacken.", "Quinoa mit Gemüse, Öl und Zitronensaft mischen.", "Lachs würzen und 4 Min. je Seite braten.", "Auf Quinoa-Salat anrichten."],
+    "highlight": "Wildlachs enthält 3× mehr Omega-3 als Zuchtlachs – Qualität lohnt sich."
+  },
+  {
+    "id": "miesmuscheln_weisswein",
+    "title": "Miesmuscheln in Weißweinsauce",
+    "duration": "25 Min.",
+    "servings": 2,
+    "tags": ["jod", "vitamin_b12", "zink", "selen", "eisen"],
+    "ingredients": ["1 kg Miesmuscheln (gereinigt)", "200 ml Weißwein", "1 Schalotte", "2 Knoblauchzehen", "1 Stange Sellerie", "Frische Petersilie", "Butter, Salz, Pfeffer"],
+    "steps": ["Schalotte, Knoblauch und Sellerie fein würfeln.", "In Butter andünsten.", "Weißwein dazugeben.", "Muscheln hineinlegen, Topf abdecken.", "5–8 Min. bei hoher Hitze dünsten bis alle Muscheln offen sind."],
+    "highlight": "Miesmuscheln haben mehr Vitamin B12 als Rinderleber und sind extrem jodreich."
+  },
+  {
+    "id": "spinat_linsen_dip",
+    "title": "Spinat-Linsen-Dip mit Vollkornbrot",
+    "duration": "20 Min.",
+    "servings": 3,
+    "tags": ["eisen", "vitamin_b9", "vitamin_k", "magnesium"],
+    "ingredients": ["200 g rote Linsen", "200 g Blattspinat", "2 Knoblauchzehen", "2 EL Tahini", "Zitronensaft", "Kreuzkümmel", "Salz, Olivenöl"],
+    "steps": ["Linsen kochen, abtropfen lassen.", "Spinat kurz in Öl andünsten.", "Alles mit Tahini, Knoblauch und Zitrone mixen.", "Mit Kreuzkümmel und Salz abschmecken.", "Mit Vollkornbrot und Olivenöl servieren."],
+    "highlight": "Spinat und Linsen vereint: eine der nährstoffdichtesten Kombinationen für Eisen und Folat."
+  },
+  {
+    "id": "ofengemuese_feta",
+    "title": "Ofengemüse mit Feta und Kichererbsen",
+    "duration": "40 Min.",
+    "servings": 2,
+    "tags": ["vitamin_c", "vitamin_b6", "vitamin_k", "eisen", "magnesium"],
+    "ingredients": ["1 Süßkartoffel", "1 Paprika", "1 Zucchini", "200 g Kichererbsen (Dose)", "100 g Feta", "3 EL Olivenöl", "Rosmarin, Thymian, Paprikapulver", "Salz, Pfeffer"],
+    "steps": ["Gemüse in gleichmäßige Stücke schneiden.", "Mit Kichererbsen, Olivenöl und Gewürzen mischen.", "Auf Backblech verteilen.", "Bei 200 °C 25 Min. backen.", "Feta darüber bröseln und weitere 5 Min. backen."],
+    "highlight": "Süßkartoffeln stecken voller Betacarotin; Paprika liefert Vitamin C für die Eisenaufnahme."
+  },
+  {
+    "id": "tofu_wok",
+    "title": "Tofu-Wok mit Brokkoli und Erdnusssauce",
+    "duration": "25 Min.",
+    "servings": 2,
+    "tags": ["eisen", "magnesium", "vitamin_b1", "zink", "vitamin_c"],
+    "ingredients": ["400 g fester Tofu", "1 Brokkoli", "2 Paprika", "3 EL Erdnussmus", "2 EL Sojasoße", "1 EL Sesamöl", "1 Limette", "1 Stück Ingwer", "Erdnüsse zum Toppen"],
+    "steps": ["Tofu abtropfen, in Würfel schneiden, scharf anbraten.", "Brokkoli und Paprika dazugeben, 5 Min. mitbraten.", "Erdnusssauce aus Erdnussmus, Sojasoße, Limettensaft und etwas Wasser rühren.", "Sauce über Wok geben.", "Mit Erdnüssen und Sesamöl servieren."],
+    "highlight": "Tofu ist eine der besten pflanzlichen Eisen- und Magnesiumquellen für Veganer."
+  },
+  {
+    "id": "blumenkohl_steak",
+    "title": "Blumenkohl-Steak mit Tahini-Dressing",
+    "duration": "30 Min.",
+    "servings": 2,
+    "tags": ["vitamin_c", "vitamin_k", "vitamin_b6", "magnesium", "vitamin_b9"],
+    "ingredients": ["1 großer Blumenkohl", "3 EL Olivenöl", "2 EL Tahini", "1 Zitrone", "1 Knoblauchzehe", "1 TL Kreuzkümmel", "Paprikapulver", "Petersilie", "Salz"],
+    "steps": ["Blumenkohl in dicke Scheiben schneiden ('Steaks').", "Mit Öl und Gewürzen einpinseln.", "Bei 220 °C 20–25 Min. backen bis goldbraun.", "Tahini-Dressing aus Tahini, Zitrone, Knoblauch und Wasser rühren.", "Über Steaks geben und mit Petersilie servieren."],
+    "highlight": "Blumenkohl enthält mehr Vitamin C als Orangen und ist reich an Vitamin K."
+  },
+  {
+    "id": "entenleber_zwiebeln",
+    "title": "Leber mit karamellisierten Zwiebeln",
+    "duration": "25 Min.",
+    "servings": 2,
+    "tags": ["eisen", "vitamin_b12", "vitamin_a", "vitamin_b9", "ferritin", "kupfer"],
+    "ingredients": ["300 g Rinderleber oder Geflügelleber", "2 große Zwiebeln", "2 EL Butterschmalz", "1 EL Balsamico", "Frischer Salbei", "Salz, Pfeffer", "Kartoffelpüree zum Servieren"],
+    "steps": ["Zwiebeln in Ringe schneiden, in Butterschmalz bei mittlerer Hitze 15 Min. karamellisieren.", "Balsamico dazugeben.", "Leber würzen und bei hoher Hitze 2 Min. je Seite braten.", "Mit Salbei und Zwiebeln anrichten."],
+    "highlight": "Leber ist das nährstoffreichste Lebensmittel überhaupt – mit dem höchsten Vitamin-A- und B12-Gehalt."
+  },
+  {
+    "id": "miso_suppe_wakame",
+    "title": "Miso-Suppe mit Tofu, Wakame und Sesam",
+    "duration": "15 Min.",
+    "servings": 2,
+    "tags": ["jod", "zink", "magnesium", "vitamin_b12"],
+    "ingredients": ["1 L Dashi-Brühe oder Gemüsebrühe", "3 EL Miso-Paste (hell)", "150 g Seidentofu", "10 g getrocknetes Wakame", "2 Frühlingszwiebeln", "1 TL Sesam"],
+    "steps": ["Wakame 5 Min. in kaltem Wasser einweichen, ausdrücken.", "Brühe erhitzen, Miso-Paste einrühren (nicht mehr kochen!).", "Tofu in Würfel schneiden.", "Alle Zutaten in Schalen geben.", "Mit Frühlingszwiebeln und Sesam garnieren."],
+    "highlight": "Wakame-Algen sind eine der jodreichsten natürlichen Lebensmittel in der westlichen Küche."
+  },
+  {
+    "id": "smoothiebowl_spirulina",
+    "title": "Grüne Smoothie-Bowl mit Spirulina",
+    "duration": "10 Min.",
+    "servings": 1,
+    "tags": ["eisen", "vitamin_b12", "vitamin_c", "vitamin_k"],
+    "ingredients": ["1 TL Spirulina-Pulver", "1 Banane (gefroren)", "1 Handvoll Spinat", "150 g Mango (TK)", "150 ml Kokosmilch", "Topping: Kokosflocken, Kiwi, Hanfsamen"],
+    "steps": ["Alle Smoothie-Zutaten im Mixer cremig mixen.", "In eine Schüssel geben.", "Mit Kokosflocken, Kiwi und Hanfsamen toppen."],
+    "highlight": "Spirulina ist eine der nährstoffdichtesten Algen mit Eisen, B12 und allen Aminosäuren."
+  },
+  {
+    "id": "graupen_gemuese_eintopf",
+    "title": "Graupen-Gemüse-Eintopf mit Kräutern",
+    "duration": "45 Min.",
+    "servings": 4,
+    "tags": ["vitamin_b3", "vitamin_b1", "magnesium", "eisen", "zink"],
+    "ingredients": ["150 g Perlgraupen", "2 Karotten", "2 Pastinaken", "1 Stange Lauch", "2 Stangen Sellerie", "1,5 L Gemüsebrühe", "Frischer Thymian", "Lorbeer", "Salz, Pfeffer"],
+    "steps": ["Gemüse würfeln.", "In Topf mit Brühe geben.", "Graupen hinzufügen.", "40 Min. köcheln.", "Mit Kräutern und Salz abschmecken."],
+    "highlight": "Perlgraupen (Gerste) liefern B-Vitamine, lösliche Ballaststoffe (Beta-Glucan) und Zink."
+  },
+  {
+    "id": "nusspanier_huehnchen",
+    "title": "Nuss-paniertes Hähnchen mit Süßkartoffel-Wedges",
+    "duration": "40 Min.",
+    "servings": 2,
+    "tags": ["vitamin_b3", "vitamin_b6", "vitamin_e", "magnesium", "selen"],
+    "ingredients": ["2 Hähnchenbrustfilets", "100 g gemischte Nüsse (gemahlen)", "2 Eier", "2 Süßkartoffeln", "2 TL Paprikapulver", "Olivenöl", "Salz, Pfeffer"],
+    "steps": ["Süßkartoffeln in Spalten schneiden, mit Öl und Gewürzen bei 200 °C 25 Min. backen.", "Hähnchen in Ei wenden, dann in Nussbröseln wälzen.", "Separat in Pfanne goldbraun braten.", "Mit Wedges und einem Salat servieren."],
+    "highlight": "Nuss-Panier statt Semmelbrösel verdoppelt den Vitamin-E- und Selentgehalt."
+  },
+  {
+    "id": "rote_bete_suppe_apfel",
+    "title": "Rote-Bete-Apfel-Suppe",
+    "duration": "30 Min.",
+    "servings": 3,
+    "tags": ["vitamin_b9", "vitamin_c", "eisen", "magnesium"],
+    "ingredients": ["500 g Rote Bete", "2 Äpfel", "1 Zwiebel", "700 ml Gemüsebrühe", "150 ml Kokosmilch", "1 EL Kokosöl", "1 TL Zimt", "Salz, Pfeffer"],
+    "steps": ["Rote Bete schälen und würfeln.", "Zwiebel in Kokosöl andünsten.", "Rote Bete, Äpfel und Brühe dazugeben.", "25 Min. kochen.", "Pürieren, Kokosmilch unterrühren."],
+    "highlight": "Rote Bete + Apfel: Folat trifft auf Vitamin C für eine optimale Nährstoffkombination."
+  },
+  {
+    "id": "paprika_gefluegelsuppe",
+    "title": "Paprika-Geflügelsuppe mit Vollkornnudeln",
+    "duration": "35 Min.",
+    "servings": 3,
+    "tags": ["vitamin_c", "vitamin_b3", "vitamin_b6", "eisen"],
+    "ingredients": ["300 g Hähnchenbrustfilet", "2 rote Paprika", "1 Zwiebel", "3 Knoblauchzehen", "1 L Hühnerbrühe", "100 g Vollkornnudeln", "1 EL Paprikapulver", "Frische Petersilie"],
+    "steps": ["Hähnchen in Stücke schneiden, kurz anbraten.", "Zwiebel und Knoblauch dazugeben.", "Paprika würfeln, hinzufügen.", "Mit Brühe auffüllen, 20 Min. köcheln.", "Nudeln darin garen, mit Petersilie servieren."],
+    "highlight": "Rote Paprika enthält 3× mehr Vitamin C als Orangen."
+  },
+  {
+    "id": "spargel_lachs_hollandaise",
+    "title": "Spargel mit Räucherlachs und leichter Sauce",
+    "duration": "25 Min.",
+    "servings": 2,
+    "tags": ["vitamin_b9", "vitamin_d", "omega3", "vitamin_k", "selen"],
+    "ingredients": ["500 g weißer oder grüner Spargel", "100 g Räucherlachs", "2 Eier", "1 EL Butter", "1 Zitrone", "Frischer Schnittlauch", "Salz"],
+    "steps": ["Spargel schälen (weiß) oder waschen (grün), in Salzwasser kochen.", "Eier hart kochen, pellen und vierteln.", "Räucherlachs in Streifen schneiden.", "Butter aufschäumen, über Spargel geben.", "Mit Eiern, Lachs, Schnittlauch und Zitronensaft anrichten."],
+    "highlight": "Spargel ist eine der besten natürlichen Folatquellen des deutschen Saisongemüses."
+  },
+  {
+    "id": "senf_makrele_salat",
+    "title": "Makrele mit Kartoffel-Senf-Salat",
+    "duration": "20 Min.",
+    "servings": 2,
+    "tags": ["omega3", "vitamin_d", "vitamin_b12", "selen", "jod"],
+    "ingredients": ["2 Makrelenfilets (geräuchert)", "500 g Kartoffeln", "2 EL Vollkornsenf", "4 EL Naturjoghurt", "1 Bund Schnittlauch", "Salz, Pfeffer", "Apfelessig"],
+    "steps": ["Kartoffeln kochen, pellen und in Scheiben schneiden.", "Senf, Joghurt, Essig zu Dressing rühren.", "Kartoffeln mit Dressing vermengen.", "Schnittlauch hacken und unterrühren.", "Makrelenfilets auf dem Salat anrichten."],
+    "highlight": "Makrele ist unter den heimischen Fischen der absolute Champion für Vitamin D und Omega-3."
+  },
+  {
+    "id": "haferflockenkekse",
+    "title": "Haferflockenkekse mit Schokolade",
+    "duration": "25 Min.",
+    "servings": 16,
+    "tags": ["vitamin_b1", "magnesium", "eisen", "vitamin_b3"],
+    "ingredients": ["200 g Haferflocken", "3 EL Mandelmus", "2 EL Ahornsirup", "2 EL Kakaopulver", "50 g Zartbitterschokolade (gehackt)", "1 Ei", "1 Prise Salz"],
+    "steps": ["Ofen auf 175 °C vorheizen.", "Alle Zutaten mischen.", "Zu Kugeln formen und auf Backblech legen.", "Flachdrücken.", "12–15 Min. backen."],
+    "highlight": "Zartbitter-Schokolade ist eine ausgezeichnete Magnesiumquelle – je dunkler, desto besser."
+  },
+  {
+    "id": "fischsuppe_mediterran",
+    "title": "Mediterrane Fischsuppe mit Gemüse",
+    "duration": "35 Min.",
+    "servings": 3,
+    "tags": ["omega3", "vitamin_d", "jod", "selen", "vitamin_b12", "vitamin_c"],
+    "ingredients": ["400 g gemischte Fischfilets (Kabeljau, Lachs)", "2 Tomaten", "1 Fenchelknolle", "1 Zwiebel", "3 Knoblauchzehen", "800 ml Fischbrühe", "Safran", "Thymian", "Olivenöl", "Weißbrot zum Servieren"],
+    "steps": ["Zwiebel, Knoblauch und Fenchel in Öl andünsten.", "Tomaten würfeln und dazugeben.", "Brühe mit Safran und Thymian aufgießen.", "10 Min. köcheln.", "Fischfilets einlegen und 8 Min. garziehen lassen."],
+    "highlight": "Eine mediterrane Fischsuppe deckt fast alle wichtigen Omega-3- und Jod-Bedürfnisse."
+  },
+  {
+    "id": "kuerbiskern_pasta",
+    "title": "Pasta mit Kürbiskern-Pesto und Parmesan",
+    "duration": "20 Min.",
+    "servings": 2,
+    "tags": ["zink", "magnesium", "vitamin_e", "vitamin_k", "eisen"],
+    "ingredients": ["200 g Vollkornspaghetti", "80 g Kürbiskerne", "1 Bund Basilikum", "40 g Parmesan", "3 EL Olivenöl", "1 Knoblauchzehe", "Zitronensaft", "Salz"],
+    "steps": ["Pasta kochen.", "Kürbiskerne in Pfanne rösten.", "Kürbiskerne, Basilikum, Knoblauch, Parmesan und Öl im Mixer zu Pesto mixen.", "Mit Zitronensaft und Salz abschmecken.", "Pasta abgießen, Pesto unterrühren."],
+    "highlight": "Kürbiskerne sind unter Samen die beste Zink- und Magnesiumquelle."
+  },
+  {
+    "id": "nuss_dattel_riegel",
+    "title": "Energie-Riegel mit Nüssen und Datteln",
+    "duration": "15 Min. + 2 h kühlen",
+    "servings": 10,
+    "tags": ["magnesium", "eisen", "vitamin_b6", "omega3", "vitamin_e"],
+    "ingredients": ["200 g Medjool-Datteln (entsteint)", "100 g Haferflocken", "50 g Mandeln", "50 g Walnüsse", "3 EL Kakaopulver", "2 EL Mandelmus", "1 Prise Salz"],
+    "steps": ["Datteln in warmem Wasser einweichen, abtropfen lassen.", "Mit Mandeln und Walnüssen im Mixer zerkleinern.", "Haferflocken, Kakao und Mandelmus unterrühren.", "In eine Form drücken.", "2 Stunden kühlen, in Riegel schneiden."],
+    "highlight": "Datteln liefern Eisen und Magnesium ohne raffinierten Zucker – ideal als Snack nach dem Sport."
+  },
+  {
+    "id": "tomaten_eier_pfanne",
+    "title": "Shakshuka – Eier in Tomatensauce",
+    "duration": "25 Min.",
+    "servings": 2,
+    "tags": ["vitamin_c", "vitamin_b12", "eisen", "vitamin_b6", "vitamin_b2"],
+    "ingredients": ["4 Eier", "1 Dose Tomaten (400 g)", "1 rote Paprika", "1 Zwiebel", "2 Knoblauchzehen", "1 TL Kreuzkümmel", "1 TL Paprikapulver", "Chiliflocken", "Olivenöl", "Frischer Koriander"],
+    "steps": ["Zwiebel und Paprika in Öl andünsten.", "Knoblauch und Gewürze mitrösten.", "Tomaten dazugeben, 10 Min. köcheln.", "4 Mulden in die Sauce drücken.", "Eier hineingeben, Deckel drauf, 5 Min. stocken lassen."],
+    "highlight": "Dieses nordafrikanische Gericht vereint Vitamin C, B12 und Eisen in einer Pfanne."
+  },
+  {
+    "id": "ingwer_huhn_suppe",
+    "title": "Asiatische Hühnersuppe mit Ingwer und Zitronengras",
+    "duration": "40 Min.",
+    "servings": 3,
+    "tags": ["vitamin_b3", "vitamin_b6", "selen", "zink"],
+    "ingredients": ["400 g Hähnchenbrust", "2 Stangen Zitronengras", "1 Stück Ingwer (4 cm)", "2 Kaffir-Limettenblätter", "1 L Hühnerbrühe", "200 ml Kokosmilch", "Reisbandnudeln", "Frischer Koriander"],
+    "steps": ["Brühe mit Zitronengras, Ingwer und Limettenblättern 15 Min. ziehen lassen.", "Hähnchen in Scheiben schneiden, in der Brühe garen.", "Kokosmilch einrühren.", "Nudeln nach Packung kochen.", "In Schalen servieren, mit Koriander garnieren."],
+    "highlight": "Ingwer hat nachgewiesene entzündungshemmende Eigenschaften – ideal bei Erkältung."
+  },
+  {
+    "id": "kohl_hafer_eintopf",
+    "title": "Grüner-Kohl-Hafer-Eintopf",
+    "duration": "35 Min.",
+    "servings": 3,
+    "tags": ["vitamin_k", "vitamin_c", "magnesium", "vitamin_b1", "eisen"],
+    "ingredients": ["300 g Grünkohl", "100 g Hafergrütze oder Perlgraupen", "2 Karotten", "1 Zwiebel", "1 L Gemüsebrühe", "2 EL Olivenöl", "Thymian, Salz, Pfeffer"],
+    "steps": ["Zwiebel und Karotten würfeln, in Öl andünsten.", "Hafergrütze dazugeben.", "Brühe aufgießen.", "20 Min. köcheln.", "Grünkohl zufügen, weitere 10 Min. köcheln."],
+    "highlight": "Grünkohl + Hafer = eines der nährstoffdichtesten Winteressen überhaupt."
+  },
+  {
+    "id": "zucchini_frittata",
+    "title": "Zucchini-Tomaten-Frittata",
+    "duration": "25 Min.",
+    "servings": 3,
+    "tags": ["vitamin_b2", "vitamin_b12", "vitamin_b7", "vitamin_k", "eisen"],
+    "ingredients": ["6 Eier", "2 Zucchini", "100 g Kirschtomaten", "80 g Feta", "1 Zwiebel", "Frisches Basilikum", "2 EL Olivenöl", "Salz, Pfeffer"],
+    "steps": ["Ofen auf 180 °C vorheizen.", "Zwiebel in Pfanne andünsten.", "Zucchini in Scheiben und Tomaten dazugeben.", "Eier verquirlen, über Gemüse geben.", "Feta darüberbröckeln, 15 Min. im Ofen stocken lassen."],
+    "highlight": "Eier liefern alle B-Vitamine gleichzeitig – eine natürliche Multivitaminquelle."
+  },
+  {
+    "id": "kiwi_spinat_salat",
+    "title": "Spinat-Kiwi-Salat mit Pinienkernen",
+    "duration": "10 Min.",
+    "servings": 2,
+    "tags": ["vitamin_c", "vitamin_k", "eisen", "magnesium", "vitamin_b9"],
+    "ingredients": ["200 g Babyspinat", "3 Kiwis", "3 EL Pinienkerne", "50 g Parmesan", "3 EL Olivenöl", "2 EL weißer Balsamico", "Salz, Pfeffer"],
+    "steps": ["Spinat waschen.", "Kiwis schälen und in Scheiben schneiden.", "Pinienkerne in Pfanne ohne Fett rösten.", "Salat auf Tellern anrichten.", "Mit Dressing, Parmesan und Pinienkernen servieren."],
+    "highlight": "Kiwi hat mehr Vitamin C als Orangen und steigert die Eisenaufnahme aus Spinat deutlich."
+  },
+  {
+    "id": "artischocken_vinaigrette",
+    "title": "Artischocken mit Vinaigrette",
+    "duration": "30 Min.",
+    "servings": 2,
+    "tags": ["vitamin_c", "magnesium", "vitamin_b9", "eisen"],
+    "ingredients": ["2 große Artischocken", "3 EL Olivenöl", "2 EL Weißweinessig", "1 TL Senf", "1 Knoblauchzehe", "Frische Petersilie", "Salz, Pfeffer"],
+    "steps": ["Artischocken in Salzwasser 25–30 Min. kochen.", "Vinaigrette aus Öl, Essig, Senf, Knoblauch rühren.", "Artischocken halbieren, Heu entfernen.", "Mit Vinaigrette zum Dippen servieren."],
+    "highlight": "Artischocken fördern die Leberfunktion und liefern Magnesium und Folat."
+  },
+  {
+    "id": "buchweizen_risotto",
+    "title": "Buchweizen-'Risotto' mit Pilzen und Parmesan",
+    "duration": "30 Min.",
+    "servings": 2,
+    "tags": ["magnesium", "vitamin_b3", "eisen", "vitamin_b2"],
+    "ingredients": ["200 g Buchweizen", "300 g Champignons", "1 Zwiebel", "500 ml Gemüsebrühe", "50 g Parmesan", "2 EL Butter", "Frischer Thymian", "Salz, Pfeffer"],
+    "steps": ["Zwiebel in Butter andünsten.", "Buchweizen dazugeben, glasig rühren.", "Brühe nach und nach hinzufügen.", "Pilze separat braten, dazugeben.", "Parmesan und Thymian unterrühren."],
+    "highlight": "Buchweizen enthält Rutin – ein Flavonoid, das die Blutgefäße stärkt."
+  },
+  {
+    "id": "sauerkraut_eintopf",
+    "title": "Sauerkraut-Linseneintopf mit Speck",
+    "duration": "40 Min.",
+    "servings": 4,
+    "tags": ["vitamin_c", "eisen", "vitamin_b1", "vitamin_b9", "magnesium"],
+    "ingredients": ["400 g Sauerkraut", "200 g braune Linsen", "150 g Speck (gewürfelt)", "1 Zwiebel", "2 Kartoffeln", "1 L Gemüsebrühe", "1 Lorbeerblatt", "Kümmel, Salz, Pfeffer"],
+    "steps": ["Speck in Topf auslassen, Zwiebel andünsten.", "Linsen und Kartoffeln (gewürfelt) dazugeben.", "Sauerkraut und Brühe hinzufügen.", "35 Min. köcheln.", "Mit Kümmel und Pfeffer abschmecken."],
+    "highlight": "Sauerkraut ist fermentiert und liefert Vitamin C sowie probiotische Kulturen für den Darm."
+  },
+  {
+    "id": "nussige_haenchen_satay",
+    "title": "Hähnchen-Satay mit Erdnusssauce",
+    "duration": "30 Min.",
+    "servings": 2,
+    "tags": ["vitamin_b3", "vitamin_b6", "zink", "magnesium"],
+    "ingredients": ["400 g Hähnchenbrust (Streifen)", "3 EL Erdnussmus", "2 EL Sojasoße", "1 EL Honig", "1 Limette", "1 Knoblauchzehe", "1 TL Kurkuma", "Kürbiskerne"],
+    "steps": ["Hähnchen mit Sojasoße, Knoblauch und Kurkuma marinieren.", "Auf Holzspießen aufstecken, 15 Min. ruhen lassen.", "Im Grill oder Pfanne 8–10 Min. garen.", "Erdnusssauce aus Erdnussmus, Limette, Sojasoße und Wasser rühren.", "Satay mit Sauce servieren."],
+    "highlight": "Hähnchenbrust hat fast keinen Fettanteil und deckt 80 % des täglichen Niacin-Bedarfs."
+  },
+  {
+    "id": "matjes_apfel_salat",
+    "title": "Matjes-Apfel-Salat nach Hausfrauen-Art",
+    "duration": "15 Min.",
+    "servings": 2,
+    "tags": ["omega3", "vitamin_d", "jod", "selen", "vitamin_b12"],
+    "ingredients": ["4 Matjesfilets", "1 Apfel", "1/2 rote Zwiebel", "200 g Saure Sahne", "1 EL Dill (frisch)", "1 TL Zucker", "Salz, Pfeffer"],
+    "steps": ["Matjes in mundgerechte Stücke schneiden.", "Apfel und Zwiebel würfeln.", "Saure Sahne mit Dill, Zucker, Salz und Pfeffer verrühren.", "Matjes, Apfel und Zwiebel unterheben.", "1 Stunde kalt stellen."],
+    "highlight": "Matjes (junger Hering) liefert mehr Vitamin D als Lachs – und ist günstiger."
+  },
+  {
+    "id": "kohlrabi_salat_senf",
+    "title": "Kohlrabi-Salat mit Senf-Vinaigrette",
+    "duration": "10 Min.",
+    "servings": 2,
+    "tags": ["vitamin_c", "vitamin_b6", "magnesium"],
+    "ingredients": ["3 Kohlrabi", "1 Bund Radieschen", "Frische Minze", "2 EL Olivenöl", "1 EL Senf", "Zitronensaft", "Salz, Pfeffer"],
+    "steps": ["Kohlrabi schälen und in feine Streifen hobeln.", "Radieschen in Scheiben schneiden.", "Dressing aus Öl, Senf und Zitronensaft rühren.", "Salat mit Dressing mischen.", "Mit Minze servieren."],
+    "highlight": "Kohlrabi enthält fast so viel Vitamin C wie Paprika – ideal im Frühling und Sommer."
+  },
+  {
+    "id": "mango_linsensalat",
+    "title": "Linsen-Mango-Salat mit Koriander",
+    "duration": "20 Min.",
+    "servings": 2,
+    "tags": ["eisen", "vitamin_c", "vitamin_b9", "vitamin_b6"],
+    "ingredients": ["200 g grüne Linsen (aus Dose)", "1 reife Mango", "1 rote Paprika", "1 Avocado", "Frischer Koriander", "2 EL Olivenöl", "Limettensaft", "1 TL Kreuzkümmel", "Salz"],
+    "steps": ["Linsen abspülen.", "Mango, Paprika und Avocado würfeln.", "Alles mischen.", "Dressing aus Öl, Limettensaft und Kreuzkümmel rühren.", "Über Salat geben, Koriander darüberstreuen."],
+    "highlight": "Mango liefert Vitamin C für bessere Eisenaufnahme aus den Linsen – eine perfekte Symbiose."
+  },
+  {
+    "id": "wurst_vollkorn_brot",
+    "title": "Vollkornbrot mit Lachsaufschnitt und Gurkensalat",
+    "duration": "10 Min.",
+    "servings": 1,
+    "tags": ["omega3", "vitamin_d", "vitamin_b12", "jod", "vitamin_b1"],
+    "ingredients": ["2 Scheiben Vollkornbrot", "60 g Lachsaufschnitt", "1/2 Gurke", "100 g Naturjoghurt", "Frischer Dill", "Zitronensaft", "Salz, Pfeffer"],
+    "steps": ["Gurke in Scheiben schneiden.", "Joghurt mit Dill, Zitronensaft, Salz und Pfeffer verrühren.", "Brot toasten.", "Lachsaufschnitt auf Brot legen.", "Gurken-Joghurt-Salat daneben servieren."],
+    "highlight": "Vollkornbrot + Lachs: B1 aus dem Brot trifft auf Omega-3 und Vitamin D aus dem Lachs."
+  },
+  {
+    "id": "spinat_nusspfanne",
+    "title": "Spinat-Käse-Pfanne mit Cashews",
+    "duration": "15 Min.",
+    "servings": 2,
+    "tags": ["eisen", "vitamin_k", "magnesium", "zink", "vitamin_b9"],
+    "ingredients": ["400 g Blattspinat", "80 g Cashewkerne", "80 g geriebener Gruyère", "2 Knoblauchzehen", "2 EL Butter", "Muskatnuss", "Salz, Pfeffer"],
+    "steps": ["Cashews in Pfanne ohne Fett rösten.", "Butter erhitzen, Knoblauch andünsten.", "Spinat portionsweise zugeben und zusammenfallen lassen.", "Mit Muskatnuss, Salz und Pfeffer würzen.", "Käse darüberreiben und Cashews darüberstreuen."],
+    "highlight": "Cashews sind reich an Zink und Magnesium – perfekt in Kombination mit Spinat."
+  },
+  {
+    "id": "haenchen_zitrone_orzo",
+    "title": "Hähnchen in Zitronensauce mit Orzo",
+    "duration": "30 Min.",
+    "servings": 2,
+    "tags": ["vitamin_b3", "vitamin_b6", "selen", "vitamin_c"],
+    "ingredients": ["2 Hähnchenbrustfilets", "150 g Orzo (Reisnudeln)", "2 Zitronen", "200 ml Hühnerbrühe", "1 EL Butter", "2 Knoblauchzehen", "Frischer Thymian", "Salz, Pfeffer"],
+    "steps": ["Hähnchen würzen und in Pfanne goldbraun braten.", "Herausnehmen, Knoblauch anbraten.", "Brühe und Zitronensaft dazugeben.", "Hähnchen wieder einlegen, 10 Min. köcheln.", "Orzo separat kochen und dazu servieren."],
+    "highlight": "Hähnchen und Zitrone: B6 und Niacin aus dem Fleisch, Vitamin C aus der Zitrone."
+  },
+  {
+    "id": "fenchel_lachs_pasta",
+    "title": "Lachs-Pasta mit Fenchel und Kapern",
+    "duration": "25 Min.",
+    "servings": 2,
+    "tags": ["omega3", "vitamin_d", "vitamin_b12", "jod", "selen"],
+    "ingredients": ["200 g Vollkornnudeln", "2 Lachsfilets", "1 Fenchelknolle", "2 EL Kapern", "1/2 Zitrone", "200 ml Sahne", "Weißwein", "Olivenöl", "Dill"],
+    "steps": ["Pasta kochen.", "Fenchel in Streifen schneiden, in Öl andünsten.", "Lachs dazugeben, kurz anbraten.", "Weißwein und Sahne einrühren.", "Kapern und Zitrone dazugeben, mit Pasta mischen."],
+    "highlight": "Lachs-Pasta ist eine der besten Kombinationen für Vitamin D, Omega-3 und Jod."
+  },
+  {
+    "id": "pilze_gemuese_suppe",
+    "title": "Waldpilz-Suppe mit Thymian",
+    "duration": "30 Min.",
+    "servings": 3,
+    "tags": ["vitamin_b3", "vitamin_b5", "vitamin_d", "selen", "kupfer"],
+    "ingredients": ["400 g gemischte Waldpilze", "1 Zwiebel", "2 Knoblauchzehen", "800 ml Gemüsebrühe", "200 ml Sahne", "2 EL Olivenöl", "Frischer Thymian", "Salz, Pfeffer"],
+    "steps": ["Zwiebel und Knoblauch in Öl andünsten.", "Pilze dazugeben, 8 Min. anbraten.", "Brühe auffüllen, 15 Min. köcheln.", "Mit Stabmixer teilweise pürieren.", "Sahne unterrühren."],
+    "highlight": "Waldpilze können Vitamin D durch Sonnenlicht bilden – am besten auf dem Balkon vorher trocknen."
+  },
+  {
+    "id": "grillkaeseburger_portobello",
+    "title": "Portobello-Pilz-Burger mit Ziegenkäse",
+    "duration": "20 Min.",
+    "servings": 2,
+    "tags": ["vitamin_b3", "vitamin_b5", "selen", "kupfer"],
+    "ingredients": ["2 große Portobello-Pilze", "80 g Ziegenkäse", "Vollkornbun oder Brot", "Babyspinat", "2 Tomaten", "1 EL Balsamico", "Olivenöl", "Thymian", "Salz"],
+    "steps": ["Portobello-Pilze von unten mit Öl und Thymian bestreichen.", "12 Min. bei 200 °C backen.", "Ziegenkäse drauflegen, weitere 3 Min. gratinieren.", "Auf Brot mit Spinat und Tomaten anrichten.", "Mit Balsamico beträufeln."],
+    "highlight": "Portobello-Pilze ersetzen Burgerfleisch vollständig – und liefern B5 und Selen."
+  },
+  {
+    "id": "vollkorn_crepes_heidelbeeren",
+    "title": "Vollkorn-Crêpes mit Heidelbeeren und Joghurt",
+    "duration": "20 Min.",
+    "servings": 2,
+    "tags": ["vitamin_b1", "vitamin_b2", "magnesium", "vitamin_c"],
+    "ingredients": ["100 g Vollkornmehl", "2 Eier", "250 ml Milch", "1 EL Butter", "1 TL Honig", "200 g Heidelbeeren", "200 g Naturjoghurt"],
+    "steps": ["Teig aus Mehl, Eiern und Milch rühren, 10 Min. quellen lassen.", "Butter in Pfanne schmelzen, dünne Crêpes braten.", "Joghurt mit Honig verrühren.", "Crêpes mit Joghurt bestreichen, Heidelbeeren darüber.", "Zusammenrollen und servieren."],
+    "highlight": "Heidelbeeren haben eine der höchsten Antioxidantien-Dichten unter allen Früchten."
+  },
+  {
+    "id": "spanakorizo",
+    "title": "Spanakorizo – griechischer Spinatreis",
+    "duration": "30 Min.",
+    "servings": 3,
+    "tags": ["eisen", "vitamin_k", "vitamin_b9", "magnesium", "vitamin_c"],
+    "ingredients": ["500 g Blattspinat", "200 g Langkornreis", "1 Zwiebel", "3 EL Olivenöl", "400 ml Gemüsebrühe", "Dill und Zitrone", "Salz, Pfeffer", "Fetakäse zum Servieren"],
+    "steps": ["Zwiebel in Öl andünsten.", "Reis hinzufügen, glasig rühren.", "Brühe dazugeben, 10 Min. vorköcheln.", "Spinat einrühren, weitere 10 Min. garen.", "Mit Dill, Zitrone und Feta servieren."],
+    "highlight": "Dieses griechische Gericht vereint alle wichtigen Blut-bildenden Nährstoffe in einer Schüssel."
+  },
+  {
+    "id": "lachs_avocado_sushi_bowl",
+    "title": "Lachs-Avocado-Sushi-Bowl",
+    "duration": "20 Min.",
+    "servings": 2,
+    "tags": ["omega3", "vitamin_d", "vitamin_b12", "jod", "vitamin_e"],
+    "ingredients": ["200 g Sushi-Lachs (frisch, sashimi-Qualität)", "200 g Sushireis", "1 Avocado", "1 Gurke", "2 EL Sojasoße", "1 EL Sesamöl", "1 TL Sesamkörner", "1 TL Reisessig", "Noriblätter (optional)"],
+    "steps": ["Sushireis kochen und mit Reisessig abschmecken.", "Lachs in Scheiben schneiden.", "Avocado und Gurke würfeln.", "Reis in Schüsseln geben.", "Alle Toppings darauflegen, mit Sojasoße und Sesam servieren."],
+    "highlight": "Diese Bowl liefert alle Omega-3-Fettsäuren des Tages in einer einzigen Mahlzeit."
+  },
+  {
+    "id": "sesam_haenchen_glas",
+    "title": "Sesam-Hähnchen im Glas (Meal Prep)",
+    "duration": "25 Min.",
+    "servings": 3,
+    "tags": ["vitamin_b3", "vitamin_b6", "magnesium", "zink", "eisen"],
+    "ingredients": ["400 g Hähnchenbrust", "2 EL Sesam", "2 EL Sojasoße", "1 EL Honig", "1 EL Sesamöl", "Vollkornreis", "Brokkoli", "Karotten"],
+    "steps": ["Hähnchen marinieren (Sojasoße, Honig, Sesamöl), 15 Min. ruhen.", "In Pfanne 6 Min. je Seite braten.", "Reis kochen.", "Brokkoli und Karotten dünsten.", "Alles in Meal-Prep-Gläser schichten."],
+    "highlight": "Hähnchen, Sesam und Brokkoli: ein perfektes Niacin- und Magnesium-Meal-Prep."
+  },
+  {
+    "id": "papaya_joghurt_bowl",
+    "title": "Papaya-Joghurt-Bowl mit Granola",
+    "duration": "5 Min.",
+    "servings": 1,
+    "tags": ["vitamin_c", "vitamin_b7", "vitamin_b2", "jod"],
+    "ingredients": ["1/2 Papaya", "150 g Naturjoghurt", "3 EL Granola", "1 Passionsfrucht", "1 TL Honig"],
+    "steps": ["Papaya schälen und würfeln.", "Joghurt in eine Schüssel geben.", "Papaya darauflegen.", "Passionsfrucht halbieren und Kerne ausschaben.", "Granola, Passionsfrucht und Honig darüber."],
+    "highlight": "Papaya enthält das Enzym Papain – es verbessert die Proteinverdauung und liefert viel Vitamin C."
+  },
+  {
+    "id": "senf_hasenbraten_alt",
+    "title": "Gefüllte Paprika mit Hack und Couscous",
+    "duration": "40 Min.",
+    "servings": 2,
+    "tags": ["vitamin_c", "eisen", "vitamin_b12", "vitamin_b6", "zink"],
+    "ingredients": ["4 Paprika (bunt)", "300 g gemischtes Hackfleisch", "100 g Couscous", "1 Zwiebel", "1 Dose Tomaten", "1 TL Paprikapulver", "Oregano", "Olivenöl", "Salz, Pfeffer"],
+    "steps": ["Ofen auf 180 °C vorheizen.", "Paprika entkernen.", "Couscous mit heißem Wasser übergießen, quellen lassen.", "Hackfleisch mit Zwiebel anbraten, Couscous und Gewürze untermischen.", "Paprika füllen, mit Tomatensauce begießen, 25 Min. backen."],
+    "highlight": "Gefüllte Paprika kombiniert Vitamin C aus der Hülle mit Zink und B12 aus dem Hack."
+  },
+  {
+    "id": "joghurt_walnuss_dip",
+    "title": "Tzatziki mit Vollkornfladenbrot",
+    "duration": "10 Min.",
+    "servings": 3,
+    "tags": ["vitamin_b12", "jod", "vitamin_b2", "vitamin_b6"],
+    "ingredients": ["400 g griechischer Joghurt", "1 Salatgurke", "2 Knoblauchzehen", "3 EL Olivenöl", "Frischer Dill und Minze", "Zitronensaft", "Salz"],
+    "steps": ["Gurke reiben, gut ausdrücken.", "Joghurt mit Knoblauch, Olivenöl und Zitronensaft verrühren.", "Gurke untermengen.", "Mit Kräutern garnieren.", "Mit Vollkornfladenbrot servieren."],
+    "highlight": "Griechischer Joghurt liefert pro 100 g fast 12 µg Jod – eine unterschätzte Quelle."
+  },
+  {
+    "id": "gemuese_couscous_harissa",
+    "title": "Gemüse-Couscous mit Harissa",
+    "duration": "30 Min.",
+    "servings": 3,
+    "tags": ["vitamin_c", "vitamin_b1", "eisen", "magnesium", "vitamin_b6"],
+    "ingredients": ["200 g Couscous", "2 Zucchini", "1 Aubergine", "1 rote Paprika", "1 Dose Kichererbsen", "2 TL Harissa", "400 ml Gemüsebrühe", "Olivenöl", "Koriander"],
+    "steps": ["Gemüse würfeln, in Öl anbraten.", "Harissa dazugeben.", "Kichererbsen und Brühe einrühren.", "Couscous einrühren, Hitze abstellen, 5 Min. quellen.", "Mit frischem Koriander servieren."],
+    "highlight": "Paprika und Harissa (Chili) sind reich an Vitamin C – ideal für die Eisenaufnahme aus Kichererbsen."
+  },
+  {
+    "id": "lachswraps",
+    "title": "Lachswraps mit Guacamole und Rucola",
+    "duration": "15 Min.",
+    "servings": 2,
+    "tags": ["omega3", "vitamin_d", "vitamin_e", "vitamin_k", "jod"],
+    "ingredients": ["2 Vollkorn-Wraps", "150 g Räucherlachs", "2 Avocados", "1 Limette", "Frischer Rucola", "Rote Zwiebel", "Chiliflocken", "Salz"],
+    "steps": ["Avocados zerdrücken, mit Limettensaft und Salz würzen.", "Guacamole auf Wraps streichen.", "Lachsstreifen darauflegen.", "Rucola und Zwiebelringe hinzufügen.", "Fest einrollen und servieren."],
+    "highlight": "Lachs + Avocado: fettlösliche Vitamine D und E in idealer Kombination für maximale Aufnahme."
+  },
+  {
+    "id": "koriander_linsen_suppe",
+    "title": "Marokkanische Linsensuppe mit Koriander",
+    "duration": "30 Min.",
+    "servings": 4,
+    "tags": ["eisen", "vitamin_b9", "vitamin_c", "magnesium", "vitamin_b1"],
+    "ingredients": ["300 g rote Linsen", "2 Tomaten", "1 Zwiebel", "2 Knoblauchzehen", "1 TL Kreuzkümmel", "1 TL Kurkuma", "1/2 TL Zimt", "1 L Gemüsebrühe", "Saft einer Zitrone", "Frischer Koriander"],
+    "steps": ["Zwiebel und Knoblauch andünsten.", "Gewürze mitrösten.", "Linsen, Tomaten und Brühe dazugeben.", "20 Min. köcheln.", "Mit Zitrone und Koriander abschmecken."],
+    "highlight": "Koriander enthält Flavonoide, die nachweislich den Blutzuckerspiegel stabilisieren."
+  },
+  {
+    "id": "nuss_kaese_platte",
+    "title": "Käse-Nuss-Platte mit frischen Früchten",
+    "duration": "10 Min.",
+    "servings": 4,
+    "tags": ["vitamin_b12", "vitamin_b2", "zink", "magnesium", "selen"],
+    "ingredients": ["Auswahl: Parmesan, Gouda, Emmentaler", "Walnüsse, Cashews, Paranüsse", "Frische Trauben und Feigen", "Honig und Walnussbrot"],
+    "steps": ["Käse in Scheiben oder Stücke schneiden.", "Nüsse und Früchte anrichten.", "Honig dazustellen.", "Brot in Scheiben schneiden und dazu servieren."],
+    "highlight": "Hartkäse wie Parmesan enthält mehr Calcium und B12 als Weichkäse."
+  },
+  {
+    "id": "tomaten_linsen_salat",
+    "title": "Beluga-Linsen-Salat mit Sonnengetrockneten Tomaten",
+    "duration": "25 Min.",
+    "servings": 3,
+    "tags": ["eisen", "vitamin_b9", "vitamin_b1", "magnesium", "vitamin_c"],
+    "ingredients": ["200 g Beluga-Linsen", "100 g sonnengetrocknete Tomaten", "1 Bund Basilikum", "50 g Rucola", "1 rote Zwiebel", "3 EL Olivenöl", "Balsamico", "Salz, Pfeffer"],
+    "steps": ["Linsen in Salzwasser 20 Min. kochen, abgießen.", "Tomaten in Streifen schneiden.", "Alles abkühlen lassen.", "Mit Basilikum, Rucola und Zwiebel mischen.", "Dressing aus Öl und Balsamico darüber."],
+    "highlight": "Beluga-Linsen sind die nährstoffdichteste Linsensorte mit viel Eisen und Folat."
+  },
+  {
+    "id": "gemuese_omelett_ofen",
+    "title": "Bunte Gemüse-Frittata aus dem Ofen",
+    "duration": "30 Min.",
+    "servings": 4,
+    "tags": ["vitamin_b2", "vitamin_b12", "vitamin_k", "vitamin_c", "eisen"],
+    "ingredients": ["8 Eier", "1 Zucchini", "1 Paprika", "200 g Kirschtomaten", "100 g Feta", "Blattspinat", "Olivenöl", "Frische Kräuter", "Salz, Pfeffer"],
+    "steps": ["Ofen auf 180 °C vorheizen.", "Gemüse würfeln, in Pfanne mit Olivenöl 5 Min. andünsten.", "Eier verquirlen, würzen.", "Eimasse über Gemüse gießen.", "25 Min. im Ofen stocken lassen, mit Feta und Kräutern servieren."],
+    "highlight": "Diese Frittata ist vollgepackt mit Eiweiß, B-Vitaminen und Vitamin K aus dem Spinat."
+  },
+  {
+    "id": "susskartoffel_erdnuss_suppe",
+    "title": "Süßkartoffel-Erdnuss-Suppe",
+    "duration": "30 Min.",
+    "servings": 3,
+    "tags": ["vitamin_a", "vitamin_b6", "magnesium", "vitamin_c", "kupfer"],
+    "ingredients": ["2 große Süßkartoffeln", "3 EL Erdnussmus (crunchy)", "1 Zwiebel", "2 Knoblauchzehen", "1 Stück Ingwer (3 cm)", "1 Dose Kokosmilch", "600 ml Gemüsebrühe", "1 TL Kurkuma", "Koriander", "Limettensaft"],
+    "steps": ["Süßkartoffeln schälen und würfeln.", "Zwiebel und Knoblauch in Öl andünsten.", "Ingwer und Kurkuma mitrösten.", "Süßkartoffeln, Brühe und Erdnussmus hinzufügen.", "20 Min. kochen, pürieren, Kokosmilch einrühren, mit Limette und Koriander servieren."],
+    "highlight": "Süßkartoffeln + Erdnüsse: eine westafrikanische Kombination reich an Vitamin A, B6 und Kupfer."
+  },
+  {
+    "id": "hafer_bananen_pancakes",
+    "title": "Hafer-Bananen-Pancakes (glutenfrei)",
+    "duration": "15 Min.",
+    "servings": 2,
+    "tags": ["vitamin_b1", "magnesium", "vitamin_b6", "vitamin_b7", "chrom"],
+    "ingredients": ["2 reife Bananen", "100 g Haferflocken (glutenfrei)", "2 Eier", "1 TL Zimt", "1 Prise Salz", "Kokosöl zum Braten", "Frische Beeren und Joghurt zum Servieren"],
+    "steps": ["Bananen zerdrücken.", "Haferflocken, Eier, Zimt und Salz unterrühren.", "In Kokosöl kleine Pancakes braten (je 2 Min. pro Seite).", "Mit Beeren und Joghurt anrichten."],
+    "highlight": "Nur 4 Zutaten – glutenfrei, zuckerfrei, reich an B1 und Magnesium aus Hafer."
+  }
+];
+
+const FREE_IDS = ['vitamin_d', 'vitamin_b12', 'eisen', 'gewicht'];
+
+// ── STORAGE ───────────────────────────────────────────────
+const storage = {
+  get(k) { try { const r=localStorage.getItem(k); return r?JSON.parse(r):null; } catch{return null;} },
+  set(k,v) { localStorage.setItem(k,JSON.stringify(v)); },
+  remove(k) { localStorage.removeItem(k); }
+};
+
+// ── PROFILE ───────────────────────────────────────────────
+const profileRepo = {
+  get() { return Object.assign({name:'',sex:'',ageGroup:'',weightGoal:null,onboardingDone:false}, storage.get('vm_profile')||{}); },
+  save(p) { storage.set('vm_profile', Object.assign(this.get(), p)); }
+};
+
+// ── MEASUREMENTS ──────────────────────────────────────────
+const measurementRepo = {
+  _load() { return storage.get('vm_measurements')||[]; },
+  _save(l) { storage.set('vm_measurements',l); },
+  add(e) { const l=this._load(); const item={id:Date.now(),...e}; l.push(item); this._save(l); return item; },
+  getByBiomarker(id) { return this._load().filter(m=>m.biomarkerId===id).sort((a,b)=>new Date(a.date)-new Date(b.date)); },
+  getLatestAll() { const all=this._load(),map={}; for(const m of all) { if(!map[m.biomarkerId]||new Date(m.date)>new Date(map[m.biomarkerId].date)) map[m.biomarkerId]=m; } return map; },
+  getTrackedIds() { return [...new Set(this._load().map(m=>m.biomarkerId))]; },
+  delete(id) { this._save(this._load().filter(m=>m.id!==id)); },
+  clear() { storage.remove('vm_measurements'); }
+};
+
+// ── ENTITLEMENTS ──────────────────────────────────────────
+const entitlements = {
+  isPremium() { return storage.get('vm_premium')===true; },
+  setPremium(v) { storage.set('vm_premium',v); },
+  canTrack(id) { return this.isPremium()||FREE_IDS.includes(id); }
+};
+
+// ── RANGES ────────────────────────────────────────────────
+function getRefRange(bm, profile) {
+  if (bm.refMin==null && bm.refMax==null) return {min:null,max:null};
+  const sex = profile && profile.sex;
+  if (sex && bm.refByGender && bm.refByGender[sex]) return {min:bm.refByGender[sex].min, max:bm.refByGender[sex].max};
+  return {min:bm.refMin, max:bm.refMax};
+}
+function getRefRangeLabel(bm, profile) {
+  const r=getRefRange(bm,profile);
+  if (r.min==null) return '–';
+  return r.min+'–'+r.max+' '+bm.unit;
+}
+
+// ── STATUS ────────────────────────────────────────────────
+function getStatus(value, bm, profile) {
+  if (value==null||value==='') return 'unknown';
+  const v=parseFloat(value); if(isNaN(v)) return 'unknown';
+  const r=getRefRange(bm,profile||{});
+  if (r.min==null && r.max==null) return 'unknown';
+  if (r.min!=null && v<r.min) return 'low';
+  if (r.max!=null && v>r.max) return 'high';
+  return 'ok';
+}
+function getStatusLabel(s) { return {low:'Zu niedrig',ok:'Im Normbereich',high:'Zu hoch',unknown:'Kein Wert'}[s]||'Unbekannt'; }
+function getStatusColor(s) { return {low:'#E53935',ok:'#43A047',high:'#FB8C00',unknown:'#BDBDBD'}[s]||'#BDBDBD'; }
+
+// ── TOAST ─────────────────────────────────────────────────
+function showToast(msg, ms=2500) {
+  let t=document.getElementById('vm-toast');
+  t.textContent=msg; t.className='toast visible';
+  clearTimeout(t._t); t._t=setTimeout(()=>t.className='toast', ms);
+}
+
+// ── FORMAT DATE ───────────────────────────────────────────
+function fmtDate(iso) { if(!iso) return ''; const [y,m,d]=iso.split('-'); return d+'.'+m+'.'+y; }
+
+// ── VALIDATION ────────────────────────────────────────────
+function validateMeasurement(value, bm) {
+  if (value===''||value==null) return {valid:false,error:'Bitte einen Wert eingeben.'};
+  const v=parseFloat(value); if(isNaN(v)) return {valid:false,error:'Bitte eine gültige Zahl eingeben.'};
+  if (v<0) return {valid:false,error:'Wert muss > 0 sein.'};
+  if (bm.id==='gewicht' && (v<10||v>500)) return {valid:false,error:'Bitte plausibles Gewicht (10–500 kg).'};
+  return {valid:true,error:null};
+}
+
+// ── ROUTER / STATE ────────────────────────────────────────
+let currentScreen='dashboard', currentBiomarkerId='vitamin_d';
+
+function navigate(screen, bmId) {
+  if (bmId) currentBiomarkerId=bmId;
+  currentScreen=screen;
+  const nav=document.querySelector('.bottom-nav');
+  if (nav) nav.style.display=['onboarding'].includes(screen)?'none':'flex';
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.screen===screen));
+  renderScreen(screen);
+}
+
+function renderScreen(screen) {
+  const c=document.getElementById('screen-container');
+  c.innerHTML='';
+  const screens={dashboard:renderDashboard,entry:renderEntry,trend:renderTrend,profile:renderProfile,premium:renderPremium,onboarding:renderOnboarding};
+  if (screens[screen]) screens[screen](c);
+}
+
+// ══════════════════════════════════════════════════════════
+// SCREEN: ONBOARDING
+// ══════════════════════════════════════════════════════════
+function renderOnboarding(c) {
+  c.innerHTML=`
+    <div class="onboarding-screen">
+      <div class="onboarding-logo">💊</div>
+      <h1 class="onboarding-title">Willkommen bei<br><span class="brand">VitalMetrics</span></h1>
+      <p class="onboarding-sub">Damit wir dir die richtigen Referenzwerte zeigen können, brauchen wir drei kurze Angaben.</p>
+      <div class="onboarding-card">
+        <h2 class="step-label">① Dein Geschlecht</h2>
+        <p class="step-hint">Die DGE-Referenzwerte unterscheiden sich – vor allem bei Eisen und Zink.</p>
+        <div class="sex-buttons">
+          <button class="sex-btn" data-sex="f">♀ Weiblich</button>
+          <button class="sex-btn" data-sex="m">♂ Männlich</button>
+          <button class="sex-btn" data-sex="">Keine Angabe</button>
+        </div>
+      </div>
+      <div class="onboarding-card">
+        <h2 class="step-label">② Deine Altersgruppe</h2>
+        <p class="step-hint">Für 18–50 Jahre sind DGE-Werte weitgehend einheitlich – wir differenzieren in drei Stufen.</p>
+        <div class="age-buttons">
+          <button class="age-btn" data-age="18-19">18–19 Jahre</button>
+          <button class="age-btn" data-age="19-25">19–25 Jahre</button>
+          <button class="age-btn" data-age="25-50">25–50 Jahre</button>
+        </div>
+      </div>
+      <div class="onboarding-card">
+        <h2 class="step-label">③ Deine Körpergröße</h2>
+        <p class="step-hint">Wird benötigt, um deinen BMI automatisch aus deinem Gewicht zu berechnen.</p>
+        <div class="height-row">
+          <input type="number" id="inp-height" class="height-input" placeholder="z. B. 172" min="100" max="250" step="1">
+          <span class="unit-label">cm</span>
+        </div>
+        <p class="bmi-info-note">Du kannst die Körpergröße jederzeit im Profil ändern.</p>
+      </div>
+      <button class="btn-primary btn-onboarding-done" id="btn-done" disabled>Los geht's →</button>
+      <p class="onboarding-disclaimer">Diese Angaben werden nur lokal auf deinem Gerät gespeichert.</p>
+    </div>`;
+
+  let selSex=null, selAge=null;
+  function checkDone() {
+    c.querySelector('#btn-done').disabled=(selSex===null||selAge===null);
+  }
+  c.querySelectorAll('.sex-btn').forEach(b=>b.addEventListener('click',()=>{
+    c.querySelectorAll('.sex-btn').forEach(x=>x.classList.remove('selected'));
+    b.classList.add('selected'); selSex=b.dataset.sex; checkDone();
+  }));
+  c.querySelectorAll('.age-btn').forEach(b=>b.addEventListener('click',()=>{
+    c.querySelectorAll('.age-btn').forEach(x=>x.classList.remove('selected'));
+    b.classList.add('selected'); selAge=b.dataset.age; checkDone();
+  }));
+  c.querySelector('#btn-done').addEventListener('click',()=>{
+    const heightVal=parseFloat(c.querySelector('#inp-height').value)||null;
+    profileRepo.save({sex:selSex,ageGroup:selAge,height:heightVal,onboardingDone:true});
+    navigate('dashboard');
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// SCREEN: DASHBOARD
+// ══════════════════════════════════════════════════════════
+function renderDashboard(c) {
+  const profile=profileRepo.get();
+  const latestAll=measurementRepo.getLatestAll();
+  const isPremium=entitlements.isPremium();
+
+  const grouped={};
+  for (const bm of CATALOG.biomarkers) {
+    if (!grouped[bm.category]) grouped[bm.category]=[];
+    grouped[bm.category].push(bm);
+  }
+
+  const trackedBms=CATALOG.biomarkers.filter(bm=>latestAll[bm.id]);
+  const statuses=trackedBms.map(bm=>getStatus(latestAll[bm.id]?.value,bm,profile));
+  const okC=statuses.filter(s=>s==='ok').length;
+  const lowC=statuses.filter(s=>s==='low').length;
+  const highC=statuses.filter(s=>s==='high').length;
+
+  let html=`<div class="screen dashboard-screen">
+    <div class="screen-header">
+      <h1 class="app-title">VitalMetrics</h1>
+      <p class="app-subtitle">${profile.name?'Hallo '+profile.name+' · ':''}Deine Übersicht</p>
+    </div>`;
+
+  if (!isPremium) html+=`<div class="premium-banner"><span>⭐ 4 Werte gratis · <strong>Alle 30 Werte mit Premium</strong></span><button class="btn-upgrade-sm" id="btn-upg-banner">Upgrade</button></div>`;
+
+  if (trackedBms.length>0) html+=`<div class="summary-bar">
+    <div class="summary-item ok"><span class="summary-count">${okC}</span><span class="summary-label">Normal</span></div>
+    <div class="summary-item low"><span class="summary-count">${lowC}</span><span class="summary-label">Zu niedrig</span></div>
+    <div class="summary-item high"><span class="summary-count">${highC}</span><span class="summary-label">Zu hoch</span></div>
+  </div>`;
+
+  for (const [catKey, bms] of Object.entries(grouped)) {
+    html+=`<div class="category-section"><h2 class="category-title">${CATALOG.categories[catKey]}</h2><div class="biomarker-grid">`;
+    for (const bm of bms) {
+      const canTrack=entitlements.canTrack(bm.id);
+      const latest=latestAll[bm.id];
+      const status=latest?getStatus(latest.value,bm,profile):'unknown';
+      const color=canTrack?getStatusColor(status):'#E0E0E0';
+      const valueLabel=latest?latest.value+' '+bm.unit:'– –';
+      const refLabel=getRefRangeLabel(bm,profile);
+      if (canTrack) {
+        const isBmi = bm.id==='bmi';
+        const bmiCalculatedFrom = isBmi ? profile.height : null;
+        html+=`<div class="biomarker-card" data-id="${bm.id}" style="border-left:4px solid ${color}">
+          <div class="card-header">
+            <span class="card-name">${bm.name}${isBmi?'<span class="bmi-auto-badge">📐 Auto</span>':''}</span>
+            <span class="status-dot" style="background:${color}"></span>
+          </div>
+          <div class="card-value">${valueLabel}</div>
+          <div class="card-ref">Ref: ${refLabel}</div>
+          ${isBmi&&bmiCalculatedFrom?'<div class="bmi-info-note">Berechnet aus Gewicht + '+bmiCalculatedFrom+' cm Größe</div>':''}
+          ${isBmi&&!bmiCalculatedFrom?'<div class="no-height-warning" style="margin-top:6px;font-size:12px">📏 Größe im Profil eintragen für automatische Berechnung</div>':''}
+          ${bm.selfTestAvailable?'<div class="self-test-badge">🧪 Heimtest verfügbar</div>':''}
+          <div class="card-actions">
+            ${isBmi
+              ? (latest?'<button class="btn-card btn-trend" data-id="'+bm.id+'">📈 BMI-Verlauf</button>':'<button class="btn-card btn-entry" data-id="gewicht">+ Gewicht eintragen</button>')
+              : '<button class="btn-card btn-entry" data-id="'+bm.id+'">+ Eintragen</button>'+(latest?'<button class="btn-card btn-trend" data-id="'+bm.id+'">📈 Verlauf</button>':'')
+            }
+          </div></div>`;
+      } else {
+        html+=`<div class="biomarker-card biomarker-locked" data-id="${bm.id}">
+          <div class="card-header"><span class="card-name">${bm.name}</span><span class="lock-icon">🔒</span></div>
+          <div class="card-value locked-value">Premium</div>
+          <div class="card-ref">Ref: ${refLabel}</div>
+          <div class="card-actions"><button class="btn-card btn-unlock" data-id="${bm.id}">⭐ Freischalten</button></div>
+        </div>`;
+      }
+    }
+    html+=`</div></div>`;
+  }
+  html+=`<div class="disclaimer"><p>ℹ️ VitalMetrics ist kein Medizinprodukt. Referenzwerte nach DGE${profile.sex?' ('+( profile.sex==='f'?'♀ weiblich':'♂ männlich')+')':''}. Ersetzt keine ärztliche Beratung.</p></div></div>`;
+  c.innerHTML=html;
+
+  c.querySelectorAll('.btn-entry').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();navigate('entry',b.dataset.id);}));
+  c.querySelectorAll('.btn-trend').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();navigate('trend',b.dataset.id);}));
+  c.querySelectorAll('.biomarker-card:not(.biomarker-locked)').forEach(card=>card.addEventListener('click',()=>navigate('trend',card.dataset.id)));
+  c.querySelectorAll('.btn-unlock,.btn-upgrade-sm,#btn-upg-banner').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();navigate('premium');}));
+}
+
+// ══════════════════════════════════════════════════════════
+// SCREEN: ENTRY
+// ══════════════════════════════════════════════════════════
+// ── BMI HELPER ─────────────────────────────────────────────
+function calcBMI(weightKg, heightCm) {
+  if (!weightKg || !heightCm || heightCm < 50) return null;
+  return Math.round((weightKg / Math.pow(heightCm / 100, 2)) * 10) / 10;
+}
+
+function renderEntry(c) {
+  const profile=profileRepo.get();
+  const selId=currentBiomarkerId||'vitamin_d';
+  // BMI wird automatisch berechnet – aus manueller Eingabe ausschließen
+  const trackable=CATALOG.biomarkers.filter(bm=>entitlements.canTrack(bm.id) && bm.id!=='bmi');
+  const opts=trackable.map(bm=>`<option value="${bm.id}" ${bm.id===selId?'selected':''}>${bm.name} (${bm.unit})</option>`).join('');
+  const today=new Date().toISOString().split('T')[0];
+  const effectiveId = selId==='bmi' ? 'gewicht' : selId;
+  const selBm=CATALOG.biomarkers.find(b=>b.id===effectiveId)||trackable[0];
+  const isGewicht = selBm?.id==='gewicht';
+  const bmiPossible = isGewicht && !!profile.height;
+
+  c.innerHTML=`<div class="screen entry-screen">
+    <div class="screen-header"><h1 class="screen-title">Wert eintragen</h1></div>
+    ${!profile.height?'<div class="no-height-warning">📏 Tipp: Trage deine Körpergröße im <strong>Profil</strong> ein, damit der BMI automatisch berechnet wird.</div>':''}
+    <div class="entry-form-card">
+      <div class="form-group">
+        <label>Vitamin / Mineralstoff / Messwert</label>
+        <select id="bm-sel" class="form-control">${opts}</select>
+      </div>
+      <div class="form-group">
+        <label>Gemessener Wert</label>
+        <div class="input-with-unit">
+          <input type="number" id="bm-val" class="form-control" placeholder="z. B. 25" step="any" min="0">
+          <span class="unit-label" id="unit-lbl">${selBm?.unit||''}</span>
+        </div>
+        <p class="form-hint" id="ref-hint">Referenzbereich (DGE): ${getRefRangeLabel(selBm,profile)}</p>
+        <p class="self-test-hint" id="st-hint">${selBm?.selfTestNote?'🧪 '+selBm.selfTestNote:''}</p>
+        <div id="bmi-preview" style="display:${bmiPossible?'block':'none'}">
+          <p class="bmi-info-note">📐 BMI wird automatisch mitgespeichert (Größe: ${profile.height||'–'} cm)</p>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Datum</label>
+        <input type="date" id="bm-date" class="form-control" value="${today}" max="${today}">
+      </div>
+      <div class="form-group">
+        <label>Notiz (optional)</label>
+        <input type="text" id="bm-note" class="form-control" placeholder="z. B. nach Arztbesuch, Heimtest">
+      </div>
+      <p class="error-msg" id="err-msg" style="display:none"></p>
+      <button class="btn-primary" id="btn-save">Speichern</button>
+      <button class="btn-secondary" id="btn-cancel">Abbrechen</button>
+    </div>
+    <div class="biomarker-info-card" id="bm-info">${renderBmInfo(selBm)}</div>
+  </div>`;
+
+  const sel=c.querySelector('#bm-sel');
+  sel.addEventListener('change',()=>{
+    const bm=CATALOG.biomarkers.find(b=>b.id===sel.value);
+    if(!bm) return;
+    currentBiomarkerId=bm.id;
+    c.querySelector('#unit-lbl').textContent=bm.unit;
+    c.querySelector('#ref-hint').textContent='Referenzbereich (DGE): '+getRefRangeLabel(bm,profile);
+    c.querySelector('#st-hint').textContent=bm.selfTestNote?'🧪 '+bm.selfTestNote:'';
+    c.querySelector('#bm-info').innerHTML=renderBmInfo(bm);
+    const preview=c.querySelector('#bmi-preview');
+    if(preview) preview.style.display=(bm.id==='gewicht'&&profile.height)?'block':'none';
+  });
+
+  c.querySelector('#btn-save').addEventListener('click',()=>{
+    const bm=CATALOG.biomarkers.find(b=>b.id===sel.value);
+    const value=parseFloat(c.querySelector('#bm-val').value);
+    const date=c.querySelector('#bm-date').value;
+    const note=c.querySelector('#bm-note').value.trim();
+    const errEl=c.querySelector('#err-msg');
+    const {valid,error}=validateMeasurement(value,bm);
+    if(!valid){errEl.textContent=error;errEl.style.display='block';return;}
+    errEl.style.display='none';
+    measurementRepo.add({biomarkerId:bm.id,value,date,note});
+    // ── Auto-BMI: wenn Gewicht gespeichert und Größe bekannt ──
+    if(bm.id==='gewicht' && profile.height) {
+      const bmiVal=calcBMI(value,profile.height);
+      if(bmiVal!==null) {
+        measurementRepo.add({biomarkerId:'bmi',value:bmiVal,date,note:'Automatisch aus Gewicht berechnet'});
+        showToast('✅ Gewicht + BMI ('+bmiVal+' kg/m²) gespeichert!');
+      } else {
+        showToast('✅ '+bm.name+' gespeichert!');
+      }
+    } else {
+      showToast('✅ '+bm.name+' gespeichert!');
+    }
+    navigate('trend',bm.id);
+  });
+  c.querySelector('#btn-cancel').addEventListener('click',()=>navigate('dashboard'));
+}
+
+function renderBmInfo(bm) {
+  if(!bm) return '';
+  return `<h3>${bm.name}</h3><p class="bm-description">${bm.description}</p><p class="bm-function"><strong>Funktion:</strong> ${bm.function}</p>${bm.tips?.length?'<div class="tips-section"><strong>💡 Wissenswertes:</strong><ul>'+bm.tips.map(t=>'<li>'+t+'</li>').join('')+'</ul></div>':''}`;
+}
+
+// ══════════════════════════════════════════════════════════
+// SCREEN: TREND
+// ══════════════════════════════════════════════════════════
+function renderTrend(c) {
+  const profile=profileRepo.get();
+  const bmId=currentBiomarkerId||'vitamin_d';
+  const bm=CATALOG.biomarkers.find(b=>b.id===bmId)||CATALOG.biomarkers[0];
+  if(!entitlements.canTrack(bm.id)){navigate('premium');return;}
+
+  const measurements=measurementRepo.getByBiomarker(bm.id);
+  const latestM=measurements[measurements.length-1];
+  const status=latestM?getStatus(latestM.value,bm,profile):'unknown';
+  const sColor=getStatusColor(status);
+  const r=getRefRange(bm,profile);
+
+  const trackable=CATALOG.biomarkers.filter(b=>entitlements.canTrack(b.id));
+  const opts=trackable.map(b=>`<option value="${b.id}" ${b.id===bm.id?'selected':''}>${b.name}</option>`).join('');
+
+  const histRows=[...measurements].reverse().map(m=>{
+    const s=getStatus(m.value,bm,profile);
+    return `<tr><td>${fmtDate(m.date)}</td><td>${m.value} ${bm.unit}</td><td><span class="status-badge" style="background:${getStatusColor(s)}">${getStatusLabel(s)}</span></td><td><button class="btn-delete" data-id="${m.id}">🗑️</button></td></tr>`;
+  }).join('');
+
+  c.innerHTML=`<div class="screen trend-screen">
+    <div class="screen-header">
+      <select id="trend-sel" class="form-control trend-select">${opts}</select>
+    </div>
+    <div class="status-banner" style="background:${sColor}20;border-left:4px solid ${sColor}">
+      <span class="status-dot" style="background:${sColor}"></span>
+      <span class="status-text">${getStatusLabel(status)}</span>
+      ${latestM?'<span class="latest-value">'+latestM.value+' '+bm.unit+'</span>':''}
+      ${r.min!=null?'<span class="ref-text">Ref: '+getRefRangeLabel(bm,profile)+(profile.sex?' ('+( profile.sex==='f'?'♀':'♂')+')':'')+'</span>':''}
+      ${bm.selfTestAvailable?'<span class="ref-text">🧪 '+bm.selfTestNote+'</span>':''}
+    </div>
+    ${measurements.length===0
+      ? `<div class="no-data-card"><p>Noch keine Einträge für <strong>${bm.name}</strong>.</p><button class="btn-primary" id="btn-add-first">Ersten Wert eintragen</button></div>`
+      : `<div class="chart-container"><canvas id="trend-chart"></canvas></div>
+         <div class="measurements-history"><h3>Verlauf</h3>
+         <table class="history-table"><thead><tr><th>Datum</th><th>Wert</th><th>Status</th><th></th></tr></thead>
+         <tbody>${histRows}</tbody></table></div>`
+    }
+    ${bm.category!=='body'?renderFoodsSection(bm,status):''}
+    <button class="btn-primary btn-add-entry" id="btn-add-entry">+ Neuen Wert eintragen</button>
+  </div>`;
+
+  if(measurements.length>0) drawChart(measurements,bm,profile);
+  c.querySelector('#trend-sel').addEventListener('change',e=>navigate('trend',e.target.value));
+  c.querySelector('#btn-add-entry')?.addEventListener('click',()=>navigate('entry',bm.id));
+  c.querySelector('#btn-add-first')?.addEventListener('click',()=>navigate('entry',bm.id));
+  c.querySelectorAll('.btn-delete').forEach(b=>b.addEventListener('click',()=>{
+    if(confirm('Eintrag löschen?')){measurementRepo.delete(parseInt(b.dataset.id));navigate('trend',bm.id);}
+  }));
+  // Recipe card expand/collapse
+  c.querySelectorAll('.recipe-card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('expanded');
+      const icon=card.querySelector('.recipe-expand-icon');
+      if(icon) icon.textContent=card.classList.contains('expanded')?'▲ Rezept ausblenden':'▼ Rezept anzeigen';
+    });
+  });
+}
+
+function renderFoodsSection(bm, status) {
+  // ── SAFETY: When value is HIGH, show warning instead of food recommendations ──
+  if (status === 'high') {
+    return `<div class="info-section">
+      <div class="high-value-warning">
+        <h4>⚠️ Dein ${bm.name}-Wert ist zu hoch</h4>
+        <p>Ein zu hoher Wert kann gesundheitliche Risiken bergen. Wir zeigen dir hier bewusst <strong>keine</strong> Lebensmittelquellen an, da eine weitere Zufuhr den Wert verschlimmern könnte.</p>
+        <p class="consult-note">Bitte besprich erhöhte Werte mit deinem Arzt oder deiner Ärztin, um die Ursache abzuklären und ggf. die Ernährung gezielt anzupassen.</p>
+      </div>
+      ${bm.tips?.length?'<div class="tips-section"><h4>💡 Allgemeine Tipps</h4>'+bm.tips.map(t=>'<p class="tip-text">'+t+'</p>').join('')+'</div>':''}
+    </div>`;
+  }
+
+  // ── Dynamic recipe matching by tag ──
+  const matchedRecipes = RECIPES.filter(r => r.tags && r.tags.includes(bm.id)).slice(0, 6);
+  const recipesHtml = matchedRecipes.map((r, idx) => {
+    const ingHtml = r.ingredients.map(i => '<li>' + i + '</li>').join('');
+    const stepsHtml = r.steps.map(s => '<li>' + s + '</li>').join('');
+    return `<div class="recipe-card" data-ridx="${idx}">
+      <div class="recipe-header"><span class="recipe-title">${r.title}</span><span class="recipe-duration">⏱ ${r.duration} · ${r.servings} Port.</span></div>
+      <p class="recipe-highlight">${r.highlight}</p>
+      <span class="recipe-expand-icon">▼ Rezept anzeigen</span>
+      <div class="recipe-body">
+        <h5>Zutaten</h5>
+        <ul class="recipe-ingredients-list">${ingHtml}</ul>
+        <h5>Zubereitung</h5>
+        <ol class="recipe-steps-list">${stepsHtml}</ol>
+      </div>
+    </div>`;
+  }).join('');
+
+  return `<div class="info-section">
+    <h3>🥗 Lebensmittelquellen</h3>
+    <div class="foods-grid">${(bm.foods||[]).map(f=>'<span class="food-tag">'+f+'</span>').join('')}</div>
+    ${status==='low'&&bm.deficiencySymptoms?.length?'<div class="symptoms-box"><h4>⚠️ Typische Mangelsymptome</h4><ul>'+bm.deficiencySymptoms.map(s=>'<li>'+s+'</li>').join('')+'</ul></div>':''}
+    ${bm.tips?.length?'<div class="tips-section"><h4>💡 Tipps</h4>'+bm.tips.map(t=>'<p class="tip-text">'+t+'</p>').join('')+'</div>':''}
+    ${matchedRecipes.length?'<h3 style="margin-top:20px">🍽️ Passende Rezepte ('+matchedRecipes.length+')</h3><div id="recipes-list">'+recipesHtml+'</div>':''}
+  </div>`;
+}
+
+function drawChart(measurements, bm, profile) {
+  const canvas=document.getElementById('trend-chart');
+  if(!canvas||typeof Chart==='undefined') return;
+  if(canvas._ci) canvas._ci.destroy();
+  const r=getRefRange(bm,profile);
+  const labels=measurements.map(m=>fmtDate(m.date));
+  const values=measurements.map(m=>m.value);
+  const pointColors=values.map(v=>getStatusColor(getStatus(v,bm,profile)));
+  const datasets=[{label:bm.name,data:values,borderColor:'#1a7a6e',backgroundColor:'rgba(26,122,110,0.1)',pointBackgroundColor:pointColors,pointRadius:6,pointHoverRadius:8,tension:0.3,fill:true}];
+  if(r.min!=null&&r.max!=null) {
+    datasets.push({label:'Min ('+r.min+' '+bm.unit+')',data:measurements.map(()=>r.min),borderColor:'#43A04788',borderDash:[6,4],borderWidth:1.5,pointRadius:0,fill:false});
+    datasets.push({label:'Max ('+r.max+' '+bm.unit+')',data:measurements.map(()=>r.max),borderColor:'#43A04788',borderDash:[6,4],borderWidth:1.5,pointRadius:0,fill:'-1',backgroundColor:'rgba(67,160,71,0.07)'});
+  }
+  canvas._ci=new Chart(canvas,{type:'line',data:{labels,datasets},options:{responsive:true,plugins:{legend:{display:r.min!=null,position:'bottom',labels:{boxWidth:12,font:{size:11}}},tooltip:{callbacks:{label:ctx=>ctx.parsed.y+' '+bm.unit}}},scales:{y:{title:{display:true,text:bm.unit}}}}});
+}
+
+// ══════════════════════════════════════════════════════════
+// SCREEN: PROFILE
+// ══════════════════════════════════════════════════════════
+function renderProfile(c) {
+  const p=profileRepo.get();
+  c.innerHTML=`<div class="screen profile-screen">
+    <div class="screen-header"><h1 class="screen-title">Profil & Einstellungen</h1></div>
+    <div class="profile-card">
+      <h3>Persönliche Daten</h3>
+      <div class="form-group"><label>Name</label><input type="text" id="p-name" class="form-control" value="${p.name}" placeholder="Dein Name"></div>
+      <div class="form-group"><label>Geschlecht</label>
+        <select id="p-sex" class="form-control">
+          <option value="" ${!p.sex?'selected':''}>Keine Angabe</option>
+          <option value="f" ${p.sex==='f'?'selected':''}>♀ Weiblich</option>
+          <option value="m" ${p.sex==='m'?'selected':''}>♂ Männlich</option>
+        </select></div>
+      <div class="form-group"><label>Altersgruppe</label>
+        <select id="p-age" class="form-control">
+          <option value="" ${!p.ageGroup?'selected':''}>–</option>
+          <option value="18-19" ${p.ageGroup==='18-19'?'selected':''}>18–19 Jahre</option>
+          <option value="19-25" ${p.ageGroup==='19-25'?'selected':''}>19–25 Jahre</option>
+          <option value="25-50" ${p.ageGroup==='25-50'?'selected':''}>25–50 Jahre</option>
+        </select></div>
+      <div class="form-group">
+        <label>Körpergröße (cm)</label>
+        <div class="height-row">
+          <input type="number" id="p-height" class="form-control" value="${p.height||''}" placeholder="z. B. 172" min="100" max="250">
+          <span class="unit-label">cm</span>
+        </div>
+        <p class="bmi-info-note">Wird verwendet, um deinen BMI automatisch zu berechnen.</p>
+      </div>
+      <div class="form-group"><label>Zielgewicht (kg)</label><input type="number" id="p-wg" class="form-control" value="${p.weightGoal||''}" placeholder="z. B. 70"></div>
+      <button class="btn-primary" id="btn-save-p">Speichern</button>
+    </div>
+    <div class="profile-card danger-zone">
+      <h3>Daten</h3>
+      <p class="hint-text">Alle gespeicherten Messwerte löschen – kann nicht rückgängig gemacht werden.</p>
+      <button class="btn-danger" id="btn-clear">Alle Daten löschen</button>
+    </div>
+    <div class="profile-card about-card">
+      <h3>Über VitalMetrics</h3>
+      <p class="disclaimer-text">⚠️ Diese App ist kein Medizinprodukt und ersetzt keine ärztliche Beratung. Referenzwerte nach DGE (D-A-CH 2021/2024).</p>
+      <p class="version-text">Version 1.0.0</p>
+    </div>
+  </div>`;
+
+  c.querySelector('#btn-save-p').addEventListener('click',()=>{
+    profileRepo.save({
+      name:c.querySelector('#p-name').value.trim(),
+      sex:c.querySelector('#p-sex').value,
+      ageGroup:c.querySelector('#p-age').value,
+      height:parseFloat(c.querySelector('#p-height').value)||null,
+      weightGoal:parseFloat(c.querySelector('#p-wg').value)||null
+    });
+    showToast('✅ Profil gespeichert!');
+  });
+  c.querySelector('#btn-clear').addEventListener('click',()=>{
+    if(confirm('Wirklich alle Messwerte löschen?')){measurementRepo.clear();showToast('Daten gelöscht.');navigate('dashboard');}
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// SCREEN: PREMIUM
+// ══════════════════════════════════════════════════════════
+function renderPremium(c) {
+  const isPrem=entitlements.isPremium();
+  c.innerHTML=`<div class="screen premium-screen">
+    <div class="premium-hero">
+      <div class="premium-icon">⭐</div>
+      <h1 class="premium-title">VitalMetrics Premium</h1>
+      <p class="premium-sub">Alle 30 Biomarker. Keine Einschränkungen.</p>
+    </div>
+    ${isPrem
+      ? `<div class="premium-active-card"><p>🎉 Du hast Premium aktiv. Alle Biomarker sind freigeschaltet.</p><button class="btn-secondary" id="btn-deact">Premium deaktivieren (Test)</button></div>`
+      : `<div class="price-card">
+          <div class="price-option"><div class="price-option-left"><div class="price-label">Monatsabo</div><div class="price-sub">Flexibel, jederzeit kündbar</div></div><div class="price-amount">2,45 €<span class="price-period"> / Monat</span></div></div>
+          <div class="price-option selected"><div class="price-option-left"><div class="price-label">Jahresabo <span class="badge-best">Beste Wahl</span></div><div class="price-sub">≈ 1,92 € / Monat – du sparst 37 %</div></div><div class="price-amount">22,99 €<span class="price-period"> / Jahr</span></div></div>
+          <div class="price-option"><div class="price-option-left"><div class="price-label">Lifetime</div><div class="price-sub">Einmalig, für immer – kein Abo</div></div><div class="price-amount">60,00 €</div></div>
+         </div>
+         <button class="btn-primary btn-purchase" id="btn-purch">Premium freischalten</button>
+         <p class="restore-text"><button class="btn-link" id="btn-restore">Kauf wiederherstellen</button></p>`
+    }
+    <div class="features-card"><h3>Was ist enthalten?</h3><div class="feature-list">
+      <div class="feature-item"><span class="feature-check">✅</span><span>Alle 13 Vitamine (A, D, E, K, C, B1–B12)</span></div>
+      <div class="feature-item"><span class="feature-check">✅</span><span>Alle Spurenelemente inkl. Magnesium</span></div>
+      <div class="feature-item"><span class="feature-check">✅</span><span>Laborwerte: Omega-3, Ferritin, Homocystein, TSH</span></div>
+      <div class="feature-item"><span class="feature-check">✅</span><span>Körperwerte: Gewicht, BMI, Taillenumfang</span></div>
+      <div class="feature-item"><span class="feature-check">✅</span><span>Geschlechtsspezifische DGE-Referenzwerte</span></div>
+      <div class="feature-item"><span class="feature-check">✅</span><span>Rezepte bei Mängeln</span></div>
+      <div class="feature-item"><span class="feature-check">✅</span><span>🧪 Heimtest-Hinweise zu jedem Biomarker</span></div>
+    </div></div>
+    <div class="free-card"><h3>Gratis immer verfügbar</h3><div class="feature-list">
+      <div class="feature-item"><span class="feature-check">🆓</span><span>Vitamin D</span></div>
+      <div class="feature-item"><span class="feature-check">🆓</span><span>Vitamin B12</span></div>
+      <div class="feature-item"><span class="feature-check">🆓</span><span>Eisen</span></div>
+      <div class="feature-item"><span class="feature-check">🆓</span><span>Gewicht</span></div>
+    </div></div>
+    <p class="legal-text">Zahlungen werden über den App Store / Google Play abgewickelt. Das Abo verlängert sich automatisch, sofern es nicht mindestens 24 Stunden vor Ende der Laufzeit gekündigt wird.</p>
+  </div>`;
+
+  c.querySelector('#btn-purch')?.addEventListener('click',()=>{entitlements.setPremium(true);showToast('🎉 Premium freigeschaltet! (Demo)');navigate('dashboard');});
+  c.querySelector('#btn-deact')?.addEventListener('click',()=>{entitlements.setPremium(false);showToast('Premium deaktiviert.');navigate('premium');});
+  c.querySelector('#btn-restore')?.addEventListener('click',()=>showToast('In der finalen App: Kauf über App Store.'));
+}
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('.nav-item').forEach(item=>item.addEventListener('click',()=>navigate(item.dataset.screen)));
+  const profile=profileRepo.get();
+  navigate(profile.onboardingDone?'dashboard':'onboarding');
+});
+</script>
+</body>
+</html>
