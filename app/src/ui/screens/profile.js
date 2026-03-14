@@ -2,6 +2,7 @@ import { profileRepo } from '../../infra/db/repositories/profileRepo.js';
 import { measurementRepo } from '../../infra/db/repositories/measurementRepo.js';
 import { navigate } from '../../router.js';
 import { showToast } from '../components/toast.js';
+import { feedbackService } from '../../infra/feedback/feedbackService.js';
 
 export function renderProfile(container) {
   const profile = profileRepo.get();
@@ -43,6 +44,13 @@ export function renderProfile(container) {
         <button class="btn-danger" id="btn-clear-data">Alle Daten löschen</button>
       </div>
 
+      <div class="profile-card feedback-card">
+        <h3>Feedback & Bewertung</h3>
+        <p class="hint-text">Gefällt dir VitalMetrics? Eine Bewertung hilft anderen Nutzern, die App zu finden.</p>
+        <button class="btn-primary" id="btn-rate">⭐ App bewerten</button>
+        <button class="btn-secondary" id="btn-feedback">✉️ Feedback senden</button>
+      </div>
+
       <div class="profile-card about-card">
         <h3>Über VitalMetrics</h3>
         <p>VitalMetrics hilft dir, deine Vitamin- und Mineralstoffwerte im Blick zu behalten.</p>
@@ -68,5 +76,13 @@ export function renderProfile(container) {
       showToast('Alle Daten gelöscht.');
       navigate('dashboard');
     }
+  });
+
+  container.querySelector('#btn-rate').addEventListener('click', () => {
+    feedbackService.requestReview();
+  });
+
+  container.querySelector('#btn-feedback').addEventListener('click', () => {
+    feedbackService.openFeedbackMail();
   });
 }

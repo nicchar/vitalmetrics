@@ -6,6 +6,7 @@ import { entitlements } from '../../domain/entitlements.js';
 import { getRefRangeLabel } from '../../domain/ranges.js';
 import { navigate } from '../../router.js';
 import { showToast } from '../components/toast.js';
+import { feedbackService } from '../../infra/feedback/feedbackService.js';
 
 export function renderEntry(container) {
   const catalog = state.get('catalog');
@@ -81,6 +82,7 @@ export function renderEntry(container) {
     if (!valid) { errorEl.textContent = error; errorEl.style.display = 'block'; return; }
     errorEl.style.display = 'none';
     measurementRepo.add({ biomarkerId: bm.id, value, date, note });
+    feedbackService.trackEntryAdded(); // Zähler für automatische Bewertungsanfrage
     showToast(`✅ ${bm.name} gespeichert!`);
     navigate('trend', bm.id);
   });
