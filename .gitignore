@@ -1,0 +1,40 @@
+# ── Abhängigkeiten ────────────────────────────────────────────────────────────
+node_modules/
+
+# ── Android Build-Artefakte ──────────────────────────────────────────────────
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+android/capacitor-cordova-android-plugins/build/
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# ── Capacitor ────────────────────────────────────────────────────────────────
+# capacitor.config.json NICHT ignorieren – gehört ins Repo
+
+# ── Umgebungs- und Geheimnis-Dateien ─────────────────────────────────────────
+.env
+.env.*
+google-services.json
+# Hinweis: google-services.json nur ins Repo wenn es KEINE API-Keys enthält.
+# Für VitalMetrics ohne Firebase kann die Datei ignoriert werden.
+
+# ── IDE und Betriebssystem ────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Logs und temporäre Dateien ────────────────────────────────────────────────
+*.log
+npm-debug.log*
+.npm/
+
+# ── Cowork (Claude Desktop) ───────────────────────────────────────────────────
+.skills/
+*.skill

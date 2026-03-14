@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">VitalMetrics</string>
+    <string name="title_activity_main">VitalMetrics</string>
+    <string name="package_name">com.yourcompany.vitalmetrics</string>
+    <string name="custom_url_scheme">com.yourcompany.vitalmetrics</string>
+</resources>

@@ -1,0 +1,182 @@
+[
+  {
+    "id": "lachsfilet_spinat",
+    "title": "Lachsfilet auf Spinatbett",
+    "duration": "25 Min.",
+    "servings": 2,
+    "tags": ["vitamin_d", "vitamin_b12", "eisen", "selen"],
+    "ingredients": [
+      "2 Lachsfilets (je 150 g)",
+      "300 g frischer Blattspinat",
+      "2 Knoblauchzehen",
+      "1 EL Olivenöl",
+      "Saft einer Zitrone",
+      "Salz, Pfeffer"
+    ],
+    "steps": [
+      "Lachs mit Zitronensaft, Salz und Pfeffer würzen.",
+      "Lachs in einer Pfanne mit etwas Öl von jeder Seite 3–4 Min. braten.",
+      "Knoblauch hacken, in Öl andünsten, Spinat dazugeben und zusammenfallen lassen.",
+      "Spinat mit Salz und Pfeffer abschmecken.",
+      "Lachs auf dem Spinatbett anrichten und servieren."
+    ],
+    "highlight": "Reich an Vitamin D, B12 und Selen – ideal bei mehreren Mängeln gleichzeitig."
+  },
+  {
+    "id": "linsensuppe_zitrone",
+    "title": "Rote Linsensuppe mit Zitrone",
+    "duration": "30 Min.",
+    "servings": 3,
+    "tags": ["eisen", "vitamin_c", "vitamin_b9", "vitamin_b1"],
+    "ingredients": [
+      "200 g rote Linsen",
+      "1 Zwiebel",
+      "2 Karotten",
+      "1 Dose Tomaten (400 g)",
+      "800 ml Gemüsebrühe",
+      "1 Zitrone (Saft)",
+      "Kreuzkümmel, Kurkuma, Salz, Pfeffer",
+      "1 EL Olivenöl"
+    ],
+    "steps": [
+      "Zwiebel und Karotten würfeln, in Öl andünsten.",
+      "Gewürze kurz mitrösten.",
+      "Linsen, Tomaten und Brühe dazugeben.",
+      "20 Min. köcheln lassen bis Linsen weich sind.",
+      "Mit Zitronensaft abschmecken – das steigert die Eisenaufnahme!"
+    ],
+    "highlight": "Die Kombination aus Eisen (Linsen) + Vitamin C (Zitrone) maximiert die Eisenaufnahme."
+  },
+  {
+    "id": "spinat_omelett",
+    "title": "Spinat-Omelett mit Käse",
+    "duration": "15 Min.",
+    "servings": 1,
+    "tags": ["vitamin_b2", "vitamin_b7", "vitamin_b12", "vitamin_k", "eisen"],
+    "ingredients": [
+      "3 Eier",
+      "100 g frischer Spinat",
+      "30 g geriebener Käse",
+      "1 TL Butter",
+      "Salz, Pfeffer, Muskat"
+    ],
+    "steps": [
+      "Eier verquirlen, mit Salz und Pfeffer würzen.",
+      "Butter in Pfanne schmelzen, Spinat kurz andünsten.",
+      "Ei-Masse darüber gießen.",
+      "Käse auf einer Hälfte verteilen, Omelett zusammenklappen.",
+      "2 Min. stocken lassen und servieren."
+    ],
+    "highlight": "Schnelles Powerfrühstück mit Biotin, B12, Eisen und Vitamin K."
+  },
+  {
+    "id": "karotten_ingwer_suppe",
+    "title": "Karotten-Ingwer-Suppe",
+    "duration": "25 Min.",
+    "servings": 2,
+    "tags": ["vitamin_a", "vitamin_c"],
+    "ingredients": [
+      "500 g Karotten",
+      "1 Stück Ingwer (2 cm)",
+      "1 Orange (Saft)",
+      "500 ml Gemüsebrühe",
+      "1 EL Kokosöl",
+      "Salz, Pfeffer"
+    ],
+    "steps": [
+      "Karotten schälen und grob würfeln.",
+      "Ingwer reiben, mit Karotten in Kokosöl andünsten.",
+      "Brühe dazugeben, 15 Min. kochen.",
+      "Pürieren, Orangensaft untermischen.",
+      "Mit Salz und Pfeffer abschmecken."
+    ],
+    "highlight": "Beta-Carotin aus Karotten + Fett (Kokosöl) = optimale Vitamin-A-Aufnahme."
+  },
+  {
+    "id": "vollkorn_bowl",
+    "title": "Vollkorn-Power-Bowl",
+    "duration": "20 Min.",
+    "servings": 1,
+    "tags": ["vitamin_b1", "vitamin_b3", "eisen", "zink", "mangan"],
+    "ingredients": [
+      "80 g Quinoa oder Vollkorn-Bulgur",
+      "1 Handvoll Kichererbsen (aus Dose)",
+      "1 Avocado",
+      "Handvoll Rucola",
+      "Kürbiskerne",
+      "Olivenöl, Zitronensaft, Salz"
+    ],
+    "steps": [
+      "Quinoa nach Packungsanweisung kochen.",
+      "Kichererbsen abtropfen und würzen.",
+      "Avocado würfeln.",
+      "Alles in einer Schüssel anrichten.",
+      "Mit Olivenöl und Zitronensaft beträufeln, Kürbiskerne darüber streuen."
+    ],
+    "highlight": "Vollgepackt mit B-Vitaminen, Eisen und Zink – perfekt als Mittagessen."
+  },
+  {
+    "id": "paranuss_smoothie",
+    "title": "Selen-Booster-Smoothie",
+    "duration": "5 Min.",
+    "servings": 1,
+    "tags": ["selen", "vitamin_c", "vitamin_e"],
+    "ingredients": [
+      "2–3 Paranüsse",
+      "1 Banane",
+      "150 g gefrorene Erdbeeren",
+      "200 ml Hafermilch",
+      "1 TL Mandelmus"
+    ],
+    "steps": [
+      "Alle Zutaten in den Mixer geben.",
+      "Cremig mixen.",
+      "Sofort trinken."
+    ],
+    "highlight": "Nur 2–3 Paranüsse decken den Tagesbedarf an Selen vollständig."
+  },
+  {
+    "id": "brokkoli_lachs_pfanne",
+    "title": "Brokkoli-Lachs-Pfanne",
+    "duration": "20 Min.",
+    "servings": 2,
+    "tags": ["vitamin_d", "vitamin_k", "vitamin_c", "selen", "jod"],
+    "ingredients": [
+      "2 Lachsfilets",
+      "1 Brokkoli (in Röschen)",
+      "2 Knoblauchzehen",
+      "1 EL Sojasoße",
+      "1 TL Sesam",
+      "Olivenöl"
+    ],
+    "steps": [
+      "Lachs in Stücke schneiden, kurz anbraten.",
+      "Brokkoli in der Pfanne mit Knoblauch 5 Min. dünsten.",
+      "Lachs wieder dazugeben.",
+      "Mit Sojasoße ablöschen.",
+      "Mit Sesam bestreuen und servieren."
+    ],
+    "highlight": "Kombination aus Vitamin D, K und Selen – ideal für Knochen und Immunsystem."
+  },
+  {
+    "id": "erdbeeren_joghurt_bowl",
+    "title": "Erdbeer-Joghurt-Bowl",
+    "duration": "5 Min.",
+    "servings": 1,
+    "tags": ["vitamin_c", "vitamin_b2", "vitamin_b7", "jod"],
+    "ingredients": [
+      "200 g Naturjoghurt",
+      "200 g Erdbeeren",
+      "2 EL Haferflocken",
+      "1 EL Honig",
+      "Handvoll Nüsse"
+    ],
+    "steps": [
+      "Joghurt in eine Schüssel geben.",
+      "Erdbeeren waschen und halbieren.",
+      "Alle Zutaten obenauf anrichten.",
+      "Mit Honig beträufeln."
+    ],
+    "highlight": "Schnelles Frühstück mit Vitamin C, B2 und Biotin für Haut und Energie."
+  }
+]
