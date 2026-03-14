@@ -1,4 +1,4 @@
-package com.yourcompany.vitalmetrics;
+package com.vitalmetrics.app;
 
 import com.getcapacitor.BridgeActivity;
 
