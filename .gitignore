@@ -19,6 +19,7 @@ android/capacitor-cordova-android-plugins/build/
 .env
 .env.*
 google-services.json
+keystore-base64.txt
 # Hinweis: google-services.json nur ins Repo wenn es KEINE API-Keys enthält.
 # Für VitalMetrics ohne Firebase kann die Datei ignoriert werden.
 
