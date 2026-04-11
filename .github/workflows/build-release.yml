@@ -52,9 +52,20 @@ jobs:
             -Pandroid.injected.signing.key.alias=vitalmetrics \
             -Pandroid.injected.signing.key.password=${{ secrets.KEY_PASSWORD }}
 
+      - name: Build Debug APK (zum Testen)
+        working-directory: android
+        run: ./gradlew assembleDebug
+
       - name: Upload AAB artifact
         uses: actions/upload-artifact@v4
         with:
           name: vitalmetrics-release-aab
           path: android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+      - name: Upload Debug APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitalmetrics-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
