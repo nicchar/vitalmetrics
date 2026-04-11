@@ -140,20 +140,87 @@ ul { list-style: none; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  padding: 8px;
+  gap: 2px;
+  padding: 6px 2px;
   color: var(--text-hint);
   transition: color 0.2s;
 }
 .nav-item.active { color: var(--primary); }
 .nav-item.active .nav-icon-wrap {
   background: var(--primary-light);
-  border-radius: 12px;
-  padding: 4px 14px;
+  border-radius: 10px;
+  padding: 3px 8px;
 }
-.nav-icon-wrap { padding: 4px 14px; transition: background 0.2s; }
-.nav-icon { font-size: 20px; display: block; }
-.nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.2px; }
+.nav-icon-wrap { padding: 3px 8px; transition: background 0.2s; }
+.nav-icon { font-size: 18px; display: block; }
+.nav-label { font-size: 9px; font-weight: 600; letter-spacing: 0.2px; }
+
+/* ── Activity Screen ── */
+.activity-screen { padding-bottom: 32px; }
+.activity-hero { background: linear-gradient(135deg, var(--primary), #1a7a6e); color: #fff; border-radius: var(--radius); padding: 20px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+.activity-hero-left h2 { font-size: 14px; font-weight: 600; opacity: 0.85; margin-bottom: 4px; }
+.activity-hero-left .cal-big { font-size: 36px; font-weight: 800; }
+.activity-hero-left .cal-unit { font-size: 13px; opacity: 0.8; }
+.activity-hero-right { text-align: right; }
+.activity-hero-right .steps-num { font-size: 26px; font-weight: 800; }
+.activity-hero-right .steps-label { font-size: 12px; opacity: 0.8; }
+.activity-section { background: var(--surface); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow-sm); }
+.activity-section h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+.steps-input-row { display: flex; gap: 10px; align-items: center; }
+.steps-input-row input { flex: 1; padding: 12px; border: 2px solid var(--border); border-radius: 10px; font-size: 18px; font-weight: 700; text-align: center; }
+.steps-input-row input:focus { border-color: var(--primary); outline: none; }
+.sport-picker-row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.sport-select { flex: 1; min-width: 140px; padding: 10px; border: 2px solid var(--border); border-radius: 10px; font-size: 14px; }
+.sport-select:focus { border-color: var(--primary); outline: none; }
+.minutes-input { width: 80px; padding: 10px; border: 2px solid var(--border); border-radius: 10px; font-size: 14px; text-align: center; }
+.minutes-input:focus { border-color: var(--primary); outline: none; }
+.activity-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.activity-item { display: flex; align-items: center; justify-content: space-between; background: var(--bg); border-radius: 10px; padding: 10px 14px; }
+.activity-item-left { display: flex; align-items: center; gap: 10px; }
+.activity-item-emoji { font-size: 22px; }
+.activity-item-name { font-size: 14px; font-weight: 600; }
+.activity-item-time { font-size: 12px; color: var(--text-secondary); }
+.activity-item-cal { font-size: 14px; font-weight: 700; color: var(--primary); }
+.activity-item-del { font-size: 16px; color: var(--text-hint); padding: 4px 8px; cursor: pointer; }
+.week-chart { display: flex; align-items: flex-end; gap: 6px; height: 80px; margin-top: 12px; }
+.week-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+.week-bar { width: 100%; background: var(--primary-light); border-radius: 6px 6px 0 0; transition: height 0.4s ease; min-height: 3px; }
+.week-bar.today { background: var(--primary); }
+.week-bar-label { font-size: 10px; color: var(--text-hint); font-weight: 600; }
+
+/* ── Cycle Screen ── */
+.cycle-screen { padding-bottom: 32px; }
+.cycle-phase-card { border-radius: var(--radius); padding: 20px; margin-bottom: 16px; color: #fff; }
+.cycle-phase-card.menstruation { background: linear-gradient(135deg, #c62828, #e53935); }
+.cycle-phase-card.follicular { background: linear-gradient(135deg, #f57f17, #fb8c00); }
+.cycle-phase-card.ovulation { background: linear-gradient(135deg, #2e7d32, #43a047); }
+.cycle-phase-card.luteal { background: linear-gradient(135deg, #4527a0, #7b1fa2); }
+.cycle-phase-card.unknown { background: linear-gradient(135deg, #455a64, #607d8b); }
+.cycle-phase-label { font-size: 12px; font-weight: 700; opacity: 0.85; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.cycle-phase-name { font-size: 24px; font-weight: 800; margin-bottom: 4px; }
+.cycle-phase-day { font-size: 13px; opacity: 0.85; margin-bottom: 12px; }
+.cycle-phase-tip { font-size: 13px; opacity: 0.9; line-height: 1.5; background: rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 12px; }
+.cycle-section { background: var(--surface); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow-sm); }
+.cycle-section h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+.cycle-calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 8px; }
+.cycle-day { aspect-ratio: 1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; cursor: pointer; }
+.cycle-day.menstruation { background: #ffcdd2; color: #c62828; }
+.cycle-day.follicular { background: #fff3e0; color: #f57f17; }
+.cycle-day.ovulation { background: #e8f5e9; color: #2e7d32; }
+.cycle-day.luteal { background: #ede7f6; color: #4527a0; }
+.cycle-day.today { outline: 2px solid var(--primary); outline-offset: 1px; }
+.cycle-day.other-month { opacity: 0.3; }
+.cycle-cal-header { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px; }
+.cycle-cal-header span { text-align: center; font-size: 10px; font-weight: 700; color: var(--text-hint); }
+.cycle-stats-row { display: flex; gap: 10px; }
+.cycle-stat { flex: 1; background: var(--bg); border-radius: 10px; padding: 12px; text-align: center; }
+.cycle-stat-num { font-size: 22px; font-weight: 800; color: var(--primary); }
+.cycle-stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+.cycle-nutrient-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.cycle-nutrient-item { display: flex; align-items: center; gap: 10px; background: var(--bg); border-radius: 8px; padding: 10px 12px; }
+.cycle-nutrient-emoji { font-size: 20px; }
+.cycle-nutrient-name { font-size: 13px; font-weight: 700; }
+.cycle-nutrient-why { font-size: 12px; color: var(--text-secondary); }
 
 /* ── Forms ── */
 .form-group { margin-bottom: 16px; }
@@ -225,6 +292,27 @@ ul { list-style: none; }
   font-size: 15px;
   font-weight: 600;
   text-align: center;
+}
+
+/* ── Reminder Card ── */
+.reminder-time-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.reminder-time-input {
+  flex: 1;
+  max-width: 140px;
+}
+.btn-save-reminder {
+  flex-shrink: 0;
+  padding: 10px 18px;
+  font-size: 14px;
+}
+.reminder-note {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-hint);
 }
 
 /* ── Entry Screen ── */
@@ -466,6 +554,163 @@ ul { list-style: none; }
 .btn-onboarding-done:disabled { background: #BDBDBD; }
 .onboarding-disclaimer { font-size: 11px; color: var(--text-hint); margin-top: 12px; text-align: center; }
 
+/* ══════════════════════════════════════════════════════════
+   HEALTH TOOLS — Fasten / Tagesgang / Heißhunger
+   ══════════════════════════════════════════════════════════ */
+
+/* Hub */
+.tools-hub { padding-bottom: 24px; }
+.tools-hub-header { padding: 20px 16px 8px; }
+.tools-hub-title { font-size: 22px; font-weight: 800; color: var(--text); }
+.tools-hub-sub { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+.tool-card {
+  background: var(--surface); border-radius: var(--radius);
+  margin: 0 0 14px; padding: 18px 16px;
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer; border: 1.5px solid var(--border);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.tool-card:hover { border-color: var(--primary); box-shadow: 0 2px 12px rgba(67,160,71,0.1); }
+.tool-card-icon { font-size: 32px; flex-shrink: 0; }
+.tool-card-body { flex: 1; }
+.tool-card-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.tool-card-desc { font-size: 13px; color: var(--text-secondary); margin-top: 3px; line-height: 1.4; }
+.tool-card-meta { font-size: 12px; color: var(--primary); font-weight: 600; margin-top: 4px; }
+.tool-card-arrow { color: var(--text-hint); font-size: 18px; }
+
+/* Fasten Screen */
+.fasting-screen { padding-bottom: 32px; }
+.fasting-header { text-align: center; padding: 24px 16px 16px; }
+.fasting-title { font-size: 20px; font-weight: 800; }
+.fasting-protocol-row { display: flex; gap: 8px; padding: 0 16px 16px; }
+.fasting-proto-btn {
+  flex: 1; padding: 10px 6px; border-radius: 12px;
+  border: 2px solid var(--border); font-size: 13px; font-weight: 700;
+  color: var(--text-secondary); background: var(--surface);
+  cursor: pointer; text-align: center; transition: all 0.15s;
+}
+.fasting-proto-btn.active {
+  border-color: var(--primary); color: var(--primary);
+  background: var(--primary-light);
+}
+.fasting-proto-label { font-size: 11px; font-weight: 400; margin-top: 2px; color: var(--text-hint); }
+.fasting-timer-card {
+  margin: 0 16px 16px; background: linear-gradient(135deg, var(--primary) 0%, #2e7d32 100%);
+  border-radius: 20px; padding: 28px 20px; text-align: center; color: #fff;
+}
+.fasting-status-label { font-size: 13px; opacity: 0.85; margin-bottom: 8px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+.fasting-clock { font-size: 52px; font-weight: 800; letter-spacing: 2px; font-variant-numeric: tabular-nums; }
+.fasting-progress-wrap { margin: 12px 0; background: rgba(255,255,255,0.2); border-radius: 8px; height: 8px; overflow: hidden; }
+.fasting-progress-bar { height: 100%; background: #fff; border-radius: 8px; transition: width 1s linear; }
+.fasting-progress-text { font-size: 12px; opacity: 0.85; margin-top: 6px; }
+.fasting-stage { font-size: 13px; margin-top: 10px; background: rgba(255,255,255,0.15); border-radius: 10px; padding: 8px 14px; }
+.btn-fasting-toggle {
+  display: block; width: calc(100% - 32px); margin: 0 16px 16px;
+  padding: 15px; border-radius: 16px; font-size: 16px; font-weight: 700;
+  background: var(--primary); color: #fff; cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-fasting-toggle.active { background: #e53935; }
+.fasting-stages-list { margin: 0 16px 16px; }
+.fasting-stage-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 14px; border-radius: 12px; margin-bottom: 8px;
+  background: var(--surface); border: 1.5px solid var(--border);
+}
+.fasting-stage-item.reached { border-color: var(--primary); background: var(--primary-light); }
+.fasting-stage-h { font-size: 11px; font-weight: 700; color: var(--primary); min-width: 32px; }
+.fasting-stage-name { font-size: 13px; font-weight: 700; }
+.fasting-stage-desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.fasting-streak { margin: 0 16px 16px; background: var(--surface); border-radius: var(--radius); padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+.fasting-streak-num { font-size: 32px; font-weight: 800; color: var(--primary); }
+.fasting-streak-label { font-size: 13px; color: var(--text-secondary); }
+.fasting-history { margin: 0 16px; }
+.fasting-history-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.fasting-history-row:last-child { border-bottom: none; }
+
+/* Blutzucker Tagesgang */
+.glucose-day-screen { padding-bottom: 32px; }
+.glucose-day-header { padding: 20px 16px 8px; }
+.glucose-day-title { font-size: 20px; font-weight: 800; }
+.glucose-date-nav { display: flex; align-items: center; justify-content: space-between; padding: 0 16px 12px; }
+.glucose-date-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 6px 14px; font-size: 14px; cursor: pointer; }
+.glucose-date-label { font-size: 15px; font-weight: 700; color: var(--text); }
+.glucose-slots { margin: 0 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+.glucose-slot {
+  background: var(--surface); border-radius: 14px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px; border: 1.5px solid var(--border);
+}
+.glucose-slot.has-value { border-color: var(--primary); }
+.glucose-slot-icon { font-size: 24px; flex-shrink: 0; }
+.glucose-slot-info { flex: 1; }
+.glucose-slot-label { font-size: 13px; font-weight: 700; }
+.glucose-slot-hint { font-size: 11px; color: var(--text-hint); margin-top: 2px; }
+.glucose-slot-input { width: 72px; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 15px; font-weight: 700; text-align: center; }
+.glucose-slot-unit { font-size: 11px; color: var(--text-hint); margin-left: 4px; }
+.glucose-chart-card { margin: 0 16px 16px; background: var(--surface); border-radius: var(--radius); padding: 16px; }
+.glucose-chart-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+.glucose-status-card {
+  margin: 0 16px 16px; border-radius: var(--radius); padding: 14px 16px;
+  border-left: 4px solid var(--border);
+}
+.glucose-status-card.normal { background: #f1f8f2; border-color: var(--ok); }
+.glucose-status-card.warning { background: #fff8e1; border-color: #ffc107; }
+.glucose-status-card.alert { background: #fff3f3; border-color: var(--low); }
+.glucose-status-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.glucose-status-text { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+.glucose-info-box { margin: 0 16px 16px; background: #f8fbff; border: 1px solid #d0e8ff; border-radius: var(--radius); padding: 14px 16px; font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+/* Heißhunger Journal */
+.cravings-screen { padding-bottom: 32px; }
+.cravings-header { padding: 20px 16px 8px; display: flex; align-items: center; justify-content: space-between; }
+.cravings-title { font-size: 20px; font-weight: 800; }
+.btn-add-craving { background: var(--primary); color: #fff; border-radius: 12px; padding: 8px 16px; font-size: 14px; font-weight: 700; cursor: pointer; }
+.craving-pattern-card { margin: 0 16px 16px; background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: var(--radius); padding: 16px; border: 1px solid #ffcc80; }
+.craving-pattern-title { font-size: 14px; font-weight: 700; color: #e65100; margin-bottom: 8px; }
+.craving-pattern-stat { font-size: 13px; color: #bf360c; margin-bottom: 4px; }
+.craving-form-card { margin: 0 16px 16px; background: var(--surface); border-radius: var(--radius); padding: 16px; border: 1.5px solid var(--primary); display: none; }
+.craving-form-card.open { display: block; }
+.craving-form-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; }
+.craving-form-row { margin-bottom: 14px; }
+.craving-form-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+.craving-what-input { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 15px; }
+.craving-hunger-row { display: flex; gap: 8px; }
+.craving-hunger-btn {
+  flex: 1; padding: 8px 4px; border-radius: 10px; border: 1.5px solid var(--border);
+  font-size: 18px; cursor: pointer; text-align: center; transition: all 0.15s;
+}
+.craving-hunger-btn.active { border-color: var(--primary); background: var(--primary-light); }
+.craving-mood-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.craving-mood-btn {
+  padding: 8px 12px; border-radius: 20px; border: 1.5px solid var(--border);
+  font-size: 13px; cursor: pointer; transition: all 0.15s; background: var(--surface);
+}
+.craving-mood-btn.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); font-weight: 700; }
+.craving-trigger-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.craving-trigger-btn {
+  padding: 8px 12px; border-radius: 20px; border: 1.5px solid var(--border);
+  font-size: 13px; cursor: pointer; transition: all 0.15s; background: var(--surface);
+}
+.craving-trigger-btn.active { border-color: #e65100; background: #fff3e0; color: #e65100; font-weight: 700; }
+.craving-note-input { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; resize: none; height: 70px; }
+.btn-save-craving { width: 100%; padding: 13px; background: var(--primary); color: #fff; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 6px; }
+.craving-list { margin: 0 16px; }
+.craving-list-header { font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+.craving-item {
+  background: var(--surface); border-radius: 14px; padding: 14px; margin-bottom: 10px;
+  border: 1px solid var(--border); position: relative;
+}
+.craving-item-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.craving-item-what { font-size: 15px; font-weight: 700; }
+.craving-item-time { font-size: 12px; color: var(--text-hint); }
+.craving-item-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.craving-tag { font-size: 11px; padding: 3px 8px; border-radius: 10px; background: var(--bg); color: var(--text-secondary); }
+.craving-tag.mood { background: #f3e5f5; color: #7b1fa2; }
+.craving-tag.trigger { background: #fff3e0; color: #e65100; }
+.craving-tag.hunger { background: #e8f5e9; color: #2e7d32; }
+.craving-empty { text-align: center; padding: 32px 16px; color: var(--text-hint); font-size: 14px; }
+.btn-delete-craving { position: absolute; top: 10px; right: 10px; background: none; color: var(--text-hint); font-size: 16px; cursor: pointer; }
+
 /* ── Premium Screen ── */
 .premium-screen { padding-bottom: 32px; }
 .premium-hero { text-align: center; padding: 32px 16px 24px; }
@@ -693,6 +938,124 @@ ul { list-style: none; }
 .legal-link:hover { text-decoration: underline; }
 .legal-sep { color: var(--text-hint); font-size: 13px; }
 
+/* ── Biomarker Bildungskarte (alle Biomarker) ── */
+.bm-edu-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1.5px solid var(--border);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.bm-edu-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; cursor: pointer; user-select: none;
+}
+.bm-edu-icon { font-size: 24px; flex-shrink: 0; }
+.bm-edu-title { font-size: 14px; font-weight: 700; color: var(--text); }
+.bm-edu-subtitle { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.bm-edu-arrow { margin-left: auto; color: var(--text-hint); font-size: 13px; flex-shrink: 0; }
+.bm-edu-body {
+  display: none; padding: 0 16px 16px;
+  border-top: 1px solid var(--border);
+}
+.bm-edu-card.open .bm-edu-body { display: block; }
+.edu-section { margin-top: 14px; }
+.edu-section-title { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+.edu-description { font-size: 14px; color: var(--text); line-height: 1.65; margin: 0; }
+.edu-function { font-size: 13px; color: var(--text-secondary); line-height: 1.55; margin: 0; }
+.edu-lifestyle-list {
+  margin: 0; padding-left: 0; list-style: none;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.edu-lifestyle-list li {
+  font-size: 13px; color: var(--text-secondary); line-height: 1.55;
+  padding: 10px 12px; background: #f7faf7;
+  border-radius: 10px; border-left: 3px solid var(--primary);
+}
+.edu-disclaimer {
+  font-size: 11px; color: var(--text-hint); margin-top: 14px;
+  padding-top: 10px; border-top: 1px solid var(--border); font-style: italic;
+}
+
+/* ── Darm & Mikrobiom Erklärkarte ── */
+.gut-edu-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1.5px solid #e8f5e9;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.gut-edu-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  user-select: none;
+}
+.gut-edu-emoji { font-size: 26px; flex-shrink: 0; }
+.gut-edu-title { font-size: 14px; font-weight: 700; color: var(--text); }
+.gut-edu-subtitle { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.gut-edu-arrow { margin-left: auto; color: var(--text-hint); font-size: 13px; flex-shrink: 0; transition: transform 0.2s; }
+.gut-edu-body { display: none; padding: 0 16px 16px; border-top: 1px solid var(--border); }
+.gut-edu-card.open .gut-edu-body { display: block; }
+.gut-edu-section { margin-top: 16px; }
+.gut-edu-section-title { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+.gut-edu-text { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0; }
+.gut-edu-disclaimer { font-size: 11px; color: var(--text-hint); margin-top: 10px; font-style: italic; border-top: 1px solid var(--border); padding-top: 8px; }
+.gut-rebuild-steps { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.gut-rebuild-step { display: flex; gap: 10px; align-items: flex-start; }
+.gut-rebuild-num {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--primary); color: #fff;
+  font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.gut-rebuild-step div { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+
+/* ── Spezialisierte Testlinks ── */
+.gut-tests-section {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1.5px solid #e3f2fd;
+}
+.gut-tests-section h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; color: var(--text); }
+.gut-tests-intro { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5; }
+.gut-tests-list { display: flex; flex-direction: column; gap: 8px; }
+.gut-test-card {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: #f8fbff;
+  border: 1px solid #d0e8ff;
+  border-radius: 10px;
+  padding: 12px 14px;
+  text-decoration: none;
+  color: var(--text);
+  transition: background 0.15s;
+}
+.gut-test-card:hover { background: #eaf4ff; }
+.gut-test-label { font-size: 13px; font-weight: 600; flex: 1; }
+.gut-test-note { font-size: 12px; color: var(--text-secondary); flex: 2; line-height: 1.4; }
+.gut-test-arrow { color: var(--primary); font-size: 16px; align-self: center; flex-shrink: 0; }
+.gut-tests-disclaimer { font-size: 11px; color: var(--text-hint); margin-top: 8px; font-style: italic; }
+
+/* ── Transparenz-Karte im Profil ── */
+.transp-card { }
+.transp-section { margin-bottom: 18px; }
+.transp-section:last-child { margin-bottom: 0; }
+.transp-section-title { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+.transp-section-title .transp-icon { font-size: 16px; }
+.transp-text { font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; margin: 0; }
+.transp-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.transp-chip { background: #f0f9f8; border: 1px solid #b2dfdb; border-radius: 20px; padding: 4px 10px; font-size: 11.5px; font-weight: 600; color: #1a7a6e; }
+.transp-privacy-box { display: flex; align-items: flex-start; gap: 10px; background: linear-gradient(135deg, #E8F5E9, #F9FBE7); border: 1px solid #A5D6A7; border-radius: 10px; padding: 12px; margin-top: 6px; }
+.transp-privacy-icon { font-size: 22px; flex-shrink: 0; line-height: 1.2; }
+.transp-privacy-text { font-size: 12px; color: #2E7D32; line-height: 1.55; }
+.transp-privacy-text strong { display: block; font-size: 13px; margin-bottom: 3px; color: #1B5E20; }
+.transp-divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
 /* ── HIGH Value Caution Box ── */
 .high-value-warning {
   background: #FFF3E0; border-left: 4px solid #FB8C00;
@@ -751,6 +1114,15 @@ ul { list-style: none; }
     <button class="nav-item" data-screen="trend">
       <span class="nav-icon-wrap"><span class="nav-icon">📈</span></span><span class="nav-label">Verlauf</span>
     </button>
+    <button class="nav-item" data-screen="activity">
+      <span class="nav-icon-wrap"><span class="nav-icon">🏃</span></span><span class="nav-label">Bewegung</span>
+    </button>
+    <button class="nav-item nav-cycle" data-screen="cycle" style="display:none">
+      <span class="nav-icon-wrap"><span class="nav-icon">🌙</span></span><span class="nav-label">Zyklus</span>
+    </button>
+    <button class="nav-item" data-screen="tools">
+      <span class="nav-icon-wrap"><span class="nav-icon">⚡</span></span><span class="nav-label">Tools</span>
+    </button>
     <button class="nav-item" data-screen="profile">
       <span class="nav-icon-wrap"><span class="nav-icon">👤</span></span><span class="nav-label">Profil</span>
     </button>
@@ -767,7 +1139,9 @@ const CATALOG = {
     "water_soluble": "Wasserlösliche Vitamine",
     "trace_elements": "Spurenelemente",
     "lab_values": "Laborwerte",
-    "body": "Körpermesswerte"
+    "body": "Körpermesswerte",
+    "gut": "🦠 Darm & Mikrobiom",
+    "cognitive": "🧠 Kognitive Gesundheit"
   },
   "biomarkers": [
     {
@@ -1335,6 +1709,134 @@ const CATALOG = {
       "deficiencySymptoms": ["Extreme Erschöpfung (Burnout)", "Hypoglykämie", "Niedriger Blutdruck", "Salzgelüste", "Immunschwäche"],
       "highSymptoms": ["Chronischer Stress", "Schlafstörungen", "Gewichtszunahme (Bauchfett)", "Beschleunigtes Altern", "Gedächtnisprobleme"],
       "tips": ["Morgens (7–9 Uhr) messen – dann ist Cortisol natürlicherweise am höchsten.", "Chronischer Stress ist der stärkste Treiber hoher Cortisol-Werte.", "Meditationsbasierte Techniken (Atemübungen, MBSR) senken Cortisol nachweislich.", "Schlafmangel erhöht Cortisol – 7–9h Schlaf ist entscheidend.", "Adaptogene wie Ashwagandha können chronisch hohe Werte reduzieren."]
+    },
+    {
+      "id": "gut_diversity",
+      "name": "Mikrobiom-Diversität (Shannon-Index)",
+      "category": "gut",
+      "unit": "Index",
+      "refMin": 3.0, "refMax": 5.0,
+      "premium": true,
+      "selfTestAvailable": true,
+      "selfTestNote": "Mikrobiom-Tests wie Viome, Thryve oder myBioma liefern einen Diversitäts-Index per Post.",
+      "description": "Die Diversität des Darmmikrobioms ist ein zentraler Marker für Darmgesundheit. Ein höherer Shannon-Index steht für mehr verschiedene Bakterienarten – was mit besserer Immunfunktion, niedrigerem Entzündungsrisiko und stabilerem Stoffwechsel assoziiert ist.",
+      "function": "Immunregulation, Verdauung, Entzündungsschutz, Stimmung (Darm-Hirn-Achse)",
+      "referenceRange": { "min": 3.0, "max": 5.0 },
+      "foods": ["Joghurt (Naturjoghurt)", "Kefir", "Sauerkraut", "Kimchi", "Miso", "Tempeh", "Kombucha", "Artischocken", "Chicorée", "Zwiebeln"],
+      "deficiencySymptoms": ["Häufige Infekte", "Blähungen & Verdauungsprobleme", "Stimmungsschwankungen", "Erhöhte Entzündungsmarker", "Nahrungsmittelunverträglichkeiten"],
+      "tips": ["Fermentierte Lebensmittel täglich essen (Joghurt, Kefir, Sauerkraut).", "30 verschiedene Pflanzensorten pro Woche – auch Kräuter und Gewürze zählen.", "Präbiotika (Inulin, FOS) aus Chicorée, Zwiebeln und Artischocken füttern Darmbakterien.", "Antibiotika nur bei echter Indikation – zerstören Diversität nachhaltig.", "Bewegung (besonders Ausdauer) erhöht die Mikrobiom-Diversität nachweislich."]
+    },
+    {
+      "id": "scfa",
+      "name": "Kurzkettige Fettsäuren (SCFA)",
+      "category": "gut",
+      "unit": "mmol/kg",
+      "refMin": 60, "refMax": 200,
+      "premium": true,
+      "selfTestAvailable": true,
+      "selfTestNote": "SCFA-Tests per Stuhlprobe sind über spezialisierte Labore erhältlich (z.B. myBioma, Medivere).",
+      "description": "Kurzkettige Fettsäuren (Butyrat, Propionat, Acetat) entstehen durch Fermentation von Ballaststoffen durch Darmbakterien. Sie sind der Hauptbrennstoff der Darmschleimhaut, schützen vor Leaky Gut und wirken entzündungshemmend.",
+      "function": "Darmschutzschicht, Entzündungshemmung, Immuntraining, Energieversorgung Dickdarm",
+      "referenceRange": { "min": 60, "max": 200 },
+      "foods": ["Hafer", "Hülsenfrüchte", "Topinambur", "Kartoffeln (gekühlt)", "Bananen (unreif)", "Roggenbrот", "Leinsamen", "Gerste", "resistente Stärke"],
+      "deficiencySymptoms": ["Löchriger Darm (Leaky Gut)", "Chronische Darmentzündung", "Schlechte Nährstoffaufnahme", "Erhöhter hsCRP"],
+      "tips": ["30 g Ballaststoffe täglich sind die Basis für SCFA-Produktion.", "Resistente Stärke (abgekühlter Reis/Kartoffeln) ist besonders SCFA-fördernd.", "Roggenbrot liefert mehr fermentierbare Fasern als Weizenbrot.", "Hülsenfrüchte 3–4× pro Woche einplanen.", "Langsames Einführen von Ballaststoffen verhindert Blähungen."]
+    },
+    {
+      "id": "zonulin",
+      "name": "Zonulin (Leaky Gut Marker)",
+      "category": "gut",
+      "unit": "ng/mL",
+      "lowerIsBetter": true,
+      "refMin": 0, "refMax": 40,
+      "premium": true,
+      "selfTestAvailable": true,
+      "selfTestNote": "Zonulin-Tests sind als Blut- oder Stuhltest über Labore wie Imupro oder Medivere erhältlich.",
+      "description": "Zonulin reguliert die Durchlässigkeit der Darmschleimhaut. Erhöhte Werte zeigen einen 'löchrigen Darm' (Leaky Gut) an – Bakterienbestandteile können in den Blutkreislauf gelangen und systemische Entzündungen auslösen.",
+      "function": "Regulation der Darmschranke, Schutz vor Endotoxämie",
+      "referenceRange": { "min": 0, "max": 40 },
+      "foods": ["Knochenbrühe", "Collagen", "Sauerkraut", "Kefir", "Ingwer", "Kurkuma", "Zink-reiche Lebensmittel", "L-Glutamin (aus Fleisch)", "Blaubeeren"],
+      "highSymptoms": ["Systemische Entzündung", "Nahrungsmittelunverträglichkeiten", "Autoimmunreaktionen", "Hautprobleme (Akne, Ekzem)", "Gehirnnebel (Brain Fog)"],
+      "tips": ["Gluten und Milchprodukte kurzfristig reduzieren, um Zonulin zu senken.", "L-Glutamin (aus Ernährung) repariert die Darmschleimhaut.", "Knochenbrühe enthält Kollagen und Gelatine – regenerieren den Darm.", "Chronischer Stress erhöht Zonulin – Stressmanagement ist entscheidend.", "Probiotika (Lactobacillus rhamnosus) senken nachweislich Zonulin."]
+    },
+    {
+      "id": "calprotectin",
+      "name": "Calprotectin (Darmentzündung)",
+      "category": "gut",
+      "unit": "µg/g",
+      "lowerIsBetter": true,
+      "refMin": 0, "refMax": 50,
+      "premium": true,
+      "selfTestAvailable": true,
+      "selfTestNote": "Calprotectin ist ein Stuhltest – in Laboren und teilweise in Apotheken erhältlich. Wichtig: Arzt konsultieren bei erhöhten Werten.",
+      "description": "Calprotectin ist ein Entzündungsmarker im Stuhl. Erhöhte Werte können auf chronisch entzündliche Darmerkrankungen (Morbus Crohn, Colitis ulcerosa) oder andere Entzündungsprozesse im Darm hinweisen. Der Test ist nicht-invasiv und einfach durchzuführen.",
+      "function": "Nachweis von Darmentzündungen, Differenzierung zwischen organischen und funktionellen Darmerkrankungen",
+      "referenceRange": { "min": 0, "max": 50 },
+      "foods": ["Omega-3-reiche Fische", "Kurkuma (Curcumin)", "Ingwer", "Blaubeeren", "Brokkoli (Sulforaphan)", "Grüner Tee", "natives Olivenöl", "Granatapfel"],
+      "highSymptoms": ["Durchfall / veränderte Stuhlgewohnheiten", "Bauchschmerzen", "Blut im Stuhl", "Gewichtsverlust", "Erschöpfung"],
+      "tips": ["Erhöhtes Calprotectin immer mit einem Arzt besprechen.", "Entzündungshemmende Ernährung (mediterran) kann helfen.", "Probiotika können bei leicht erhöhten Werten unterstützen.", "Curcumin (Kurkuma) hat nachgewiesene anti-entzündliche Wirkung im Darm.", "Stress-Reduktion ist ein wichtiger Faktor bei chronischen Darmentzündungen."]
+    },
+    {
+      "id": "serotonin_gut",
+      "name": "Serotonin (Darm-Hirn-Achse)",
+      "category": "gut",
+      "unit": "ng/mL",
+      "refMin": 50, "refMax": 220,
+      "premium": true,
+      "selfTestAvailable": true,
+      "selfTestNote": "Serotonin kann über einen Bluttest (Vollblut) gemessen werden. Über spezialisierte Labore möglich.",
+      "description": "Ca. 90–95% des körpereigenen Serotonins werden im Darm produziert – nicht im Gehirn. Das Darmmikrobiom beeinflusst die Serotoninsynthese erheblich. Ein gesunder Darm ist damit direkte Voraussetzung für mentale Gesundheit und guten Schlaf.",
+      "function": "Stimmung, Schlaf, Appetit, Darmmotilität, Darm-Hirn-Achse",
+      "referenceRange": { "min": 50, "max": 220 },
+      "foods": ["Truthahn / Pute", "Hühnerei", "Haferflocken", "Nüsse (Walnüsse, Cashews)", "Bananen", "Ananas", "Lachs", "Tofu", "dunkle Schokolade (>85%)"],
+      "deficiencySymptoms": ["Depressive Verstimmung", "Schlechter Schlaf", "Heißhunger auf Kohlenhydrate", "Reizbarkeit", "Antriebslosigkeit"],
+      "tips": ["Tryptophan-reiche Lebensmittel (Truthahn, Eier) sind Vorstufen von Serotonin.", "Probiotika erhöhen die intestinale Serotoninsynthese.", "Bewegung (Ausdauer) steigert Serotoninspiegel nachweislich.", "Morgensonne und Tageslicht fördern die Serotoninproduktion.", "Vitamin B6 ist Cofaktor bei der Umwandlung von Tryptophan zu Serotonin."]
+    },
+    {
+      "id": "phosphatidylserine",
+      "name": "Phosphatidylserin (PS)",
+      "category": "cognitive",
+      "unit": "µg/mL",
+      "refMin": 15, "refMax": 40,
+      "premium": true,
+      "selfTestAvailable": true,
+      "selfTestNote": "Messbar über spezialisierte Bluttests (z. B. Laboratorius Limbach, Medivere). Noch kein Standard-Labortest.",
+      "description": "Phosphatidylserin ist ein essentieller Bestandteil der Nervenzellmembranen — besonders im Gehirn. Es ist entscheidend für die Signalübertragung zwischen Neuronen, das Arbeitsgedächtnis und die kognitive Flexibilität. Mit dem Alter sinkt der PS-Gehalt in Gehirnzellen natürlich ab.",
+      "function": "Nervenzellmembranen, Gedächtnis, Lernfähigkeit, Stressresistenz",
+      "foods": ["Rinderleber", "Hühnerleber", "Makrele", "Lachs", "Thunfisch", "Sojabohnen", "Weißbohnen", "Hühnerei"],
+      "deficiencySymptoms": ["Gedächtnisabbau", "Konzentrationsprobleme", "Erhöhter Cortisol-Spiegel", "Verlangsamtes Denken", "Stimmungsschwankungen"],
+      "tips": ["Tierische Quellen (Leber, Fisch) sind reichste PS-Quellen.", "Soja-Lecithin ist eine pflanzliche Alternative, aber geringere Bioverfügbarkeit.", "PS-Supplementierung (100–300 mg/Tag) ist gut studiiert bei älteren Erwachsenen.", "Fettlöslich — am besten mit einer fetthaltigen Mahlzeit einnehmen.", "Kombination mit Omega-3 DHA verstärkt die Wirkung auf Membrangesundheit."]
+    },
+    {
+      "id": "cholin",
+      "name": "Cholin",
+      "category": "cognitive",
+      "unit": "µmol/L",
+      "refMin": 7, "refMax": 20,
+      "premium": true,
+      "selfTestAvailable": true,
+      "selfTestNote": "Cholin im Blutplasma kann über spezialisierte Laboranalysen gemessen werden.",
+      "description": "Cholin ist die direkte Vorstufe des Neurotransmitters Acetylcholin — dem wichtigsten Botenstoff für Gedächtnis, Aufmerksamkeit und Muskelkontrolle. Ca. 90% der Bevölkerung nehmen laut Studien zu wenig Cholin auf. Es ist essentiell für die Myelinscheide (Schutzhülle der Nerven) und den Fettstoffwechsel der Leber.",
+      "function": "Acetylcholin-Produktion, Gedächtnis, Nervenleitung, Leberstoffwechsel",
+      "foods": ["Rinderleber", "Hühnerleber", "Eigelb", "Lachs", "Rindfleisch", "Hühnerbrust", "Brokkoli", "Blumenkohl", "Edamame", "Quinoa"],
+      "deficiencySymptoms": ["Gedächtnis- & Konzentrationsprobleme", "Muskelkrämpfe", "Fettleber", "Erhöhte Müdigkeit", "Kopfschmerzen"],
+      "tips": ["Eigelb ist die reichste und bioverfügbarste Cholinquelle — 2 Eier/Tag decken ~50% des Tagesbedarfs.", "Tagesbedarf: 425 mg (Frauen), 550 mg (Männer) nach US-Empfehlung.", "Veganer sind besonders gefährdet — pflanzliche Quellen haben geringeren Cholingehalt.", "Leber 1–2× pro Woche ist ideal für Cholin, PS und B12 kombiniert.", "Alpha-GPC-Supplement hat die höchste Bioverfügbarkeit aller Cholin-Formen."]
+    },
+    {
+      "id": "bdnf",
+      "name": "BDNF (Neuroplastizität)",
+      "category": "cognitive",
+      "unit": "ng/mL",
+      "refMin": 20, "refMax": 40,
+      "premium": true,
+      "selfTestAvailable": true,
+      "selfTestNote": "BDNF-Messung über Blutserum möglich — spezialisierte Labore wie Medivere oder IMD Berlin.",
+      "description": "Der Brain-Derived Neurotrophic Factor (BDNF) ist das wichtigste 'Wachstumshormon des Gehirns'. Er fördert die Bildung neuer Neuronen (Neurogenese), die Stärkung bestehender Synapsen und schützt Nervenzellen vor dem Absterben. Chronisch niedrige BDNF-Werte sind mit Depression, Demenz (Alzheimer) und kognitivem Abbau assoziiert.",
+      "function": "Neurogenese, Synaptische Plastizität, Lernfähigkeit, Stimmungsregulation, Demenzschutz",
+      "referenceRange": { "min": 20, "max": 40 },
+      "foods": ["Blaubeeren", "Dunkle Schokolade (>85%)", "Grüner Tee (EGCG)", "Kurkuma (Curcumin)", "Walnüsse", "Lachs (DHA)", "Olivenöl", "Rosenkohl", "Brokkoli", "Kaffee"],
+      "deficiencySymptoms": ["Konzentrationsprobleme & Brain Fog", "Depressive Verstimmung", "Gedächtnisprobleme", "Verlangsamtes Lernen", "Erhöhtes Demenzrisiko"],
+      "tips": ["Ausdauersport (30 min, 3×/Woche) ist der stärkste bekannte BDNF-Booster — erhöht Werte um bis zu 200–300%.", "Intervallfasten erhöht BDNF nachweislich — Autophagie und Neurogenese sind verknüpft.", "Kälteexposition (kalte Dusche) stimuliert BDNF-Ausschüttung.", "Curcumin (Kurkuma) überquert die Blut-Hirn-Schranke und erhöht BDNF.", "Chronischer Stress und Schlafmangel sind die stärksten BDNF-Killer."]
     }
   ]
 };
@@ -1551,6 +2053,63 @@ const BLS_TOP_FOODS = {
     { name: 'Spinat', amount: 18 },          { name: 'Joghurt', amount: 15 },
     { name: 'Grüner Tee', amount: 12 },      { name: 'Avocado', amount: 10 }
   ],
+  gut_diversity: [
+    { name: 'Kefir', amount: 0 },            { name: 'Joghurt (Natur)', amount: 0 },
+    { name: 'Sauerkraut', amount: 0 },       { name: 'Kimchi', amount: 0 },
+    { name: 'Miso', amount: 0 },             { name: 'Tempeh', amount: 0 },
+    { name: 'Kombucha', amount: 0 },         { name: 'Artischocken', amount: 0 },
+    { name: 'Chicorée', amount: 0 },         { name: 'Zwiebeln', amount: 0 }
+  ],
+  scfa: [
+    { name: 'Hafer (Haferflocken)', amount: 0 }, { name: 'Hülsenfrüchte', amount: 0 },
+    { name: 'Topinambur', amount: 0 },       { name: 'Kartoffeln (gekühlt)', amount: 0 },
+    { name: 'Bananen (unreif)', amount: 0 }, { name: 'Roggenbrot', amount: 0 },
+    { name: 'Leinsamen', amount: 0 },        { name: 'Gerste', amount: 0 },
+    { name: 'Chicorée', amount: 0 },         { name: 'Äpfel (mit Schale)', amount: 0 }
+  ],
+  zonulin: [
+    { name: 'Knochenbrühe', amount: 0 },     { name: 'Kefir', amount: 0 },
+    { name: 'Sauerkraut', amount: 0 },       { name: 'Ingwer', amount: 0 },
+    { name: 'Kurkuma', amount: 0 },          { name: 'Blaubeeren', amount: 0 },
+    { name: 'Kürbiskerne (Zink)', amount: 0 }, { name: 'Lachs', amount: 0 },
+    { name: 'Brokkoli', amount: 0 },         { name: 'Granatapfel', amount: 0 }
+  ],
+  calprotectin: [
+    { name: 'Lachs (Omega-3)', amount: 0 },  { name: 'Kurkuma', amount: 0 },
+    { name: 'Ingwer', amount: 0 },           { name: 'Blaubeeren', amount: 0 },
+    { name: 'Brokkoli', amount: 0 },         { name: 'Grüner Tee', amount: 0 },
+    { name: 'Olivenöl (nativ)', amount: 0 }, { name: 'Granatapfel', amount: 0 },
+    { name: 'Walnüsse', amount: 0 },         { name: 'Tomaten', amount: 0 }
+  ],
+  serotonin_gut: [
+    { name: 'Truthahn / Pute', amount: 0 },  { name: 'Hühnerei', amount: 0 },
+    { name: 'Haferflocken', amount: 0 },     { name: 'Walnüsse', amount: 0 },
+    { name: 'Bananen', amount: 0 },          { name: 'Lachs', amount: 0 },
+    { name: 'Tofu', amount: 0 },             { name: 'Cashews', amount: 0 },
+    { name: 'Ananas', amount: 0 },           { name: 'Dunkle Schokolade (>85%)', amount: 0 }
+  ],
+  // ── Kognitive Gesundheit (pro 100g Rohgewicht) ──
+  phosphatidylserine: [
+    { name: 'Rinderleber', amount: 713 },    { name: 'Hühnerleber', amount: 640 },
+    { name: 'Makrele', amount: 480 },        { name: 'Lachs (Atlantik)', amount: 360 },
+    { name: 'Thunfisch (Konserve)', amount: 194 }, { name: 'Hühnerei (Eigelb)', amount: 170 },
+    { name: 'Sojabohnen', amount: 107 },     { name: 'Hühnerbrust', amount: 90 },
+    { name: 'Weißbohnen', amount: 65 },      { name: 'Rindfleisch', amount: 55 }
+  ],
+  cholin: [
+    { name: 'Rinderleber', amount: 418 },    { name: 'Hühnerleber', amount: 290 },
+    { name: 'Eigelb', amount: 820 },         { name: 'Lachs (Atlantik)', amount: 124 },
+    { name: 'Hühnerbrust', amount: 87 },     { name: 'Rindfleisch', amount: 77 },
+    { name: 'Edamame', amount: 56 },         { name: 'Brokkoli', amount: 42 },
+    { name: 'Blumenkohl', amount: 45 },      { name: 'Quinoa', amount: 43 }
+  ],
+  bdnf: [
+    { name: 'Blaubeeren', amount: 0 },       { name: 'Dunkle Schokolade (>85%)', amount: 0 },
+    { name: 'Grüner Tee (EGCG)', amount: 0 },{ name: 'Kurkuma (Curcumin)', amount: 0 },
+    { name: 'Walnüsse', amount: 0 },         { name: 'Lachs (DHA/EPA)', amount: 0 },
+    { name: 'Olivenöl (extra vergine)', amount: 0 }, { name: 'Rosenkohl', amount: 0 },
+    { name: 'Brokkoli (Sulforaphan)', amount: 0 },   { name: 'Kaffee (schwarz)', amount: 0 }
+  ],
 };
 
 // ── Amazon Affiliate Links (Tracking-ID: vitalmetrics-21) ──
@@ -1587,6 +2146,16 @@ const SUPPLEMENT_LINKS = {
   ashwagandha:  { label: 'Ashwagandha (Cortisol)', q: 'Ashwagandha+Kapseln+Stress+Cortisol' },
   resveratrol:  { label: 'Resveratrol Kapseln', q: 'Resveratrol+Kapseln+Antioxidantien' },
   berberin:     { label: 'Berberin (Blutzucker)', q: 'Berberin+Kapseln+Blutzucker' },
+  // ── Kognitive Gesundheit ──
+  phosphatidylserine: { label: 'Phosphatidylserin Kapseln', q: 'Phosphatidylserin+PS+Kapseln+Gedaechtnis' },
+  cholin:             { label: 'Alpha-GPC Cholin Kapseln',  q: 'Alpha-GPC+Cholin+Kapseln+Gehirn' },
+  bdnf:               { label: 'Lions Mane Pilz Extrakt',   q: 'Lions+Mane+Pilz+Extrakt+Kapseln+BDNF' },
+  // ── Darm & Mikrobiom ──
+  gut_diversity: { label: 'Probiotika Hochdosiert', q: 'Probiotika+Hochdosiert+Kulturen+Darmbakterien' },
+  scfa:          { label: 'Präbiotikum Inulin', q: 'Inulin+Praebiotiikum+Pulver+Darmgesundheit' },
+  zonulin:       { label: 'L-Glutamin Pulver', q: 'L-Glutamin+Pulver+Darm+Leaky+Gut' },
+  calprotectin:  { label: 'Probiotika Darmflora', q: 'Probiotika+Darmflora+Kapseln+Darmsanierung' },
+  serotonin_gut: { label: 'L-Tryptophan Kapseln', q: 'L-Tryptophan+Kapseln+Serotonin+Schlaf' },
 };
 
 // ── Amazon Schnelltest / Home Test Kit Links ──
@@ -1609,7 +2178,37 @@ const TEST_LINKS = {
   calcium:     'Calcium+Bluttest+Heimtest',
   hscrp:       'hsCRP+Entzuendungsmarker+Bluttest',
   glucose:     'Blutzucker+Messgeraet+Teststreifen',
-  coq10:       'CoQ10+Ubiquinol+Bluttest+Heimtest',
+  coq10:         'CoQ10+Ubiquinol+Bluttest+Heimtest',
+  // ── Darm & Mikrobiom ──
+  gut_diversity: 'Mikrobiom+Test+Stuhltest+Darmflora',
+  scfa:          'SCFA+Stuhltest+Darmsaeuren',
+  zonulin:       'Zonulin+Stuhltest+Leaky+Gut',
+  calprotectin:  'Calprotectin+Stuhltest+Schnelltest',
+  serotonin_gut: 'Serotonin+Bluttest+Vollblut',
+};
+
+// ── Spezialisierte Darm-Test Anbieter (direkte externe Links, kein Amazon) ──
+const GUT_SPECIALIST_TESTS = {
+  gut_diversity: [
+    { label: '🧬 myBioma Mikrobiom-Test', url: 'https://mybioma.com/de/collections/mikrobiom-tests', note: 'Next-Gen DNA-Sequenzierung, >1.500 Bakterienarten, Shannon-Index enthalten' },
+    { label: '🔬 Medivere Darm Mikrobiom Plus', url: 'https://www.medivere.de/shop/stuhltest-mikrobiom', note: 'Stuhltest per Post, inkl. Diversitätsanalyse und Ernährungsempfehlungen' },
+  ],
+  scfa: [
+    { label: '🔬 myBioma Advanced Test', url: 'https://mybioma.com/de/products/microbiome-test-advanced', note: 'Enthält SCFA-Analyse (Butyrat, Propionat, Acetat)' },
+    { label: '🔬 Medivere Darm Mikrobiom Plus', url: 'https://www.medivere.de/shop/stuhltest-mikrobiom', note: 'Inkl. Fettsäurenanalyse aus Stuhlprobe' },
+  ],
+  zonulin: [
+    { label: '💊 Medivere Darm Plus (Zonulin)', url: 'https://www.medivere.de/shop/stuhltest-darm-plus', note: 'Stuhltest: Zonulin, Calprotectin, sIgA, Pankreas-Elastase in einem' },
+    { label: '🔬 Verisana Zonulin-Test', url: 'https://www.verisana.de/shop/leaky-gut-test/', note: 'Spezialisierter Leaky-Gut Stuhltest, online bestellbar' },
+  ],
+  calprotectin: [
+    { label: '💊 Medivere Darm Plus (Calprotectin)', url: 'https://www.medivere.de/shop/stuhltest-darm-plus', note: 'Kombinations-Stuhltest, Ergebnis in 5–7 Werktagen' },
+    { label: '🏪 Shop-Apotheke Calprotectin-Schnelltest', url: 'https://www.shop-apotheke.com/sanitaetshaus/upmGUXDCD/the-tester-calprotectin-test.htm', note: 'Selbsttest für zuhause, Ergebnis in 10 Minuten, CE-zertifiziert' },
+    { label: '🔬 Verisana Calprotectin + Lysozym', url: 'https://www.verisana.de/shop/calprotectin-lysozym-entzuendungen-test/', note: 'Labor-Analyse per Stuhlprobe, Entzündungsmarker kombiniert' },
+  ],
+  serotonin_gut: [
+    { label: '🔬 Medivere Serotonin im Vollblut', url: 'https://www.medivere.de/shop/hormonstatus', note: 'Bluttest per Kapillarblut (Fingerstich), Laboranalyse auf Serotonin' },
+  ],
 };
 function getAffiliateLink(bmId) {
   const s = SUPPLEMENT_LINKS[bmId];
@@ -1620,6 +2219,368 @@ function getTestLink(bmId) {
   const q = TEST_LINKS[bmId];
   if (!q) return null;
   return `https://www.amazon.de/s?k=${q}&tag=${AFFILIATE_TAG}`;
+}
+
+// ══════════════════════════════════════════════════════════
+// LIFESTYLE TIPS — Alltagstipps je Biomarker (kein Essen, kein Supplement)
+// Fokus: Schlaf, Bewegung, Sonne, Stress, Timing, Gewohnheiten
+// ══════════════════════════════════════════════════════════
+const LIFESTYLE_TIPS = {
+  // ── Fettlösliche Vitamine ──
+  vitamin_a: [
+    '🌿 Vitamin A aus tierischen Quellen (Retinol) wird direkt aufgenommen — pflanzliches Beta-Carotin aus Karotten & Co. muss erst umgewandelt werden, was individuell sehr unterschiedlich gut klappt.',
+    '🚬 Rauchen erhöht den Vitamin-A-Bedarf deutlich und beschleunigt seinen Abbau.',
+    '⚠️ Bei Supplementen Vorsicht: Vitamin A ist fettlöslich und kann sich anreichern. Langfristig mehr als 3.000 µg/Tag sind nicht empfehlenswert ohne Blutkontrolle.',
+  ],
+  vitamin_d: [
+    '☀️ 15–20 Minuten Mittagssonne (11–15 Uhr) auf Gesicht, Armen und Beinen genügt im Sommer oft für den Tagesbedarf — im Winter in Deutschland ist das kaum möglich.',
+    '🏃 Körperlich aktive Menschen verwerten Vitamin D effizienter als Personen mit sitzenden Tätigkeiten.',
+    '😴 Ausreichend Schlaf (7–9h) ist Voraussetzung dafür, dass Vitamin D seine volle Wirkung auf das Immunsystem entfalten kann.',
+    '🧴 Sonnencreme mit hohem LSF blockiert die Vitamin-D-Synthese vollständig — kurze ungeschützte Sonnenzeit vor dem Eincremen ist sinnvoll.',
+  ],
+  vitamin_e: [
+    '🚬 Rauchen zerstört Vitamin E in Zellmembranen sehr rasch — Raucher haben oft deutlich niedrigere Werte.',
+    '🏋️ Intensiver Sport erhöht den Vitamin-E-Bedarf, weil dabei mehr freie Radikale entstehen, die neutralisiert werden müssen.',
+    '🫙 Vitamin E wird fettlöslich gespeichert — ein einmaliger Mangel entwickelt sich langsam, aber chronischer Mangel hat dauerhafte Folgen.',
+  ],
+  vitamin_k2: [
+    '🦠 Darmflora-Gesundheit ist direkt mit K2 verknüpft: Darmbakterien produzieren Menaquinon (K2) — bei Antibiotika-Einnahme oder schlechter Darmflora sinkt die K2-Produktion.',
+    '🥩 K2 aus fermentierten Lebensmitteln (Natto, Käse) hat eine deutlich längere Halbwertszeit im Körper als K1 aus Gemüse.',
+    '💊 K2 und Vitamin D arbeiten im Team: D3 sorgt für Calcium-Aufnahme, K2 lenkt es in die Knochen statt in Gefäßwände.',
+  ],
+  // ── Wasserlösliche Vitamine ──
+  vitamin_c: [
+    '😤 Stress erhöht den Vitamin-C-Bedarf um bis zu 50% — in Stressphasen daher bewusst mehr C-reiche Lebensmittel einplanen.',
+    '🚬 Raucher haben einen um ca. 30–35 mg/Tag höheren Bedarf, weil Rauchen Vitamin C aktiv abbaut.',
+    '🌡️ Bei Infektionen verbraucht das Immunsystem Vitamin C sehr rasch — vorbeugend gut versorgt zu sein ist wirkungsvoller als bei Krankheit nachladen.',
+  ],
+  vitamin_b1: [
+    '🍺 Alkohol blockiert die Aufnahme von Vitamin B1 erheblich und erhöht den Bedarf — bei regelmäßigem Konsum oft unterschätzt.',
+    '☕ Kaffee und Tee reduzieren die B1-Aufnahme leicht — zeitlicher Abstand zu mahlzeiten ist sinnvoll.',
+    '🧁 Stark verarbeitete Kohlenhydrate (Weißmehl, Zucker) verbrauchen bei ihrer Verstoffwechselung B1, ohne es zu liefern — eine Art "Vitamin-Schulden".',
+  ],
+  vitamin_b2: [
+    '💡 Licht zerstört Vitamin B2 schnell — Milch in Lichtschutzverpackungen oder undurchsichtigen Gefäßen aufbewahren.',
+    '🏃 Sportlich aktive Menschen haben einen erhöhten B2-Bedarf, da es für die mitochondriale Energieproduktion zentral ist.',
+    '🤰 Schwangerschaft und Stillzeit erhöhen den Bedarf deutlich — dann besonders auf B2-reiche Lebensmittel achten.',
+  ],
+  vitamin_b3: [
+    '😴 Tryptophan (aus Eiweiß) kann im Körper zu Niacin umgewandelt werden — ausreichend Schlaf verbessert diese Umwandlung.',
+    '🏋️ Intensiver Sport erhöht den Niacin-Bedarf, da es für die Energiegewinnung in Muskeln essenziell ist.',
+    '🥃 Alkohol stört den Tryptophan-zu-Niacin-Stoffwechsel erheblich.',
+  ],
+  vitamin_b6: [
+    '😤 Chronischer Stress erhöht den B6-Verbrauch, da das Vitamin für die Cortisolregulation benötigt wird.',
+    '💊 Bestimmte Medikamente (Antibabypille, einige Blutdruckmittel) können den B6-Spiegel senken.',
+    '🧠 B6 ist Cofaktor für Serotonin- und Dopaminproduktion — niedriger B6 kann direkt Stimmung und Schlafqualität verschlechtern.',
+  ],
+  vitamin_b12: [
+    '🔬 B12 wird im Magen durch einen Faktor namens "Intrinsic Factor" aufgenommen — wer Säureblocker (PPI) nimmt oder älter als 50 ist, hat oft eine eingeschränkte Aufnahme.',
+    '🥗 Veganer und Vegetarier: B12 kommt ausschließlich aus tierischen Quellen — ohne Supplement ist ein Mangel bei rein pflanzlicher Ernährung sicher.',
+    '😴 Ein B12-Mangel entwickelt sich langsam über Monate bis Jahre — Symptome wie Taubheitsgefühle oder Vergesslichkeit werden oft nicht zugeordnet.',
+  ],
+  folsaeure: [
+    '🌡️ Kochen zerstört bis zu 50% der Folsäure — rohe oder schonend gedünstete Lebensmittel bevorzugen.',
+    '🤰 Bei Schwangerschaftswunsch: 400 µg Folsäure täglich mindestens 4 Wochen vor der Empfängnis ist medizinisch gut belegt zur Vorbeugung von Neuralrohrdefekten.',
+    '🍺 Alkohol reduziert die Folsäureaufnahme und erhöht die Ausscheidung — bei regelmäßigem Konsum besonders auf Zufuhr achten.',
+  ],
+  biotin: [
+    '🥚 Rohes Eiweiß bindet Biotin und macht es unverwertbar — hartgekochte oder gebratene Eier sind kein Problem, rohe Eier (z. B. im Protein-Shake) aber schon.',
+    '🦠 Darmbakterien produzieren Biotin — ein gesundes Mikrobiom verbessert die körpereigene Versorgung.',
+    '💆 Chronischer Stress kann Biotin-Speicher leeren, da es für die Stresshormonproduktion gebraucht wird.',
+  ],
+  // ── Spurenelemente ──
+  magnesium: [
+    '😤 Stress ist der größte Magnesium-Räuber: Cortisol erhöht die Magnesiumausscheidung über die Nieren erheblich — wer viel Stress hat, verliert deutlich mehr.',
+    '🏋️ Jede Schweißpore verliert Magnesium — 1 Stunde intensiver Sport kann 30–50 mg kosten.',
+    '😴 Magnesium ist direkt an der Produktion von Melatonin beteiligt — niedriger Spiegel stört den Schlaf, schlechter Schlaf leert die Reserven weiter (Teufelskreis).',
+    '☕ Kaffee und Alkohol erhöhen die Magnesiumausscheidung über die Nieren.',
+  ],
+  zink: [
+    '😤 Chronischer Stress und Infektionen verbrauchen Zink sehr rasch — Immunreaktionen benötigen große Mengen.',
+    '🍺 Alkohol hemmt die Zinkaufnahme und erhöht die Ausscheidung.',
+    '☕ Kaffee, Tee und calciumreiche Getränke direkt zu einer Mahlzeit reduzieren die Zinkaufnahme um bis zu 50%.',
+  ],
+  eisen: [
+    '☕ Kaffee und schwarzer Tee direkt zur Mahlzeit reduzieren die Eisenaufnahme um 60–80% — mindestens 1 Stunde zeitlicher Abstand ist sinnvoll.',
+    '🏃 Laufsport kann durch Hämolyse (Zerquetschen roter Blutkörperchen bei Aufprall) den Eisenbedarf erhöhen.',
+    '😴 Restless-Legs-Syndrom (unruhige Beine beim Einschlafen) ist ein häufig übersehenes Zeichen für Eisenmangel.',
+  ],
+  ferritin: [
+    '☕ Kaffee und schwarzer Tee direkt zur Mahlzeit reduzieren die Eisenaufnahme um 60–80% — mindestens 1 Stunde zeitlicher Abstand ist sinnvoll.',
+    '🏃 Laufsport kann durch Hämolyse (Zerquetschen roter Blutkörperchen bei Aufprall) den Eisenbedarf erhöhen.',
+    '😴 Erschöpfung, Haarausfall und kalte Hände sind oft erste Zeichen eines sinkenden Ferritins — lange bevor Anämie auftritt.',
+  ],
+  selen: [
+    '🌍 Böden in Mitteleuropa sind selenarm — wer nur regionale Lebensmittel isst, hat ein höheres Risiko für suboptimale Versorgung.',
+    '🦠 Selen arbeitet mit Glutathion (dem körpereigenen Antioxidans) zusammen — bei chronischen Entzündungen wird es rasch verbraucht.',
+    '⚠️ Selenmangel ist in Deutschland sehr verbreitet, Überdosierung durch Nahrung kaum möglich — nur bei Supplementen Vorsicht.',
+  ],
+  calcium: [
+    '🏋️ Körperliche Belastung (besonders Kraft- und Sprungsport) stimuliert den Einbau von Calcium in Knochen — Bewegung ist ebenso wichtig wie die Zufuhr.',
+    '☀️ Ohne ausreichend Vitamin D kann der Körper Calcium kaum aufnehmen — beide zusammen sind entscheidend.',
+    '🥤 Phosphorsäure in Cola-Getränken und übermäßig Salz erhöhen die Calciumausscheidung über die Nieren.',
+  ],
+  jod: [
+    '🧂 Jodsalz konsequent verwenden — trotz Jodzusatz deckt die durchschnittliche deutsche Ernährung den Bedarf oft nicht vollständig.',
+    '🦋 Die Schilddrüse ist das jodsensitivste Organ — chronischer Jodmangel kann langfristig zu Schilddrüsenproblemen führen.',
+    '⚠️ Sehr große Mengen Jod (z. B. aus Algen-Supplements) können Schilddrüsenprobleme auch verschlimmern — mittlere Zufuhr anstreben.',
+  ],
+  kupfer: [
+    '⚗️ Kupfer und Zink stehen in direkter Konkurrenz um Aufnahme — zu viel Zink (Supplement) senkt Kupferspiegel.',
+    '🫀 Kupfer ist für die Elastin- und Kollagenbildung in Blutgefäßen nötig — Mangel kann Gefäßwände schwächen.',
+    '🥗 Bei ausgewogener Ernährung ist Kupfermangel selten — ein Supplement ist meist nicht nötig.',
+  ],
+  mangan: [
+    '🍃 Mangan ist reichlich in pflanzlichen Lebensmitteln enthalten — Veganer haben daher oft gute Versorgung.',
+    '🦴 Mangan ist wichtig für die Knochenmineralisierung — Kombination mit Calcium und Vitamin D ist ideal.',
+  ],
+  chrom: [
+    '🍬 Raffinierter Zucker und Weißmehlprodukte erhöhen den Chrombedarf, da Chrom bei jeder Insulinantwort verbraucht wird.',
+    '😤 Stress erhöht die Chromausscheidung über die Nieren.',
+    '🏋️ Körperliche Aktivität verbessert die Insulinsensitivität — Chrom kann das unterstützen, ersetzt aber nicht Bewegung.',
+  ],
+  phosphor: [
+    '🥤 Phosphorsäure in Cola-Getränken enthält viel Phosphor — aber zusammen mit Calcium aus der Nahrung kann das die Calciumaufnahme stören.',
+    '🔩 Phosphormangel ist bei normaler Ernährung sehr selten — eher überversorgt durch Verarbeitete Lebensmittel.',
+  ],
+  // ── Laborwerte ──
+  omega3: [
+    '🌍 Das westliche Ernährungsmuster hat ein Omega-6:Omega-3-Verhältnis von etwa 15:1 — ideal wäre 4:1 oder besser. Weniger Sonnenblumen- und Maisöl, mehr Leinöl und Fisch.',
+    '😴 Omega-3 (besonders DHA) verbessert die Schlaftiefe und die REM-Schlafphasen nachweislich.',
+    '🔥 Ein niedriger Omega-3-Index ist ein stärkerer Risikofaktor für Herzerkrankungen als hoher LDL-Cholesterin — oft unterschätzt.',
+  ],
+  hscrp: [
+    '😴 Schlechter Schlaf (unter 6h) ist einer der stärksten Treiber für erhöhte hsCRP-Werte — schon 2 Wochen Schlafmangel lassen sich im Blut sehen.',
+    '🏃 Moderater Ausdauersport (150 min/Woche) senkt hsCRP langfristig um 20–30% — Intensität ist weniger entscheidend als Regelmäßigkeit.',
+    '🪑 Langes Sitzen ohne Unterbrechung erhöht Entzündungsmarker selbst bei sportlich aktiven Menschen — alle 60 Minuten kurz aufstehen und bewegen.',
+    '😤 Chronischer psychischer Stress ist ein direkter Auslöser für systemische Entzündungen — Stressmanagement ist keine Wellness-Maßnahme, sondern Entzündungsschutz.',
+  ],
+  hba1c: [
+    '📅 HbA1c spiegelt den Blutzucker der letzten 8–12 Wochen wider — ein einziger guter Monat reicht nicht, um den Wert deutlich zu senken.',
+    '🏃 Bewegung nach dem Essen ist einer der wirksamsten Wege, den Blutzuckeranstieg zu dämpfen — schon 10 Minuten Spaziergang nach der Mahlzeit wirken messbar.',
+    '😴 Schlechter Schlaf erhöht den Nüchternblutzucker und die Insulinresistenz bereits nach einer einzigen schlechten Nacht.',
+    '⏱️ Intervallfasten (12–16h) senkt HbA1c nachweislich durch Reduzierung der Insulinausschüttung über den Tag.',
+  ],
+  glucose: [
+    '🌙 Der Nüchternwert morgens ist am aussagekräftigsten — er zeigt, wie gut die Leber über Nacht den Blutzucker reguliert hat.',
+    '🏃 10–15 Minuten Gehen nach einer Mahlzeit senken den Blutzuckeranstieg um 20–30% — Muskeln nehmen Glukose ohne Insulin auf.',
+    '😴 Bereits eine Nacht Schlafmangel (5–6h statt 7–8h) erhöht den Nüchternblutzucker am nächsten Morgen messbar.',
+    '🍽️ Reihenfolge beim Essen: Zuerst Gemüse/Salat, dann Protein, dann Kohlenhydrate — das verlangsamt den Blutzuckeranstieg erheblich.',
+  ],
+  cholesterol_ldl: [
+    '🏃 Ausdauersport senkt LDL direkt und erhöht das "gute" HDL — mindestens 150 Minuten moderat pro Woche.',
+    '🚬 Rauchen senkt HDL und erhöht oxidiertes LDL (das gefährlichste) — ein Grund mehr zum Aufhören.',
+    '😴 Schlechter Schlaf erhöht LDL-Werte — Schlafdauer und -qualität sind unterschätzte Faktoren.',
+    '⚖️ Gewichtsverlust von 5–10% des Körpergewichts bei Übergewicht senkt LDL durchschnittlich um 10–15%.',
+  ],
+  homocystein: [
+    '😴 Schlechter Schlaf erhöht Homocystein — ausreichend Tiefschlaf ist für den Methylierungsstoffwechsel essenziell.',
+    '🚬 Rauchen und Alkohol erhöhen Homocystein erheblich — zwei der stärksten beeinflussbaren Faktoren.',
+    '🏃 Regelmäßiger Ausdauersport verbessert den B-Vitamin-Stoffwechsel und kann Homocystein senken.',
+    '💊 Nierenprobleme erhöhen Homocystein stark — wer Nierensymptome kennt, sollte beides gemeinsam testen lassen.',
+  ],
+  tsh: [
+    '😴 Schlafmangel und chronischer Stress belasten die Schilddrüse erheblich — viele Schilddrüsenprobleme beginnen in Dauerstress-Phasen.',
+    '🧂 Jod ist der wichtigste Nährstoff für die Schilddrüse — aber auch Selen ist essenziell für die Umwandlung von T4 in das aktive T3.',
+    '📅 TSH-Werte sollten immer morgens nüchtern gemessen werden — der Wert schwankt tagesabhängig.',
+    '🤰 Schwangerschaft, Pubertät und Wechseljahre können TSH stark verschieben — in diesen Phasen häufiger kontrollieren.',
+  ],
+  // ── Körperwerte ──
+  gewicht: [
+    '📅 Morgens nach dem Toilettengang und vor dem Frühstück ist der konsistenteste Messzeitpunkt — so vermeidest du Schwankungen durch Essen, Trinken und Kleidung.',
+    '📉 Tägliche Gewichtsschwankungen von 1–2 kg sind normal — Wassereinlagerung, Darminhalt und Hormonschwankungen spielen eine Rolle. Wichtig ist der Trend über Wochen.',
+    '🏋️ Muskelaufbau kann kurzfristig das Gewicht erhöhen, obwohl Körperfett abnimmt — Körperfettanteil ist aussagekräftiger als reines Gewicht.',
+  ],
+  bmi: [
+    '🏋️ Der BMI unterscheidet nicht zwischen Muskel und Fett — Leistungssportler haben oft "übergewichtigen" BMI bei sehr niedrigem Körperfettanteil.',
+    '📏 Bauchumfang (< 80 cm Frauen, < 94 cm Männer) ist ein besserer Risikoindikator als der BMI — viszerales Bauchfett ist das gefährlichste.',
+    '📅 BMI ist ein Langzeitindikator — kleine wöchentliche Schwankungen nicht überbewerten.',
+  ],
+  blutdruck: [
+    '😴 Schlechter Schlaf erhöht den systolischen Blutdruck — auch kurzfristig nach einer einzigen Nacht.',
+    '😤 Tiefer, langsamer Atem (4 Sekunden ein, 6 Sekunden aus) senkt den Blutdruck innerhalb von Minuten nachweislich.',
+    '🧂 Natriumreduktion (weniger Salz) senkt Blutdruck bei Salzsensitiven um 5–10 mmHg — aber nur ~50% der Menschen reagieren auf Salz stark.',
+    '🏃 Ausdauersport senkt den Ruheblutdruck langfristig um 5–8 mmHg — vergleichbar mit einem niedrig dosierten Medikament.',
+  ],
+  // ── Longevity ──
+  testosterone: [
+    '😴 70–80% des Testosterons wird im Tiefschlaf produziert — Schlafmangel unter 6h senkt den Spiegel um 15–20% bereits nach einer Woche.',
+    '🏋️ Krafttraining mit zusammengesetzten Übungen (Kniebeugen, Kreuzheben, Bankdrücken) ist der stärkste natürliche Testosteron-Booster.',
+    '⚖️ Übergewicht — besonders Bauchfett — wandelt Testosteron in Östrogen um (Aromatisierung). Gewichtsreduktion hebt Testosteron.',
+    '😤 Chronischer Stress und dauerhaft hohes Cortisol sind direkte Testosteron-Antagonisten.',
+  ],
+  cortisol: [
+    '📅 Cortisol folgt einem Tagesrhythmus: morgens (7–9 Uhr) am höchsten, nachts am niedrigsten — daher morgens messen für aussagekräftige Werte.',
+    '😴 Schlechter Schlaf und zu wenig Schlaf erhöhen das Cortisol am nächsten Tag messbar.',
+    '🧘 Atemübungen (4-7-8-Atemtechnik oder langsame Bauchatmung) aktivieren den Vagusnerv und senken Cortisol innerhalb von Minuten.',
+    '🌲 "Nature bathing" (Zeit in der Natur, besonders Wald) senkt Cortisol nachweislich um 12–13% im Vergleich zu städtischen Umgebungen.',
+  ],
+  dhea: [
+    '😴 DHEA wird hauptsächlich in den Morgenstunden ausgeschüttet — Schlafqualität ist direkt mit DHEA-Spiegeln verknüpft.',
+    '🏃 Ausdauersport hält DHEA-Spiegel länger auf gutem Niveau — körperliche Inaktivität beschleunigt den altersbedingt Abfall.',
+    '📉 DHEA sinkt ab dem 30. Lebensjahr um ca. 2% pro Jahr — ein natürlicher Prozess, der durch Lebensstil beeinflusst werden kann.',
+  ],
+  coq10: [
+    '😴 Schlechter Schlaf und mitochondriale Erschöpfung gehen Hand in Hand — CoQ10 wird bei hohem Schlafmangel schnell verbraucht.',
+    '💊 Statine (Cholesterin-Medikamente) blockieren die CoQ10-Produktion erheblich — wer Statine nimmt, sollte den CoQ10-Spiegel prüfen.',
+    '🏋️ Körperliche Aktivität erhöht die mitochondriale Dichte und damit die CoQ10-Nachfrage — aktive Menschen brauchen mehr, produzieren aber auch mehr.',
+  ],
+  melatonin: [
+    '💡 Blaues Licht von Bildschirmen hemmt Melatonin-Ausschüttung erheblich — mindestens 1 Stunde vor dem Schlafen Geräte dunkler schalten oder Blaulichtbrille nutzen.',
+    '🌙 Vollständige Dunkelheit im Schlafzimmer steigert die Melatonin-Produktion deutlich — selbst eine schwache LED-Anzeige kann stören.',
+    '📅 Melatonin hat einen starken zirkadianen Rhythmus — zu gleichen Zeiten schlafen gehen trainiert den Körper, Melatonin pünktlich auszuschütten.',
+    '🌅 Morgendliches Tageslicht (10–20 Minuten) direkt nach dem Aufstehen setzt die innere Uhr zurück und verbessert abends die Melatonin-Ausschüttung.',
+  ],
+  // ── Darm & Mikrobiom ──
+  gut_diversity: [
+    '🌿 30 verschiedene Pflanzensorten pro Woche ist das wichtigste Diversitätsziel — auch Kräuter, Gewürze und Nüsse zählen je als eigene Sorte.',
+    '🧹 Antibiotika reduzieren die Diversität um 30–50% — nach einer Kur 4–8 Wochen aktiv mit Probiotika und Präbiotika wiederaufbauen.',
+    '😤 Chronischer Stress verändert die Mikrobiom-Zusammensetzung messbar — Stressmanagement ist direkte Darmgesundheit.',
+    '🏃 Ausdauersport erhöht die Produktion kurzkettiger Fettsäuren und die Diversität der Darmbakterien.',
+  ],
+  scfa: [
+    '⏱️ Intervallfasten stimuliert die SCFA-Produktion — die Darmbakterien fermentieren Ballaststoffe effizienter, wenn keine Nahrung konstant nachgeliefert wird.',
+    '🌡️ Gekochte und dann abgekühlte Lebensmittel (Reis, Kartoffeln, Haferflocken) enthalten resistente Stärke, die Darmbakterien zu SCFA fermentieren.',
+    '🧹 Antibiotika vernichten SCFA-produzierende Bakterien besonders stark — gezielter Wiederaufbau ist wichtig.',
+  ],
+  zonulin: [
+    '😤 Chronischer Stress erhöht Zonulin direkt über neuroendokrine Signalwege — Stressmanagement ist buchstäblich Darmschutz.',
+    '😴 Schlafmangel erhöht die Darmpermeabilität messbar — auch kurzfristig nach einer schlechten Nacht.',
+    '🏃 Moderate Bewegung stärkt die Darmbarriere — übermäßig intensiver Sport (Ultramarathon) kann sie dagegen kurzfristig schwächen.',
+  ],
+  calprotectin: [
+    '😤 Psychischer Stress erhöht Calprotectin und verschlimmert Darmentzündungen — emotionale Gesundheit ist direkt mit Darmgesundheit verknüpft.',
+    '🏃 Moderater Sport wirkt entzündungshemmend — intensive Belastung kann bei vorhandener Entzündung kontraproduktiv sein.',
+    '⚠️ Erhöhtes Calprotectin immer mit einem Arzt besprechen — es ist ein medizinisch relevanter Entzündungsmarker.',
+  ],
+  serotonin_gut: [
+    '😴 80–90% der Serotonin-Produktion findet im Darm statt — schlechter Schlaf stört den Darm und damit direkt die Serotoninproduktion.',
+    '🏃 Ausdauersport erhöht sowohl die intestinale als auch die zerebrale Serotonin-Aktivität — einer der effektivsten natürlichen Antidepressiva.',
+    '☀️ Tageslicht fördert die Serotoninproduktion über die Haut und die Augen — mindestens 20–30 Minuten täglich draußen sein.',
+  ],
+  // ── Kognitive Gesundheit ──
+  phosphatidylserine: [
+    '😴 Schlaf ist die wichtigste Regenerationszeit für Nervenzellmembranen — PS-Verbrauch wird in der Nacht ausgeglichen.',
+    '😤 Kortisol (Stresshormon) beschleunigt den PS-Abbau im Gehirn — chronischer Stress ist daher direkt mit kognitivem Abbau verknüpft.',
+    '🏋️ Körperliche Aktivität verbessert den PS-Transport ins Gehirn durch bessere Durchblutung.',
+  ],
+  cholin: [
+    '🤰 Schwangerschaft und Stillzeit erhöhen den Cholinbedarf erheblich — in dieser Phase besonders auf Eigelb und Leber achten.',
+    '🍺 Alkohol stört den Cholin-Stoffwechsel in der Leber und erhöht das Risiko einer Fettleber bei gleichzeitigem Cholinmangel.',
+    '🧠 Cholin ist die direkteste Vorstufe von Acetylcholin — dem Neurotransmitter für Aufmerksamkeit und Gedächtnis. Niedriger Cholin-Spiegel zeigt sich oft zuerst als "Brain Fog".',
+  ],
+  bdnf: [
+    '🏃 Ausdauersport ist der stärkste bekannte BDNF-Booster — 30 Minuten 3× pro Woche erhöht den Spiegel um bis zu 200–300%. Kein Supplement kommt auch nur annähernd heran.',
+    '⏱️ Intervallfasten erhöht BDNF über den Autophagie-Weg — das Gehirn "reinigt" sich in Fastenphasen und stimuliert die Neurogenese.',
+    '🌡️ Kälteexposition (kalte Dusche, kaltes Bad) stimuliert die BDNF-Ausschüttung innerhalb von Minuten.',
+    '😴 Tiefschlaf ist die Phase, in der BDNF am stärksten wirkt und Neuronen repariert werden — Schlafqualität ist wichtiger als -quantität.',
+  ],
+};
+
+// ── Biomarker-Bildungskarte im Detail-Screen ──
+function renderBiomarkerEduCard(bm) {
+  if (!bm.description && !bm.function) return '';
+  const lifestyleTips = LIFESTYLE_TIPS[bm.id] || [];
+  const tipsHtml = lifestyleTips.length
+    ? `<div class="edu-section">
+        <div class="edu-section-title">🌱 Was du im Alltag tun kannst</div>
+        <ul class="edu-lifestyle-list">${lifestyleTips.map(t => `<li>${t}</li>`).join('')}</ul>
+       </div>`
+    : '';
+
+  return `
+  <div class="bm-edu-card" id="bm-edu-card">
+    <div class="bm-edu-header" id="bm-edu-toggle">
+      <span class="bm-edu-icon">📖</span>
+      <div>
+        <div class="bm-edu-title">Was ist ${bm.name}?</div>
+        <div class="bm-edu-subtitle">Wirkung, Bedeutung & Alltagstipps</div>
+      </div>
+      <span class="bm-edu-arrow">▼</span>
+    </div>
+    <div class="bm-edu-body">
+      ${bm.description ? `<div class="edu-section">
+        <p class="edu-description">${bm.description}</p>
+      </div>` : ''}
+      ${bm.function ? `<div class="edu-section">
+        <div class="edu-section-title">⚙️ Funktion im Körper</div>
+        <p class="edu-function">${bm.function}</p>
+      </div>` : ''}
+      ${tipsHtml}
+      <p class="edu-disclaimer">ℹ️ Diese Informationen dienen der allgemeinen Aufklärung. Sie ersetzen keine medizinische Beratung.</p>
+    </div>
+  </div>`;
+}
+
+// ── Darm-Erklärkarte (collapsible) ──
+function renderGutEducationCard() {
+  return `
+  <div class="gut-edu-card" id="gut-edu-card">
+    <div class="gut-edu-header" id="gut-edu-toggle">
+      <span class="gut-edu-emoji">🦠</span>
+      <div>
+        <div class="gut-edu-title">Warum ist dein Darm so entscheidend?</div>
+        <div class="gut-edu-subtitle">Dein zweites Gehirn — und wie du es pflegst</div>
+      </div>
+      <span class="gut-edu-arrow" id="gut-edu-arrow">▼</span>
+    </div>
+    <div class="gut-edu-body" id="gut-edu-body">
+
+      <div class="gut-edu-section">
+        <div class="gut-edu-section-title">🧠 Der Darm als zweites Gehirn</div>
+        <p class="gut-edu-text">Dein Darm enthält über <strong>100 Millionen Nervenzellen</strong> — mehr als Rückenmark und peripheres Nervensystem zusammen. Dieses <em>enterische Nervensystem</em> kommuniziert über den Vagusnerv direkt mit dem Gehirn (Darm-Hirn-Achse). Dein Darmmikrobiom produziert ca. <strong>90–95% deines körpereigenen Serotonins</strong> — dem wichtigsten Stimmungshormon. Schlechte Darmgesundheit ist daher direkt mit Depression, Angst und schlechtem Schlaf assoziiert.</p>
+      </div>
+
+      <div class="gut-edu-section">
+        <div class="gut-edu-section-title">🛡️ Darm & Immunsystem</div>
+        <p class="gut-edu-text">Rund <strong>70–80% deines Immunsystems</strong> sitzt im Darm. Die Darmschleimhaut (Mukosa) und das Mikrobiom bilden gemeinsam eine hochentwickelte Schutzbarriere gegen Krankheitserreger. Ein gesundes, diverses Mikrobiom trainiert dein Immunsystem täglich — es lernt, zwischen harmlosen Substanzen und echten Bedrohungen zu unterscheiden. Dysbiose (gestörte Darmflora) steht in Zusammenhang mit Autoimmunerkrankungen, Allergien und chronischen Entzündungen.</p>
+      </div>
+
+      <div class="gut-edu-section">
+        <div class="gut-edu-section-title">♻️ Wie sich der Darm selbst reinigt</div>
+        <p class="gut-edu-text">Dein Darm besitzt ein beeindruckendes Selbstreinigungssystem. Zwischen den Mahlzeiten aktiviert er den <em>Migrating Motor Complex (MMC)</em> — eine wellenartige Muskelkontraktion, die unverdaute Reste und Bakterien in Richtung Dickdarm transportiert. Aus diesem Grund ist <strong>nächtliches Fasten (12–16h)</strong> so wertvoll: Es gibt dem Darm Zeit, sich zu reinigen. Außerdem produziert die Mukosa kontinuierlich Schleim (Muzin), der Bakterien einfängt und Schadstoffe bindet.</p>
+      </div>
+
+      <div class="gut-edu-section">
+        <div class="gut-edu-section-title">💊 Nach Antibiotika: Darm aufbauen</div>
+        <p class="gut-edu-text">Antibiotika retten Leben — aber sie unterscheiden nicht zwischen schädlichen und nützlichen Bakterien. Eine einzige Kur kann die Mikrobiom-Diversität um bis zu <strong>30–50%</strong> reduzieren, bei breiten Spektren noch mehr. Die Regeneration dauert ohne Unterstützung Wochen bis Monate. Mit gezielter Ernährung und Supplementen geht es deutlich schneller:</p>
+        <div class="gut-rebuild-steps">
+          <div class="gut-rebuild-step"><span class="gut-rebuild-num">1</span><div><strong>Während der Antibiotika:</strong> Probiotika mit min. <em>5 Mrd. KBE</em> täglich, zeitversetzt um ≥2h zur Antibiotika-Einnahme. Bewährte Stämme: <em>Lactobacillus rhamnosus GG, Saccharomyces boulardii</em>.</div></div>
+          <div class="gut-rebuild-step"><span class="gut-rebuild-num">2</span><div><strong>4–8 Wochen danach:</strong> Multi-Stamm-Probiotika (Lactobacillus + Bifidobacterium) weiternehmen. Fermentierte Lebensmittel täglich einbauen: Joghurt, Kefir, Sauerkraut, Kimchi.</div></div>
+          <div class="gut-rebuild-step"><span class="gut-rebuild-num">3</span><div><strong>Präbiotika als Nahrung:</strong> Inulin, FOS (Chicorée, Zwiebeln, Artischocken) und resistente Stärke füttern die neuen Bakterien. 30 g Ballaststoffe pro Tag sind das Ziel.</div></div>
+          <div class="gut-rebuild-step"><span class="gut-rebuild-num">4</span><div><strong>Darmschutzschicht stärken:</strong> L-Glutamin (3–5 g täglich) und Knochenbrühe reparieren die Darmschleimhaut und senken Zonulin nachweislich.</div></div>
+        </div>
+        <p class="gut-edu-disclaimer">ℹ️ Diese Informationen dienen der allgemeinen Aufklärung und ersetzen keine ärztliche Beratung. Bei anhaltenden Darmbeschwerden bitte einen Arzt aufsuchen.</p>
+      </div>
+
+      <div class="gut-edu-section">
+        <div class="gut-edu-section-title">🌿 Die 30-Pflanzen-Regel</div>
+        <p class="gut-edu-text">Studien zeigen: Menschen, die <strong>30+ verschiedene Pflanzensorten pro Woche</strong> essen, haben eine signifikant höhere Mikrobiom-Diversität als jene mit unter 10 Sorten. Dabei zählen nicht nur Gemüse und Obst — auch Kräuter, Gewürze, Nüsse, Samen und Hülsenfrüchte zählen je als eigene Sorte. Ein Esslöffel Leinsamen ist eine Pflanzensorte. Kurkuma, Zimt und Pfeffer zählen ebenfalls. Diversität in der Ernährung schafft Diversität im Darm.</p>
+      </div>
+
+    </div>
+  </div>`;
+}
+
+// ── Spezialisierte Test-Links Render ──
+function renderGutSpecialistTests(bmId) {
+  const tests = GUT_SPECIALIST_TESTS[bmId];
+  if (!tests || !tests.length) return '';
+  return `
+  <div class="gut-tests-section">
+    <h4>🔬 Wo du diesen Wert messen lassen kannst</h4>
+    <p class="gut-tests-intro">Diese spezialisierten Labore und Anbieter ermöglichen es dir, ${CATALOG.biomarkers.find(b=>b.id===bmId)?.name || 'diesen Wert'} zuverlässig zu messen:</p>
+    <div class="gut-tests-list">
+      ${tests.map(t => `
+        <a href="${t.url}" target="_blank" rel="noopener" class="gut-test-card">
+          <div class="gut-test-label">${t.label}</div>
+          <div class="gut-test-note">${t.note}</div>
+          <span class="gut-test-arrow">→</span>
+        </a>`).join('')}
+    </div>
+    <p class="gut-tests-disclaimer">* Keine Affiliate-Links. VitalMetrics erhält keine Provision. Reine Empfehlung für zuverlässige Testanbieter.</p>
+  </div>`;
 }
 
 const RECIPES = [
@@ -2707,19 +3668,108 @@ function validateMeasurement(value, bm) {
 // ── ROUTER / STATE ────────────────────────────────────────
 let currentScreen='dashboard', currentBiomarkerId='vitamin_d';
 
+// ── SPORT CATALOG (MET-Werte nach ACSM/Compendium of Physical Activities) ──
+const SPORTS = [
+  { id:'laufen',       name:'Laufen',             emoji:'🏃', met:8.0 },
+  { id:'spazieren',    name:'Spazieren',           emoji:'🚶', met:3.8 },
+  { id:'radfahren',    name:'Radfahren',           emoji:'🚴', met:6.0 },
+  { id:'schwimmen',    name:'Schwimmen',           emoji:'🏊', met:6.0 },
+  { id:'yoga',         name:'Yoga',                emoji:'🧘', met:2.5 },
+  { id:'krafttraining',name:'Krafttraining',       emoji:'💪', met:3.5 },
+  { id:'fussball',     name:'Fußball',             emoji:'⚽', met:7.0 },
+  { id:'tennis',       name:'Tennis',              emoji:'🎾', met:7.3 },
+  { id:'fitness',      name:'Fitness/Aerobic',     emoji:'🏋️', met:6.0 },
+  { id:'boxen',        name:'Boxen',               emoji:'🥊', met:7.8 },
+  { id:'skifahren',    name:'Skifahren',           emoji:'⛷️', met:6.8 },
+  { id:'pilates',      name:'Pilates',             emoji:'🤸', met:3.0 },
+  { id:'klettern',     name:'Klettern',            emoji:'🧗', met:8.0 },
+  { id:'badminton',    name:'Badminton',           emoji:'🏸', met:4.5 },
+  { id:'rudern',       name:'Rudern',              emoji:'🚣', met:6.0 },
+  { id:'tanzen',       name:'Tanzen',              emoji:'💃', met:4.5 },
+  { id:'basketball',   name:'Basketball',          emoji:'🏀', met:6.5 },
+  { id:'wandern',      name:'Wandern',             emoji:'🥾', met:5.5 },
+  { id:'kampfsport',   name:'Kampfsport',          emoji:'🥋', met:10.0 },
+  { id:'wassergymnastik',name:'Wassergymnastik',   emoji:'🤽', met:4.0 },
+];
+
+// Activity Repository
+const activityRepo = {
+  _key: 'vm_activity',
+  _load() { return storage.get(this._key) || {}; },
+  getDay(dateStr) { return this._load()[dateStr] || { steps: 0, activities: [] }; },
+  saveDay(dateStr, data) {
+    const all = this._load();
+    all[dateStr] = data;
+    storage.set(this._key, all);
+  },
+  getLast7Days() {
+    const all = this._load();
+    const result = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      const day = all[key] || { steps: 0, activities: [] };
+      const totalCal = day.activities.reduce((s, a) => s + (a.calories || 0), 0);
+      result.push({ date: key, day: ['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()], steps: day.steps || 0, calories: totalCal, isToday: i === 0 });
+    }
+    return result;
+  }
+};
+
+// Cycle Repository
+const cycleRepo = {
+  _key: 'vm_cycle',
+  get() { return storage.get(this._key) || { periodStarts: [], cycleLength: 28, periodLength: 5 }; },
+  save(data) { storage.set(this._key, Object.assign(this.get(), data)); },
+  getCurrentPhase() {
+    const d = this.get();
+    if (!d.periodStarts.length) return null;
+    const last = new Date(d.periodStarts[d.periodStarts.length - 1]);
+    const today = new Date(); today.setHours(0,0,0,0);
+    const dayOfCycle = Math.floor((today - last) / 86400000) + 1;
+    const cl = d.cycleLength || 28;
+    const pl = d.periodLength || 5;
+    const dayInCycle = ((dayOfCycle - 1) % cl) + 1;
+    if (dayInCycle <= pl) return { phase: 'menstruation', day: dayInCycle, label: 'Menstruation', emoji: '🔴' };
+    if (dayInCycle <= 13) return { phase: 'follicular', day: dayInCycle, label: 'Follikelphase', emoji: '🟠' };
+    if (dayInCycle <= 15) return { phase: 'ovulation', day: dayInCycle, label: 'Eisprung', emoji: '🟢' };
+    return { phase: 'luteal', day: dayInCycle, label: 'Lutealphase', emoji: '🟣' };
+  },
+  predictNext() {
+    const d = this.get();
+    if (!d.periodStarts.length) return null;
+    const last = new Date(d.periodStarts[d.periodStarts.length - 1]);
+    const next = new Date(last); next.setDate(next.getDate() + (d.cycleLength || 28));
+    const today = new Date(); today.setHours(0,0,0,0);
+    const daysUntil = Math.round((next - today) / 86400000);
+    return { date: next.toLocaleDateString('de-DE', { day:'2-digit', month:'long' }), daysUntil };
+  }
+};
+
+// Kalorienbrechnung: MET × Gewicht(kg) × Zeit(h)
+function calcCalories(met, minutes, weightKg) {
+  const w = weightKg || 70;
+  return Math.round(met * w * (minutes / 60));
+}
+
 function navigate(screen, bmId) {
   if (bmId) currentBiomarkerId=bmId;
   currentScreen=screen;
   const nav=document.querySelector('.bottom-nav');
   if (nav) nav.style.display=['onboarding'].includes(screen)?'none':'flex';
-  document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.screen===screen));
+  // Sub-screens (fasting, glucose_day, cravings) belong to the tools tab
+  const toolsScreens = ['fasting','glucose_day','cravings'];
+  document.querySelectorAll('.nav-item').forEach(el => {
+    const match = toolsScreens.includes(screen) ? el.dataset.screen==='tools' : el.dataset.screen===screen;
+    el.classList.toggle('active', match);
+  });
   renderScreen(screen);
 }
 
 function renderScreen(screen) {
   const c=document.getElementById('screen-container');
   c.innerHTML='';
-  const screens={dashboard:renderDashboard,entry:renderEntry,trend:renderTrend,profile:renderProfile,premium:renderPremium,onboarding:renderOnboarding};
+  const screens={dashboard:renderDashboard,entry:renderEntry,trend:renderTrend,profile:renderProfile,premium:renderPremium,onboarding:renderOnboarding,tools:renderToolsHub,fasting:renderFasting,glucose_day:renderGlucoseDay,cravings:renderCravings,activity:renderActivity,cycle:renderCycle};
   if (screens[screen]) screens[screen](c);
 }
 
@@ -2748,6 +3798,8 @@ function renderOnboarding(c) {
           <button class="age-btn" data-age="18-19">18–19 Jahre</button>
           <button class="age-btn" data-age="19-25">19–25 Jahre</button>
           <button class="age-btn" data-age="25-50">25–50 Jahre</button>
+          <button class="age-btn" data-age="51-70">51–70 Jahre</button>
+          <button class="age-btn" data-age="70+">Über 70 Jahre</button>
         </div>
       </div>
       <div class="onboarding-card">
@@ -2785,7 +3837,7 @@ function renderOnboarding(c) {
 // ══════════════════════════════════════════════════════════
 // SCREEN: DASHBOARD
 // ══════════════════════════════════════════════════════════
-const CAT_ICONS = { vitamins:'🧬', minerals:'⚗️', body:'⚖️', blood:'🩸', hormones:'⚡', other:'💊' };
+const CAT_ICONS = { vitamins:'🧬', minerals:'⚗️', body:'⚖️', blood:'🩸', hormones:'⚡', other:'💊', gut:'🦠', cognitive:'🧠', fat_soluble:'💊', water_soluble:'💊', trace_elements:'⚗️', lab_values:'🧪', longevity:'⏳' };
 const STATUS_BG = { ok:'linear-gradient(135deg,#E8F5E9,#F1F8F2)', low:'linear-gradient(135deg,#FFF8E1,#FFFDE7)', high:'linear-gradient(135deg,#FBE9E7,#FFF3E0)', unknown:'var(--surface)' };
 const STATUS_EMOJI = { ok:'✅', low:'⬇️', high:'⬆️', unknown:'➕' };
 
@@ -3260,6 +4312,8 @@ function renderDashboard(c) {
           <span class="bm-info-cat-chip">🧪 Laborwerte</span>
           <span class="bm-info-cat-chip">⚖️ Körperwerte</span>
           <span class="bm-info-cat-chip">⏳ Longevity</span>
+          <span class="bm-info-cat-chip">🦠 Darm & Mikrobiom</span>
+          <span class="bm-info-cat-chip">🧠 Kognitive Gesundheit</span>
         </div>
       </div>
       <div class="bm-info-section">
@@ -3493,6 +4547,9 @@ function renderTrend(c) {
          <table class="history-table"><thead><tr><th>Datum</th><th>Wert</th><th>Status</th><th></th></tr></thead>
          <tbody>${histRows}</tbody></table></div>`
     }
+    ${renderBiomarkerEduCard(bm)}
+    ${bm.category==='gut' ? renderGutEducationCard() : ''}
+    ${bm.category==='gut' ? renderGutSpecialistTests(bm.id) : ''}
     ${bm.category!=='body'?renderFoodsSection(bm,status):''}
     <button class="btn-primary btn-add-entry" id="btn-add-entry">+ Neuen Wert eintragen</button>
   </div>`;
@@ -3501,6 +4558,30 @@ function renderTrend(c) {
   c.querySelector('#trend-sel').addEventListener('change',e=>navigate('trend',e.target.value));
   c.querySelector('#btn-add-entry')?.addEventListener('click',()=>navigate('entry',bm.id));
   c.querySelector('#btn-add-first')?.addEventListener('click',()=>navigate('entry',bm.id));
+  // Biomarker Education Card toggle
+  const bmEduToggle = c.querySelector('#bm-edu-toggle');
+  if (bmEduToggle) {
+    bmEduToggle.addEventListener('click', () => {
+      const card = c.querySelector('#bm-edu-card');
+      if (card) {
+        card.classList.toggle('open');
+        const arrow = bmEduToggle.querySelector('.bm-edu-arrow');
+        if (arrow) arrow.textContent = card.classList.contains('open') ? '▲' : '▼';
+      }
+    });
+  }
+  // Gut Education Card toggle
+  const gutEduToggle = c.querySelector('#gut-edu-toggle');
+  if (gutEduToggle) {
+    gutEduToggle.addEventListener('click', () => {
+      const card = c.querySelector('#gut-edu-card');
+      const arrow = c.querySelector('#gut-edu-arrow');
+      if (card) {
+        card.classList.toggle('open');
+        if (arrow) arrow.textContent = card.classList.contains('open') ? '▲' : '▼';
+      }
+    });
+  }
   c.querySelectorAll('.btn-delete').forEach(b=>b.addEventListener('click',()=>{
     if(confirm('Eintrag löschen?')){measurementRepo.delete(parseInt(b.dataset.id));navigate('trend',bm.id);}
   }));
@@ -3531,10 +4612,18 @@ function renderFoodsSection(bm, status) {
   const blsFoods = BLS_TOP_FOODS[bm.id] || [];
   const maxAmount = blsFoods.length ? blsFoods[0].amount : 1;
   const isLowerBetter = !!bm.lowerIsBetter;
-  const blsSectionTitle = isLowerBetter ? '🥗 Lebensmittel, die helfen' : '🥗 Top 10 Lebensmittel';
-  const blsBadgeText    = isLowerBetter ? 'Ernährungstipps · entzündungshemmend' : 'BLS 4.0 · pro 100 g';
+  const isLifestyleFoods = maxAmount === 0; // Gut/Mikrobiom-Marker: keine pro-100g-Mengen
+  const hideAmounts = isLowerBetter || isLifestyleFoods;
+  const blsSectionTitle = isLowerBetter ? '🥗 Lebensmittel, die helfen'
+    : isLifestyleFoods ? '🥗 Ernährungsempfehlungen'
+    : '🥗 Top 10 Lebensmittel';
+  const blsBadgeText    = isLowerBetter ? 'Ernährungstipps · entzündungshemmend'
+    : isLifestyleFoods ? 'Ernährungstipps · Mikrobiom'
+    : 'BLS 4.0 · pro 100 g';
   const lowerBetterNote = isLowerBetter
     ? `<p class="bls-lower-note">Diese Lebensmittel können helfen, deinen ${bm.name}-Wert zu senken oder zu stabilisieren. Je kleiner der Wert, desto besser.</p>`
+    : isLifestyleFoods
+    ? `<p class="bls-lower-note">Diese Lebensmittel unterstützen dein Mikrobiom und fördern einen gesunden Darm.</p>`
     : '';
   const blsHtml = blsFoods.length ? `
     <div class="bls-section">
@@ -3545,7 +4634,7 @@ function renderFoodsSection(bm, status) {
       ${lowerBetterNote}
       <div class="bls-list">
         ${blsFoods.map((f, i) => {
-          const pct = Math.round((f.amount / maxAmount) * 100);
+          const pct = isLifestyleFoods ? 80 : Math.round((f.amount / maxAmount) * 100);
           const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
           const amt = f.amount >= 10 ? Math.round(f.amount) : f.amount;
           return `<div class="bls-row">
@@ -3556,7 +4645,7 @@ function renderFoodsSection(bm, status) {
                 <div class="bls-bar" style="width:${pct}%"></div>
               </div>
             </div>
-            ${isLowerBetter ? '' : `<span class="bls-amount">${amt} <small>${bm.unit}</small></span>`}
+            ${hideAmounts ? '' : `<span class="bls-amount">${amt} <small>${bm.unit}</small></span>`}
           </div>`;
         }).join('')}
       </div>
@@ -3670,6 +4759,8 @@ function renderProfile(c) {
           <option value="18-19" ${p.ageGroup==='18-19'?'selected':''}>18–19 Jahre</option>
           <option value="19-25" ${p.ageGroup==='19-25'?'selected':''}>19–25 Jahre</option>
           <option value="25-50" ${p.ageGroup==='25-50'?'selected':''}>25–50 Jahre</option>
+          <option value="51-70" ${p.ageGroup==='51-70'?'selected':''}>51–70 Jahre</option>
+          <option value="70+" ${p.ageGroup==='70+'?'selected':''}>Über 70 Jahre</option>
         </select></div>
       <div class="form-group">
         <label>Körpergröße (cm)</label>
@@ -3686,11 +4777,70 @@ function renderProfile(c) {
       <div class="form-group"><label>Zielgewicht (kg)</label><input type="number" id="p-wg" class="form-control" value="${p.weightGoal||''}" placeholder="z. B. 70"></div>
       <button class="btn-primary" id="btn-save-p">Speichern</button>
     </div>
+    <div class="profile-card reminder-card">
+      <h3>🔔 Tägliche Erinnerung</h3>
+      <p class="hint-text">VitalMetrics erinnert dich täglich mit einem personalisierten Tipp basierend auf deinen Biomarkern.</p>
+      <div class="form-group reminder-time-group">
+        <label>Uhrzeit der Erinnerung</label>
+        <div class="reminder-time-row">
+          <input type="time" id="reminder-time-input" class="form-control reminder-time-input"
+            value="${localStorage.getItem('vitalmetrics_reminder_time') || '09:00'}">
+          <button class="btn-primary btn-save-reminder" id="btn-save-reminder">Speichern</button>
+        </div>
+      </div>
+      <p class="hint-text reminder-note">⚡ Funktioniert nur auf dem Android-Gerät, nicht im Browser.</p>
+    </div>
     <div class="profile-card danger-zone">
       <h3>Daten</h3>
       <p class="hint-text">Alle gespeicherten Messwerte löschen – kann nicht rückgängig gemacht werden.</p>
       <button class="btn-danger" id="btn-clear">Alle Daten löschen</button>
     </div>
+    <div class="profile-card transp-card">
+      <h3>Transparenz & Methodik</h3>
+
+      <div class="transp-section">
+        <div class="transp-section-title"><span class="transp-icon">📚</span> Datenquellen</div>
+        <p class="transp-text">Alle Referenzwerte und Lebensmitteldaten basieren auf öffentlich zugänglichen, wissenschaftlichen Quellen:</p>
+        <div class="transp-chips">
+          <span class="transp-chip">BLS 4.0</span>
+          <span class="transp-chip">DGE D-A-CH 2021/2024</span>
+          <span class="transp-chip">MRI (Max Rubner-Institut)</span>
+          <span class="transp-chip">WHO Grenzwerte</span>
+          <span class="transp-chip">EFSA Referenzwerte</span>
+        </div>
+        <p class="transp-text" style="margin-top:8px"><strong>BLS 4.0</strong> (Bundeslebensmittelschlüssel) ist die offizielle deutsche Nährstoffdatenbank des Max Rubner-Instituts mit über 10.000 Lebensmitteln und bis zu 150 Nährstoffen pro Eintrag. Die <strong>DGE D-A-CH-Referenzwerte</strong> sind die Grundlage aller Biomarker-Referenzbereiche — entwickelt von der Deutschen Gesellschaft für Ernährung, der Österreichischen Gesellschaft für Ernährung und der Schweizerischen Gesellschaft für Ernährung.</p>
+      </div>
+
+      <hr class="transp-divider">
+
+      <div class="transp-section">
+        <div class="transp-section-title"><span class="transp-icon">🔬</span> Methodik</div>
+        <p class="transp-text">VitalMetrics berechnet Statusbewertungen (Optimal / Niedrig / Erhöht) durch den Vergleich deiner eingetragenen Messwerte mit den jeweils geltenden Referenzbereichen. Wo verfügbar, werden geschlechtsspezifische Referenzwerte verwendet. Der <strong>Longevity Score</strong> ist ein gewichtetes Modell auf Basis von bis zu 12 Biomarkern — er dient der Orientierung, ist kein medizinischer Befund. Das biologische Alter ist eine Schätzung basierend auf der Abweichung vom Optimalwert.</p>
+        <p class="transp-text" style="margin-top:8px">Supplement-Empfehlungen folgen dem Prinzip <em>„Ernährung zuerst"</em>: Lebensmittelquellen werden immer vorrangig gezeigt. Affiliate-Links zu Supplements sind klar als solche gekennzeichnet und haben keinen Einfluss auf die inhaltliche Bewertung.</p>
+      </div>
+
+      <hr class="transp-divider">
+
+      <div class="transp-section">
+        <div class="transp-section-title"><span class="transp-icon">🔒</span> Datenschutz & lokale Datenhaltung</div>
+        <div class="transp-privacy-box">
+          <span class="transp-privacy-icon">🛡️</span>
+          <div class="transp-privacy-text">
+            <strong>100 % lokal — keine Server, keine Cloud.</strong>
+            Alle deine Messwerte, Profildaten und Einstellungen werden ausschließlich im lokalen Speicher dieses Geräts gespeichert (localStorage). Es findet keinerlei Datenübertragung an externe Server statt. VitalMetrics erfordert keine Registrierung, kein Konto und keine Internetverbindung für den Betrieb. Deine Gesundheitsdaten gehören dir allein.
+          </div>
+        </div>
+        <p class="transp-text" style="margin-top:10px">Dieses Datenschutzversprechen ist technisch, nicht nur rechtlich: Da keine Server-Infrastruktur existiert, ist eine Weitergabe deiner Daten durch uns schlicht nicht möglich. Das macht VitalMetrics DSGVO-konform by design — ohne Aufwand für dich.</p>
+      </div>
+
+      <hr class="transp-divider">
+
+      <div class="transp-section">
+        <div class="transp-section-title"><span class="transp-icon">🏥</span> Für Fachkräfte & Institutionen</div>
+        <p class="transp-text">VitalMetrics ist als Informations- und Präventionswerkzeug konzipiert — kein Medizinprodukt nach MDR (EU 2017/745). Die App eignet sich als ergänzendes Tool in der Ernährungsberatung, betrieblichen Gesundheitsförderung (§ 20 SGB V) und für präventionsorientierte Krankenkassenprogramme. Der PDF-Bericht-Export ermöglicht die einfache Weitergabe an Fachkräfte. Bei Interesse an B2B-Kooperationen oder Whitelabeling: Kontakt über das Impressum.</p>
+      </div>
+    </div>
+
     <div class="profile-card about-card">
       <h3>Über VitalMetrics</h3>
       <p class="disclaimer-text">⚠️ <strong>Kein Medizinprodukt.</strong> Diese App dient ausschließlich zur persönlichen Information und Orientierung. Sie ersetzt keine ärztliche Beratung, Diagnose oder Behandlung. Referenzwerte nach DGE (D-A-CH 2021/2024). Supplements sollten nur eingenommen werden, wenn der Bedarf über die Ernährung nachweislich nicht gedeckt werden kann – und idealerweise nach Rücksprache mit einem Arzt.</p>
@@ -3717,27 +4867,899 @@ function renderProfile(c) {
   c.querySelector('#btn-clear').addEventListener('click',()=>{
     if(confirm('Wirklich alle Messwerte löschen?')){measurementRepo.clear();showToast('Daten gelöscht.');navigate('dashboard');}
   });
+
+  // Reminder-Zeit speichern
+  const btnSaveReminder = c.querySelector('#btn-save-reminder');
+  if (btnSaveReminder) {
+    btnSaveReminder.addEventListener('click', () => {
+      const timeInput = c.querySelector('#reminder-time-input');
+      if (timeInput && timeInput.value) {
+        saveReminderTime(timeInput.value);
+        showToast('🔔 Erinnerung gespeichert für ' + timeInput.value + ' Uhr');
+      }
+    });
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// SMART REMINDERS — @capacitor/local-notifications
+// Tägliche personalisierte Erinnerung basierend auf suboptimalen Werten
+// ══════════════════════════════════════════════════════════
+
+const REMINDER_MESSAGES = {
+  vitamin_d: {
+    low: [
+      '☀️ Vitamin D niedrig — heute an dein Supplement gedacht?',
+      '☀️ Dein Vitamin D braucht Unterstützung — draußen war heute Sonne?',
+      '☀️ Vitamin D: ein kurzer Spaziergang in der Mittagssonne hilft.',
+    ],
+  },
+  vitamin_b12: {
+    low: [
+      '🥚 Vitamin B12 niedrig — Eier, Fisch oder Fleisch heute auf dem Teller?',
+      '🥚 B12-Tipp: fermentierte Produkte wie Tempeh oder Natto sind B12-Quellen.',
+    ],
+  },
+  ferritin: {
+    low: [
+      '🩸 Ferritin niedrig — Hülsenfrüchte mit Vitamin C verbessern die Aufnahme.',
+      '🩸 Eisenmangel-Tipp: grünes Blattgemüse + Zitronensaft erhöht die Resorption.',
+    ],
+  },
+  magnesium: {
+    low: [
+      '💚 Magnesium niedrig — Nüsse, Samen oder dunkle Schokolade heute?',
+      '💚 Tipp: Magnesiumreiche Mineralwässer (>100 mg/L) helfen täglich.',
+    ],
+  },
+  zinc: {
+    low: [
+      '🔩 Zink niedrig — Kürbiskerne und Fleisch sind top Zinkquellen.',
+      '🔩 Zink-Tipp: Einweichen von Hülsenfrüchten verbessert Zinkaufnahme.',
+    ],
+  },
+  omega3: {
+    low: [
+      '🐟 Omega-3 niedrig — fetthaltiger Fisch 2× pro Woche hilft langfristig.',
+      '🐟 Omega-3-Tipp: Leinöl und Walnüsse liefern pflanzliches ALA.',
+    ],
+  },
+  folate: {
+    low: [
+      '🥦 Folsäure niedrig — grünes Gemüse wie Spinat und Brokkoli einplanen.',
+      '🥦 Folat-Tipp: rohe Salate bewahren mehr Folsäure als Gekochtes.',
+    ],
+  },
+  hscrp: {
+    high: [
+      '🔥 Stille Entzündung (hsCRP) — heute mediterrane Kost geplant?',
+      '🔥 hsCRP-Tipp: Olivenöl, Beeren und Kurkuma wirken entzündungshemmend.',
+    ],
+  },
+  hba1c: {
+    high: [
+      '🍬 HbA1c erhöht — ballaststoffreiche Mahlzeiten stabilisieren den Blutzucker.',
+      '🍬 Tipp: Bewegung nach dem Essen senkt den Blutzuckeranstieg deutlich.',
+    ],
+  },
+  glucose: {
+    high: [
+      '🍬 Nüchternblutzucker erhöht — heute weniger raffinierte Kohlenhydrate?',
+      '🍬 Tipp: Apfelessig vor Mahlzeiten kann den Blutzuckeranstieg dämpfen.',
+    ],
+  },
+  cholesterol_ldl: {
+    high: [
+      '💛 LDL-Cholesterin erhöht — Haferflocken und Hülsenfrüchte senken LDL.',
+      '💛 LDL-Tipp: gesättigte Fette durch ungesättigte (Nüsse, Avocado) ersetzen.',
+    ],
+  },
+  homocystein: {
+    high: [
+      '🧬 Homocystein erhöht — B6, B12 und Folsäure sind die Schlüsselnährstoffe.',
+      '🧬 Tipp: grünes Gemüse und Hülsenfrüchte liefern B-Vitamine für Homocystein.',
+    ],
+  },
+  cortisol: {
+    high: [
+      '😮‍💨 Cortisol erhöht — 10 Minuten Atemübungen heute einplanen?',
+      '😮‍💨 Stress-Tipp: Adaptogene wie Ashwagandha können Cortisol langfristig senken.',
+    ],
+  },
+  testosterone: {
+    low: [
+      '💪 Testosteron niedrig — Krafttraining und ausreichend Schlaf helfen.',
+      '💪 Tipp: Zink und Vitamin D unterstützen die Testosteronproduktion.',
+    ],
+  },
+  tsh: {
+    high: [
+      '🦋 TSH erhöht (Schilddrüse) — Jod und Selen sind wichtige Nährstoffe.',
+      '🦋 Tipp: Seefisch und Paranüsse liefern Jod und Selen für die Schilddrüse.',
+    ],
+  },
+};
+
+const DEFAULT_REMINDER_MESSAGES = [
+  '📊 VitalMetrics: Hast du heute deine Gesundheitswerte im Blick?',
+  '🌱 Ein guter Tag für gesunde Entscheidungen — VitalMetrics erinnert dich.',
+  '💧 Ausreichend Wasser getrunken heute? Deine Biomarker danken es dir.',
+  '🥗 Ernährung ist Prävention — schau heute in deine VitalMetrics.',
+];
+
+function buildReminderText() {
+  const measurements = JSON.parse(localStorage.getItem('vitalmetrics_measurements') || '{}');
+  const catalog = getBiomarkerCatalog ? getBiomarkerCatalog() : [];
+  const candidates = [];
+
+  catalog.forEach(bm => {
+    const val = parseFloat(measurements[bm.id]);
+    if (isNaN(val)) return;
+    const msgs = REMINDER_MESSAGES[bm.id];
+    if (!msgs) return;
+
+    const isLower = !!bm.lowerIsBetter;
+    const refMin = bm.refMin;
+    const refMax = bm.refMax;
+
+    let status = null;
+    if (isLower && refMax !== undefined && val > refMax) status = 'high';
+    else if (!isLower) {
+      if (refMin !== undefined && val < refMin) status = 'low';
+      else if (refMax !== undefined && val > refMax) status = 'high';
+    }
+
+    if (status && msgs[status] && msgs[status].length > 0) {
+      candidates.push(...msgs[status]);
+    }
+  });
+
+  if (candidates.length === 0) {
+    return DEFAULT_REMINDER_MESSAGES[Math.floor(Math.random() * DEFAULT_REMINDER_MESSAGES.length)];
+  }
+  return candidates[Math.floor(Math.random() * candidates.length)];
+}
+
+async function scheduleHealthReminder() {
+  try {
+    const { LocalNotifications } = Capacitor.Plugins;
+    if (!LocalNotifications) return;
+
+    // Alte Erinnerung löschen
+    await LocalNotifications.cancel({ notifications: [{ id: 1001 }] });
+
+    const reminderTime = localStorage.getItem('vitalmetrics_reminder_time') || '09:00';
+    const [hours, minutes] = reminderTime.split(':').map(Number);
+
+    const now = new Date();
+    const fireDate = new Date();
+    fireDate.setHours(hours, minutes, 0, 0);
+    if (fireDate <= now) {
+      fireDate.setDate(fireDate.getDate() + 1);
+    }
+
+    const body = buildReminderText();
+
+    await LocalNotifications.schedule({
+      notifications: [{
+        id: 1001,
+        title: 'VitalMetrics',
+        body,
+        schedule: {
+          at: fireDate,
+          repeats: true,
+          every: 'day',
+        },
+        sound: null,
+        smallIcon: 'ic_stat_icon_config_sample',
+        channelId: 'vitalmetrics_reminders',
+      }],
+    });
+  } catch (e) {
+    console.warn('Reminder scheduling failed:', e);
+  }
+}
+
+async function initReminders() {
+  try {
+    if (typeof Capacitor === 'undefined' || !Capacitor.isNativePlatform()) return;
+    const { LocalNotifications } = Capacitor.Plugins;
+    if (!LocalNotifications) return;
+
+    // Berechtigung anfragen
+    const perm = await LocalNotifications.requestPermissions();
+    if (perm.display !== 'granted') return;
+
+    // Notification-Kanal erstellen (Android 8+)
+    await LocalNotifications.createChannel({
+      id: 'vitalmetrics_reminders',
+      name: 'Gesundheitserinnerungen',
+      description: 'Tägliche Biomarker-Erinnerungen',
+      importance: 3,
+      visibility: 1,
+      sound: 'default',
+      vibration: true,
+    });
+
+    await scheduleHealthReminder();
+  } catch (e) {
+    console.warn('initReminders failed:', e);
+  }
+}
+
+// Reminder-Zeit in Einstellungen speichern und neu planen
+function saveReminderTime(timeStr) {
+  localStorage.setItem('vitalmetrics_reminder_time', timeStr);
+  scheduleHealthReminder();
+}
+
+// ══════════════════════════════════════════════════════════
+// SCREEN: TOOLS HUB
+// ══════════════════════════════════════════════════════════
+function renderToolsHub(c) {
+  const fastData = JSON.parse(localStorage.getItem('vitalmetrics_fasting') || '{}');
+  const streak = fastData.streak || 0;
+  const cravings = JSON.parse(localStorage.getItem('vitalmetrics_cravings') || '[]');
+  const todayGlu = (() => {
+    const d = JSON.parse(localStorage.getItem('vitalmetrics_glucose_day') || '{}');
+    const t = new Date().toISOString().slice(0,10);
+    const e = d[t] || {};
+    return Object.keys(e).length;
+  })();
+
+  c.innerHTML = `<div class="tools-hub">
+    <div class="tools-hub-header">
+      <div class="tools-hub-title">⚡ Health Tools</div>
+      <div class="tools-hub-sub">Dein persönliches Stoffwechsel-Toolkit</div>
+    </div>
+    <div class="tools-hub-cards" style="padding:0 16px">
+      <div class="tool-card" id="tool-fasting">
+        <div class="tool-card-icon">⏱️</div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">Intervallfasten-Tracker</div>
+          <div class="tool-card-desc">16:8 · 14:10 · 12:12 — Timer, Autophagie-Phasen & Streak</div>
+          ${streak>0?`<div class="tool-card-meta">🔥 ${streak} Tage Streak</div>`:`<div class="tool-card-meta">Noch kein Fasten gestartet</div>`}
+        </div>
+        <div class="tool-card-arrow">›</div>
+      </div>
+      <div class="tool-card" id="tool-glucose">
+        <div class="tool-card-icon">🩸</div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">Blutzucker Tagesgang</div>
+          <div class="tool-card-desc">Nüchtern · nach Mahlzeiten · abends — Insulinresistenz erkennen</div>
+          ${todayGlu>0?`<div class="tool-card-meta">✅ Heute ${todayGlu} Wert${todayGlu>1?'e':''} eingetragen</div>`:`<div class="tool-card-meta">Noch keine Tageswerte heute</div>`}
+        </div>
+        <div class="tool-card-arrow">›</div>
+      </div>
+      <div class="tool-card" id="tool-cravings">
+        <div class="tool-card-icon">🍫</div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">Heißhunger-Journal</div>
+          <div class="tool-card-desc">Stimmung, Auslöser & Muster — verstehe deinen Hunger wirklich</div>
+          ${cravings.length>0?`<div class="tool-card-meta">📓 ${cravings.length} Einträge gespeichert</div>`:`<div class="tool-card-meta">Noch keine Einträge</div>`}
+        </div>
+        <div class="tool-card-arrow">›</div>
+      </div>
+    </div>
+  </div>`;
+
+  c.querySelector('#tool-fasting').addEventListener('click', () => navigate('fasting'));
+  c.querySelector('#tool-glucose').addEventListener('click', () => navigate('glucose_day'));
+  c.querySelector('#tool-cravings').addEventListener('click', () => navigate('cravings'));
+}
+
+// ══════════════════════════════════════════════════════════
+// SCREEN: INTERVALLFASTEN
+// ══════════════════════════════════════════════════════════
+const FASTING_STAGES = [
+  { h: 4,  emoji: '🍬', name: 'Zuckerverdauung',   desc: 'Insulin sinkt, Glykogen wird verbraucht.' },
+  { h: 8,  emoji: '🔥', name: 'Fettverbrennung',    desc: 'Körper wechselt auf Fettverbrennung.' },
+  { h: 12, emoji: '🧹', name: 'Tiefe Reinigung',    desc: 'Erste Autophagie-Prozesse starten.' },
+  { h: 16, emoji: '♻️', name: 'Autophagie aktiv',   desc: 'Zellreinigung läuft — optimale Erneuerung.' },
+  { h: 20, emoji: '⚡', name: 'Ketose & Fokus',     desc: 'Ketone steigen — mentale Klarheit.' },
+];
+const FASTING_PROTOCOLS = { '16:8': 16, '14:10': 14, '12:12': 12 };
+
+function getFastingData() {
+  return JSON.parse(localStorage.getItem('vitalmetrics_fasting') || '{"protocol":"16:8","isActive":false,"startTime":null,"streak":0,"log":[]}');
+}
+function saveFastingData(d) {
+  localStorage.setItem('vitalmetrics_fasting', JSON.stringify(d));
+}
+
+function renderFasting(c) {
+  let fd = getFastingData();
+  let timerInterval = null;
+
+  function elapsedMs() {
+    if (!fd.isActive || !fd.startTime) return 0;
+    return Date.now() - new Date(fd.startTime).getTime();
+  }
+  function fmtDuration(ms) {
+    const h = Math.floor(ms / 3600000);
+    const m = Math.floor((ms % 3600000) / 60000);
+    const s = Math.floor((ms % 60000) / 1000);
+    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+  function currentStage(ms) {
+    const h = ms / 3600000;
+    let stage = null;
+    for (const s of FASTING_STAGES) { if (h >= s.h) stage = s; }
+    return stage;
+  }
+
+  function buildHTML() {
+    const targetH = FASTING_PROTOCOLS[fd.protocol] || 16;
+    const ms = elapsedMs();
+    const pct = Math.min(100, Math.round((ms / (targetH * 3600000)) * 100));
+    const stage = currentStage(ms);
+    const logReversed = [...(fd.log || [])].reverse().slice(0, 5);
+    return `<div class="fasting-screen">
+      <div style="display:flex;align-items:center;gap:12px;padding:20px 16px 8px">
+        <button id="btn-back-fasting" style="background:none;font-size:22px;cursor:pointer">←</button>
+        <span style="font-size:20px;font-weight:800">⏱️ Intervallfasten</span>
+      </div>
+      <div class="fasting-protocol-row">
+        ${Object.keys(FASTING_PROTOCOLS).map(p=>`
+          <button class="fasting-proto-btn ${fd.protocol===p?'active':''}" data-proto="${p}" ${fd.isActive?'disabled':''}>
+            ${p}<div class="fasting-proto-label">${FASTING_PROTOCOLS[p]}h fasten</div>
+          </button>`).join('')}
+      </div>
+      <div class="fasting-timer-card">
+        <div class="fasting-status-label">${fd.isActive ? '⏱ Fasten läuft' : 'Bereit zum Fasten'}</div>
+        <div class="fasting-clock" id="fasting-clock">${fd.isActive ? fmtDuration(ms) : '00:00:00'}</div>
+        <div class="fasting-progress-wrap">
+          <div class="fasting-progress-bar" id="fasting-bar" style="width:${pct}%"></div>
+        </div>
+        <div class="fasting-progress-text" id="fasting-pct">${pct}% von ${targetH}h Ziel</div>
+        ${stage ? `<div class="fasting-stage">${stage.emoji} ${stage.name}</div>` : ''}
+      </div>
+      <button class="btn-fasting-toggle ${fd.isActive?'active':''}" id="btn-fasting-toggle">
+        ${fd.isActive ? '⏹ Fasten beenden' : '▶ Fasten starten'}
+      </button>
+      <div class="fasting-streak">
+        <div class="fasting-streak-num">🔥 ${fd.streak||0}</div>
+        <div><div style="font-weight:700">Tage Streak</div><div class="fasting-streak-label">Tage in Folge ein Fastenprotokoll abgeschlossen</div></div>
+      </div>
+      <div style="padding:0 16px;margin-bottom:8px;font-size:14px;font-weight:700">Phasen des Fastens</div>
+      <div class="fasting-stages-list">
+        ${FASTING_STAGES.map(s=>{
+          const reached = ms >= s.h * 3600000 && fd.isActive;
+          return `<div class="fasting-stage-item ${reached?'reached':''}">
+            <div class="fasting-stage-h">${s.emoji}<br>${s.h}h</div>
+            <div><div class="fasting-stage-name">${s.name}</div><div class="fasting-stage-desc">${s.desc}</div></div>
+          </div>`;
+        }).join('')}
+      </div>
+      ${logReversed.length?`<div style="padding:0 16px;margin-bottom:8px;font-size:14px;font-weight:700">Letzte Einträge</div>
+      <div class="fasting-history" style="margin:0 16px 24px">
+        ${logReversed.map(l=>`<div class="fasting-history-row">
+          <span>${l.date}</span>
+          <span>${l.protocol}</span>
+          <span>${Math.floor(l.duration/60)}h ${l.duration%60}min</span>
+          <span class="status-badge" style="background:${l.completed?'#43a04720':'#e5393520'};color:${l.completed?'#43a047':'#e53935'}">${l.completed?'✓ Ziel':'Abgebrochen'}</span>
+        </div>`).join('')}
+      </div>`:''}
+    </div>`;
+  }
+
+  function updateTimer() {
+    const ms = elapsedMs();
+    const targetH = FASTING_PROTOCOLS[fd.protocol] || 16;
+    const pct = Math.min(100, Math.round((ms / (targetH * 3600000)) * 100));
+    const clockEl = c.querySelector('#fasting-clock');
+    const barEl = c.querySelector('#fasting-bar');
+    const pctEl = c.querySelector('#fasting-pct');
+    if (clockEl) clockEl.textContent = fmtDuration(ms);
+    if (barEl) barEl.style.width = pct + '%';
+    if (pctEl) pctEl.textContent = `${pct}% von ${targetH}h Ziel`;
+  }
+
+  function attachEvents() {
+    c.querySelector('#btn-back-fasting').addEventListener('click', () => navigate('tools'));
+    c.querySelectorAll('.fasting-proto-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (fd.isActive) return;
+        fd.protocol = btn.dataset.proto;
+        saveFastingData(fd);
+        c.innerHTML = '';
+        c.innerHTML = buildHTML();
+        attachEvents();
+      });
+    });
+    c.querySelector('#btn-fasting-toggle').addEventListener('click', () => {
+      if (fd.isActive) {
+        // Stop fasting
+        if (timerInterval) clearInterval(timerInterval);
+        const ms = elapsedMs();
+        const targetH = FASTING_PROTOCOLS[fd.protocol] || 16;
+        const completed = ms >= targetH * 3600000;
+        const durationMin = Math.floor(ms / 60000);
+        if (!fd.log) fd.log = [];
+        fd.log.push({ date: new Date().toISOString().slice(0,10), protocol: fd.protocol, duration: durationMin, completed });
+        if (completed) fd.streak = (fd.streak || 0) + 1;
+        else fd.streak = 0;
+        fd.isActive = false;
+        fd.startTime = null;
+        saveFastingData(fd);
+        showToast(completed ? `🎉 ${fd.protocol} geschafft! Streak: ${fd.streak} 🔥` : '⏹ Fasten beendet.');
+      } else {
+        fd.isActive = true;
+        fd.startTime = new Date().toISOString();
+        saveFastingData(fd);
+        timerInterval = setInterval(updateTimer, 1000);
+        showToast('▶ Fasten gestartet — viel Erfolg!');
+      }
+      c.innerHTML = '';
+      c.innerHTML = buildHTML();
+      attachEvents();
+      if (fd.isActive) timerInterval = setInterval(updateTimer, 1000);
+    });
+  }
+
+  c.innerHTML = buildHTML();
+  attachEvents();
+  if (fd.isActive) timerInterval = setInterval(updateTimer, 1000);
+}
+
+// ══════════════════════════════════════════════════════════
+// SCREEN: BLUTZUCKER TAGESGANG
+// ══════════════════════════════════════════════════════════
+const GLUCOSE_SLOTS = [
+  { key: 'nuechtern',        icon: '🌙', label: 'Nüchternwert',     hint: 'Morgens vor dem Frühstück', normal: [70,99],  warning: [100,125] },
+  { key: 'nachFruehstueck',  icon: '☀️', label: 'Nach Frühstück',   hint: '2h nach der Mahlzeit',      normal: [0,139],  warning: [140,199] },
+  { key: 'nachMittagessen',  icon: '🌤️', label: 'Nach Mittagessen', hint: '2h nach der Mahlzeit',      normal: [0,139],  warning: [140,199] },
+  { key: 'abends',           icon: '🌇', label: 'Abendwert',        hint: 'Vor dem Schlafen',           normal: [70,109], warning: [110,139] },
+];
+
+function getGlucoseDayData() {
+  return JSON.parse(localStorage.getItem('vitalmetrics_glucose_day') || '{}');
+}
+function saveGlucoseDayData(d) {
+  localStorage.setItem('vitalmetrics_glucose_day', JSON.stringify(d));
+}
+
+function assessGlucosePattern(dayEntry) {
+  if (!dayEntry) return null;
+  const vals = Object.values(dayEntry).filter(v => v > 0);
+  if (vals.length < 2) return null;
+  const nuechtern = dayEntry.nuechtern;
+  const postMeals = [dayEntry.nachFruehstueck, dayEntry.nachMittagessen].filter(Boolean);
+  const avgPost = postMeals.length ? postMeals.reduce((a,b)=>a+b,0)/postMeals.length : null;
+  if (nuechtern >= 126 || (avgPost && avgPost >= 200)) {
+    return { level: 'alert', title: '⚠️ Auffälliges Muster', text: 'Deine Werte liegen wiederholt über den Normalwerten. Bitte besprich das zeitnah mit deinem Arzt — das kann auf Diabetes hinweisen.' };
+  }
+  if (nuechtern >= 100 || (avgPost && avgPost >= 140)) {
+    return { level: 'warning', title: '🟡 Grenzwertiger Bereich', text: 'Dein Nüchternwert oder dein Anstieg nach Mahlzeiten ist leicht erhöht. Das kann ein frühes Zeichen von Insulinresistenz sein. Bewegung nach Mahlzeiten und weniger raffinierte Kohlenhydrate helfen gezielt.' };
+  }
+  return { level: 'normal', title: '✅ Gutes Muster', text: 'Dein Tagesgang sieht normal aus. Dein Körper verarbeitet Glucose gut — weiter so mit ausgewogener Ernährung und Bewegung.' };
+}
+
+function renderGlucoseDay(c) {
+  let dayData = getGlucoseDayData();
+  let currentDate = new Date().toISOString().slice(0,10);
+
+  function fmtDisplayDate(iso) {
+    const d = new Date(iso + 'T12:00:00');
+    const today = new Date().toISOString().slice(0,10);
+    if (iso === today) return 'Heute';
+    const yesterday = new Date(Date.now()-86400000).toISOString().slice(0,10);
+    if (iso === yesterday) return 'Gestern';
+    return d.toLocaleDateString('de-DE', { day:'numeric', month:'short' });
+  }
+  function shiftDate(iso, days) {
+    const d = new Date(iso + 'T12:00:00');
+    d.setDate(d.getDate() + days);
+    return d.toISOString().slice(0,10);
+  }
+
+  function buildChart(entry) {
+    if (!entry) return '';
+    const points = GLUCOSE_SLOTS.map(s => entry[s.key] || null);
+    if (points.filter(Boolean).length < 2) return '';
+    const maxV = Math.max(200, ...points.filter(Boolean));
+    const minV = 50;
+    const w = 280; const h = 100; const pad = 24;
+    const xs = [0,1,2,3].map(i => pad + i * ((w-pad*2)/3));
+    const ys = points.map(v => v ? h - pad - ((v - minV) / (maxV - minV)) * (h - pad*2) : null);
+    let path = '';
+    let dots = '';
+    let prevX = null, prevY = null;
+    points.forEach((v, i) => {
+      if (v === null) { prevX = null; prevY = null; return; }
+      const x = xs[i]; const y = ys[i];
+      if (prevX !== null) path += ` L${x},${y}`; else path += `M${x},${y}`;
+      const col = v >= 140 ? '#e53935' : v >= 100 ? '#ff9800' : '#43a047';
+      dots += `<circle cx="${x}" cy="${y}" r="5" fill="${col}"/>`;
+      dots += `<text x="${x}" y="${y-9}" text-anchor="middle" font-size="10" fill="${col}" font-weight="700">${v}</text>`;
+      prevX = x; prevY = y;
+    });
+    const labels = GLUCOSE_SLOTS.map((s,i) => `<text x="${xs[i]}" y="${h-6}" text-anchor="middle" font-size="9" fill="#999">${s.icon}</text>`).join('');
+    return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:110px">
+      <line x1="${pad}" y1="${h-pad}" x2="${w-pad}" y2="${h-pad}" stroke="#eee" stroke-width="1"/>
+      <path d="${path}" stroke="#43a047" stroke-width="2.5" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+      ${dots}${labels}
+    </svg>`;
+  }
+
+  function build() {
+    const entry = dayData[currentDate] || {};
+    const assessment = assessGlucosePattern(entry);
+    const chart = buildChart(entry);
+    const tomorrow = shiftDate(currentDate, 1);
+    const canGoForward = tomorrow <= new Date().toISOString().slice(0,10);
+    return `<div class="glucose-day-screen">
+      <div style="display:flex;align-items:center;gap:12px;padding:20px 16px 8px">
+        <button id="btn-back-glucose" style="background:none;font-size:22px;cursor:pointer">←</button>
+        <span style="font-size:20px;font-weight:800">🩸 Tagesgang</span>
+      </div>
+      <div class="glucose-date-nav">
+        <button class="glucose-date-btn" id="btn-glu-prev">‹</button>
+        <span class="glucose-date-label">${fmtDisplayDate(currentDate)}</span>
+        <button class="glucose-date-btn" id="btn-glu-next" ${!canGoForward?'disabled style="opacity:.4"':''}>›</button>
+      </div>
+      <div class="glucose-slots">
+        ${GLUCOSE_SLOTS.map(s => `
+          <div class="glucose-slot ${(entry[s.key]&&entry[s.key]>0)?'has-value':''}">
+            <div class="glucose-slot-icon">${s.icon}</div>
+            <div class="glucose-slot-info">
+              <div class="glucose-slot-label">${s.label}</div>
+              <div class="glucose-slot-hint">${s.hint}</div>
+            </div>
+            <input type="number" class="glucose-slot-input" data-key="${s.key}"
+              value="${entry[s.key]||''}" placeholder="–" min="40" max="400">
+            <span class="glucose-slot-unit">mg/dL</span>
+          </div>`).join('')}
+      </div>
+      <div style="padding:0 16px 12px">
+        <button class="btn-primary" id="btn-save-glucose" style="padding:13px">💾 Tageswerte speichern</button>
+      </div>
+      ${chart ? `<div class="glucose-chart-card"><div class="glucose-chart-title">📈 Tagesverlauf</div>${chart}</div>` : ''}
+      ${assessment ? `<div class="glucose-status-card ${assessment.level}">
+        <div class="glucose-status-title">${assessment.title}</div>
+        <div class="glucose-status-text">${assessment.text}</div>
+      </div>` : ''}
+      <div class="glucose-info-box">
+        💡 <strong>Wie du Spikes vermeidest:</strong> Ballaststoffe und Protein zuerst essen (vor den Kohlenhydraten) · 10–15 Minuten nach dem Essen spazieren gehen · 1 TL Apfelessig in Wasser vor der Mahlzeit · langsam essen und gut kauen.
+      </div>
+    </div>`;
+  }
+
+  function attachEvents() {
+    c.querySelector('#btn-back-glucose').addEventListener('click', () => navigate('tools'));
+    c.querySelector('#btn-glu-prev').addEventListener('click', () => {
+      currentDate = shiftDate(currentDate, -1); c.innerHTML = build(); attachEvents();
+    });
+    const nextBtn = c.querySelector('#btn-glu-next');
+    if (nextBtn && !nextBtn.disabled) nextBtn.addEventListener('click', () => {
+      currentDate = shiftDate(currentDate, 1); c.innerHTML = build(); attachEvents();
+    });
+    c.querySelector('#btn-save-glucose').addEventListener('click', () => {
+      const entry = {};
+      c.querySelectorAll('.glucose-slot-input').forEach(inp => {
+        const v = parseFloat(inp.value);
+        if (!isNaN(v) && v > 0) entry[inp.dataset.key] = v;
+      });
+      dayData[currentDate] = entry;
+      saveGlucoseDayData(dayData);
+      showToast('✅ Tageswerte gespeichert!');
+      c.innerHTML = build();
+      attachEvents();
+    });
+  }
+
+  c.innerHTML = build();
+  attachEvents();
+}
+
+// ══════════════════════════════════════════════════════════
+// SCREEN: HEIẞHUNGER-JOURNAL
+// ══════════════════════════════════════════════════════════
+const CRAVING_MOODS = [
+  { key: 'stressed',  label: '😤 Stress' },
+  { key: 'tired',     label: '😴 Müde' },
+  { key: 'bored',     label: '😑 Gelangweilt' },
+  { key: 'sad',       label: '😢 Traurig' },
+  { key: 'happy',     label: '😊 Glücklich' },
+  { key: 'neutral',   label: '😐 Neutral' },
+];
+const CRAVING_TRIGGERS = ['Stress', 'Müdigkeit', 'Langeweile', 'Hunger', 'Routine', 'Geruch/Sehen', 'Belohnung', 'Sonstiges'];
+
+function getCravings() { return JSON.parse(localStorage.getItem('vitalmetrics_cravings') || '[]'); }
+function saveCravings(d) { localStorage.setItem('vitalmetrics_cravings', JSON.stringify(d)); }
+
+function analyzeCravings(list) {
+  if (list.length < 3) return null;
+  // Peak hour
+  const hours = list.map(c => new Date(c.timestamp).getHours());
+  const hourCount = {};
+  hours.forEach(h => { hourCount[h] = (hourCount[h]||0)+1; });
+  const peakHour = Object.entries(hourCount).sort((a,b)=>b[1]-a[1])[0];
+  // Top trigger
+  const trigCount = {};
+  list.forEach(c => { if(c.trigger) trigCount[c.trigger] = (trigCount[c.trigger]||0)+1; });
+  const topTrig = Object.entries(trigCount).sort((a,b)=>b[1]-a[1])[0];
+  // Top mood
+  const moodCount = {};
+  list.forEach(c => { if(c.mood) moodCount[c.mood] = (moodCount[c.mood]||0)+1; });
+  const topMood = Object.entries(moodCount).sort((a,b)=>b[1]-a[1])[0];
+  // Avg hunger
+  const avgHunger = list.filter(c=>c.hungerLevel).reduce((s,c)=>s+c.hungerLevel,0) / list.filter(c=>c.hungerLevel).length;
+  return { peakHour: peakHour?.[0], topTrig: topTrig?.[0], topMood: topMood?.[0], avgHunger: avgHunger?.toFixed(1), total: list.length };
+}
+
+function renderCravings(c) {
+  let cravings = getCravings();
+  let formOpen = false;
+  let selHunger = null, selMood = null, selTrigger = null;
+
+  const MOOD_MAP = Object.fromEntries(CRAVING_MOODS.map(m => [m.key, m.label]));
+
+  function buildPattern() {
+    const a = analyzeCravings(cravings);
+    if (!a) return '';
+    const moodLabel = a.topMood ? MOOD_MAP[a.topMood] : '';
+    return `<div class="craving-pattern-card">
+      <div class="craving-pattern-title">🔍 Dein Muster (${a.total} Einträge)</div>
+      ${a.peakHour ? `<div class="craving-pattern-stat">🕐 Häufigste Zeit: <strong>${a.peakHour}:00–${a.peakHour}:59 Uhr</strong></div>` : ''}
+      ${a.topTrig  ? `<div class="craving-pattern-stat">⚡ Häufigster Auslöser: <strong>${a.topTrig}</strong></div>` : ''}
+      ${moodLabel  ? `<div class="craving-pattern-stat">😶 Häufigste Stimmung: <strong>${moodLabel}</strong></div>` : ''}
+      ${a.avgHunger? `<div class="craving-pattern-stat">🍽️ Durchschn. Hunger-Level: <strong>${a.avgHunger}/5</strong></div>` : ''}
+    </div>`;
+  }
+
+  function buildForm() {
+    if (!formOpen) return '';
+    return `<div class="craving-form-card open">
+      <div class="craving-form-title">➕ Heißhunger eintragen</div>
+      <div class="craving-form-row">
+        <div class="craving-form-label">Was hast du gegessen / wolltest du essen?</div>
+        <input type="text" class="craving-what-input" id="craving-what" placeholder="z. B. Schokolade, Chips, Süßes...">
+      </div>
+      <div class="craving-form-row">
+        <div class="craving-form-label">Hunger-Level (1 = schwach, 5 = extrem)</div>
+        <div class="craving-hunger-row">
+          ${[1,2,3,4,5].map(n=>`<button class="craving-hunger-btn ${selHunger===n?'active':''}" data-hunger="${n}">${['😐','🙁','😟','😣','🤤'][n-1]}<br><small>${n}</small></button>`).join('')}
+        </div>
+      </div>
+      <div class="craving-form-row">
+        <div class="craving-form-label">Stimmung gerade</div>
+        <div class="craving-mood-row">
+          ${CRAVING_MOODS.map(m=>`<button class="craving-mood-btn ${selMood===m.key?'active':''}" data-mood="${m.key}">${m.label}</button>`).join('')}
+        </div>
+      </div>
+      <div class="craving-form-row">
+        <div class="craving-form-label">Was hat es ausgelöst?</div>
+        <div class="craving-trigger-row">
+          ${CRAVING_TRIGGERS.map(t=>`<button class="craving-trigger-btn ${selTrigger===t?'active':''}" data-trigger="${t}">${t}</button>`).join('')}
+        </div>
+      </div>
+      <div class="craving-form-row">
+        <div class="craving-form-label">Notiz (optional)</div>
+        <textarea class="craving-note-input" id="craving-note" placeholder="Was ist gerade los?"></textarea>
+      </div>
+      <button class="btn-save-craving" id="btn-save-craving">💾 Eintrag speichern</button>
+    </div>`;
+  }
+
+  function buildList() {
+    if (!cravings.length) return `<div class="craving-empty">📓 Noch keine Einträge.<br>Tippe oben auf „+ Eintrag", wenn Heißhunger aufkommt.</div>`;
+    return `<div class="craving-list">
+      <div class="craving-list-header">📓 Alle Einträge (${cravings.length})</div>
+      ${[...cravings].reverse().map(cr => {
+        const dt = new Date(cr.timestamp);
+        const moodLabel = MOOD_MAP[cr.mood] || '';
+        return `<div class="craving-item">
+          <button class="btn-delete-craving" data-cid="${cr.id}">🗑️</button>
+          <div class="craving-item-top">
+            <span class="craving-item-what">${cr.what||'(unbenannt)'}</span>
+            <span class="craving-item-time">${dt.toLocaleDateString('de-DE',{day:'numeric',month:'short'})} ${dt.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}</span>
+          </div>
+          <div class="craving-item-tags">
+            ${cr.hungerLevel?`<span class="craving-tag hunger">Hunger ${cr.hungerLevel}/5</span>`:''}
+            ${moodLabel?`<span class="craving-tag mood">${moodLabel}</span>`:''}
+            ${cr.trigger?`<span class="craving-tag trigger">${cr.trigger}</span>`:''}
+          </div>
+          ${cr.note?`<div style="font-size:12px;color:var(--text-hint);margin-top:6px">${cr.note}</div>`:''}
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  function build() {
+    return `<div class="cravings-screen">
+      <div class="cravings-header">
+        <div style="display:flex;align-items:center;gap:10px">
+          <button id="btn-back-cravings" style="background:none;font-size:22px;cursor:pointer">←</button>
+          <span class="cravings-title">🍫 Heißhunger-Journal</span>
+        </div>
+        <button class="btn-add-craving" id="btn-toggle-form">${formOpen?'✕ Schließen':'+ Eintrag'}</button>
+      </div>
+      ${buildPattern()}
+      ${buildForm()}
+      ${buildList()}
+    </div>`;
+  }
+
+  function attachEvents() {
+    c.querySelector('#btn-back-cravings').addEventListener('click', () => navigate('tools'));
+    c.querySelector('#btn-toggle-form').addEventListener('click', () => {
+      formOpen = !formOpen; selHunger = null; selMood = null; selTrigger = null;
+      c.innerHTML = build(); attachEvents();
+    });
+    if (formOpen) {
+      c.querySelectorAll('.craving-hunger-btn').forEach(btn => btn.addEventListener('click', () => {
+        selHunger = parseInt(btn.dataset.hunger); c.innerHTML = build(); attachEvents();
+      }));
+      c.querySelectorAll('.craving-mood-btn').forEach(btn => btn.addEventListener('click', () => {
+        selMood = btn.dataset.mood; c.innerHTML = build(); attachEvents();
+      }));
+      c.querySelectorAll('.craving-trigger-btn').forEach(btn => btn.addEventListener('click', () => {
+        selTrigger = btn.dataset.trigger; c.innerHTML = build(); attachEvents();
+      }));
+      c.querySelector('#btn-save-craving').addEventListener('click', () => {
+        const what = c.querySelector('#craving-what').value.trim();
+        if (!what) { showToast('Bitte Was eingeben'); return; }
+        const note = c.querySelector('#craving-note').value.trim();
+        cravings.push({ id: Date.now(), timestamp: new Date().toISOString(), what, hungerLevel: selHunger, mood: selMood, trigger: selTrigger, note });
+        saveCravings(cravings);
+        formOpen = false; selHunger = null; selMood = null; selTrigger = null;
+        showToast('✅ Eintrag gespeichert!');
+        c.innerHTML = build(); attachEvents();
+      });
+    }
+    c.querySelectorAll('.btn-delete-craving').forEach(btn => btn.addEventListener('click', () => {
+      if (confirm('Eintrag löschen?')) {
+        cravings = cravings.filter(cr => cr.id !== parseInt(btn.dataset.cid));
+        saveCravings(cravings); c.innerHTML = build(); attachEvents();
+      }
+    }));
+  }
+
+  c.innerHTML = build();
+  attachEvents();
+}
+
+// ══════════════════════════════════════════════════════════
+// SCREEN: PREMIUM
+// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
+// BILLING BRIDGE — cordova-plugin-purchase v13
+// Plugin: https://github.com/j3k0/cordova-plugin-purchase
+// In browser/demo: test-unlock. In native Android: echte Google Play Billing.
+// ══════════════════════════════════════════════════════════
+
+const PRODUCT_IDS = {
+  yearly:  'vitalmetrics_premium_yearly',   // muss exakt mit Google Play Console übereinstimmen
+  monthly: 'vitalmetrics_premium_monthly',  // muss exakt mit Google Play Console übereinstimmen
+};
+
+// True wenn cordova-plugin-purchase geladen ist (= echter Android-Build)
+function isBillingAvailable() {
+  return !!(window.CdvPurchase && window.CdvPurchase.store);
+}
+
+// Wird beim App-Start aufgerufen (deviceready Event)
+function initBillingStore() {
+  if (!isBillingAvailable()) return; // Web/Demo-Modus — nichts tun
+
+  const store = CdvPurchase.store;
+
+  // Produkte registrieren
+  store.register([
+    { type: CdvPurchase.ProductType.PAID_SUBSCRIPTION, id: PRODUCT_IDS.yearly,  platform: CdvPurchase.Platform.GOOGLE_PLAY },
+    { type: CdvPurchase.ProductType.PAID_SUBSCRIPTION, id: PRODUCT_IDS.monthly, platform: CdvPurchase.Platform.GOOGLE_PLAY },
+  ]);
+
+  // Kauf-Pipeline: approved → verify → finish → premium freischalten
+  store.when()
+    .approved(transaction => transaction.verify())
+    .verified(receipt => receipt.finish())
+    .finished(transaction => {
+      // Prüfen ob eines unserer Produkte aktiv ist
+      const activeIds = Object.values(PRODUCT_IDS);
+      const isOurs = activeIds.some(id => transaction.products?.some(p => p.id === id));
+      if (isOurs) {
+        entitlements.setPremium(true);
+        showToast('🎉 Premium freigeschaltet!');
+        navigate('dashboard');
+      }
+    });
+
+  // Store initialisieren (lädt Produktinfos von Google Play)
+  store.initialize([CdvPurchase.Platform.GOOGLE_PLAY]);
+}
+
+async function purchasePremium(plan) {
+  // ── Web / Demo-Modus ──
+  if (!isBillingAvailable()) {
+    entitlements.setPremium(true);
+    showToast('🎉 Premium freigeschaltet! (Demo-Modus)');
+    navigate('dashboard');
+    return;
+  }
+
+  // ── Nativer Android-Build: Google Play Billing ──
+  const store = CdvPurchase.store;
+  const productId = PRODUCT_IDS[plan];
+  const product = store.get(productId, CdvPurchase.Platform.GOOGLE_PLAY);
+
+  if (!product) {
+    showToast('Produkt nicht gefunden. Bitte Internetverbindung prüfen.');
+    return;
+  }
+
+  const offer = product.getOffer();
+  if (!offer) {
+    showToast('Kein Angebot verfügbar. Bitte erneut versuchen.');
+    return;
+  }
+
+  try {
+    await store.order(offer);
+    // Ergebnis kommt asynchron über den store.when().finished() Handler oben
+  } catch (e) {
+    if (e?.code !== CdvPurchase.ErrorCode.PAYMENT_CANCELLED) {
+      showToast('Kauf fehlgeschlagen. Bitte erneut versuchen.');
+    }
+    // Abgebrochen: kein Toast, normales Verhalten
+  }
+}
+
+async function restorePurchases() {
+  if (!isBillingAvailable()) {
+    showToast('💡 Wiederherstellung ist nur in der Android-App verfügbar.');
+    return;
+  }
+
+  showToast('Käufe werden überprüft…');
+  try {
+    await CdvPurchase.store.restorePurchases();
+    // Das finished-Event oben übernimmt die Verarbeitung
+    // Falls nichts gefunden: nach kurzer Zeit Feedback geben
+    setTimeout(() => {
+      if (!entitlements.isPremium()) showToast('Kein aktives Abo gefunden.');
+    }, 3000);
+  } catch (e) {
+    showToast('Wiederherstellung fehlgeschlagen. Bitte erneut versuchen.');
+  }
 }
 
 // ══════════════════════════════════════════════════════════
 // SCREEN: PREMIUM
 // ══════════════════════════════════════════════════════════
 function renderPremium(c) {
-  const isPrem=entitlements.isPremium();
-  c.innerHTML=`<div class="screen premium-screen">
+  const isPrem = entitlements.isPremium();
+  c.innerHTML = `<div class="screen premium-screen">
     <div class="premium-hero">
       <div class="premium-icon">⭐</div>
       <h1 class="premium-title">VitalMetrics Premium</h1>
       <p class="premium-sub">Alle 30 Biomarker. Keine Einschränkungen.</p>
     </div>
     ${isPrem
-      ? `<div class="premium-active-card"><p>🎉 Du hast Premium aktiv. Alle Biomarker sind freigeschaltet.</p><button class="btn-secondary" id="btn-deact">Premium deaktivieren (Test)</button></div>`
-      : `<div class="price-card">
-          <div class="price-option"><div class="price-option-left"><div class="price-label">Monatsabo</div><div class="price-sub">Flexibel, jederzeit kündbar</div></div><div class="price-amount">2,45 €<span class="price-period"> / Monat</span></div></div>
-          <div class="price-option selected"><div class="price-option-left"><div class="price-label">Jahresabo <span class="badge-best">Beste Wahl</span></div><div class="price-sub">≈ 1,92 € / Monat – du sparst 37 %</div></div><div class="price-amount">22,99 €<span class="price-period"> / Jahr</span></div></div>
-          <div class="price-option"><div class="price-option-left"><div class="price-label">Lifetime</div><div class="price-sub">Einmalig, für immer – kein Abo</div></div><div class="price-amount">60,00 €</div></div>
+      ? `<div class="premium-active-card">
+           <p>🎉 Du hast Premium aktiv. Alle Biomarker sind freigeschaltet.</p>
+           <button class="btn-secondary" id="btn-deact">Premium deaktivieren (Test)</button>
+         </div>`
+      : `<div class="price-card" id="price-card">
+           <div class="price-option selected" data-plan="yearly">
+             <div class="price-option-left">
+               <div class="price-label">Jahresabo <span class="badge-best">Beste Wahl</span></div>
+               <div class="price-sub">nur 2,25 € / Monat – du sparst 55 %</div>
+             </div>
+             <div class="price-amount">26,99 €<span class="price-period"> / Jahr</span></div>
+           </div>
+           <div class="price-option" data-plan="monthly">
+             <div class="price-option-left">
+               <div class="price-label">Monatsabo</div>
+               <div class="price-sub">Flexibel, jederzeit kündbar</div>
+             </div>
+             <div class="price-amount">4,99 €<span class="price-period"> / Monat</span></div>
+           </div>
          </div>
-         <button class="btn-primary btn-purchase" id="btn-purch">Premium freischalten</button>
+         <button class="btn-primary btn-purchase" id="btn-purch" data-plan="yearly">
+           Jahresabo – 26,99 € / Jahr kaufen
+         </button>
          <p class="restore-text"><button class="btn-link" id="btn-restore">Kauf wiederherstellen</button></p>`
     }
     <div class="features-card"><h3>Was ist enthalten?</h3><div class="feature-list">
@@ -3745,8 +5767,8 @@ function renderPremium(c) {
       <div class="feature-item"><span class="feature-check">✅</span><span>Alle Spurenelemente inkl. Magnesium</span></div>
       <div class="feature-item"><span class="feature-check">✅</span><span>Laborwerte: Omega-3, Ferritin, Homocystein, TSH</span></div>
       <div class="feature-item"><span class="feature-check">✅</span><span>Körperwerte: Gewicht, BMI, Taillenumfang</span></div>
-      <div class="feature-item"><span class="feature-check">✅</span><span>Geschlechtsspezifische DGE-Referenzwerte</span></div>
-      <div class="feature-item"><span class="feature-check">✅</span><span>Rezepte bei Mängeln</span></div>
+      <div class="feature-item"><span class="feature-check">✅</span><span>Longevity-Score & biologisches Alter</span></div>
+      <div class="feature-item"><span class="feature-check">✅</span><span>PDF-Export (Ernährungsberater-Report)</span></div>
       <div class="feature-item"><span class="feature-check">✅</span><span>🧪 Heimtest-Hinweise zu jedem Biomarker</span></div>
     </div></div>
     <div class="free-card"><h3>Gratis immer verfügbar</h3><div class="feature-list">
@@ -3755,21 +5777,341 @@ function renderPremium(c) {
       <div class="feature-item"><span class="feature-check">🆓</span><span>Eisen</span></div>
       <div class="feature-item"><span class="feature-check">🆓</span><span>Gewicht</span></div>
     </div></div>
-    <p class="legal-text">Zahlungen werden über den App Store / Google Play abgewickelt. Das Abo verlängert sich automatisch, sofern es nicht mindestens 24 Stunden vor Ende der Laufzeit gekündigt wird.</p>
+    <p class="legal-text">Zahlungen werden über Google Play abgewickelt. Das Abo verlängert sich automatisch, sofern es nicht mindestens 24 Stunden vor Ablauf der Laufzeit gekündigt wird. Jahresabo: 26,99 €/Jahr · Monatsabo: 4,99 €/Monat. Kündigung jederzeit in den Google Play-Einstellungen möglich.</p>
   </div>`;
 
-  c.querySelector('#btn-purch')?.addEventListener('click',()=>{entitlements.setPremium(true);showToast('🎉 Premium freigeschaltet! (Demo)');navigate('dashboard');});
-  c.querySelector('#btn-deact')?.addEventListener('click',()=>{entitlements.setPremium(false);showToast('Premium deaktiviert.');navigate('premium');});
-  c.querySelector('#btn-restore')?.addEventListener('click',()=>showToast('In der finalen App: Kauf über App Store.'));
+  // ── Plan selection: clicking a card updates the button label + stored plan ──
+  c.querySelectorAll('.price-option[data-plan]').forEach(opt => {
+    opt.addEventListener('click', () => {
+      c.querySelectorAll('.price-option[data-plan]').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      const plan = opt.dataset.plan;
+      const btn = c.querySelector('#btn-purch');
+      if (btn) {
+        btn.dataset.plan = plan;
+        btn.textContent = plan === 'yearly'
+          ? 'Jahresabo – 26,99 € / Jahr kaufen'
+          : 'Monatsabo – 4,99 € / Monat kaufen';
+      }
+    });
+  });
+
+  // ── Purchase button ──
+  c.querySelector('#btn-purch')?.addEventListener('click', (e) => {
+    const plan = e.currentTarget.dataset.plan || 'yearly';
+    purchasePremium(plan);
+  });
+
+  // ── Deactivate (test/dev only) ──
+  c.querySelector('#btn-deact')?.addEventListener('click', () => {
+    entitlements.setPremium(false);
+    showToast('Premium deaktiviert.');
+    navigate('premium');
+  });
+
+  // ── Restore purchases ──
+  c.querySelector('#btn-restore')?.addEventListener('click', () => restorePurchases());
+}
+
+// ══════════════════════════════════════════════════════════
+// SCREEN: BEWEGUNG
+// ══════════════════════════════════════════════════════════
+function renderActivity(c) {
+  const today = new Date().toISOString().slice(0, 10);
+  const profile = profileRepo.get();
+  const weightKg = profile.weight || 70;
+  const week = activityRepo.getLast7Days();
+  const dayData = activityRepo.getDay(today);
+  const totalCal = dayData.activities.reduce((s, a) => s + (a.calories || 0), 0);
+  const totalMin = dayData.activities.reduce((s, a) => s + (a.minutes || 0), 0);
+  const maxCal = Math.max(...week.map(d => d.calories), 1);
+
+  const sportOptions = SPORTS.map(s => `<option value="${s.id}">${s.emoji} ${s.name}</option>`).join('');
+  const activityItems = dayData.activities.map((a, i) => {
+    const sport = SPORTS.find(s => s.id === a.sport) || { emoji: '🏃', name: a.sport };
+    return `<div class="activity-item">
+      <div class="activity-item-left">
+        <span class="activity-item-emoji">${sport.emoji}</span>
+        <div>
+          <div class="activity-item-name">${sport.name}</div>
+          <div class="activity-item-time">${a.minutes} Minuten</div>
+        </div>
+      </div>
+      <span class="activity-item-cal">${a.calories} kcal</span>
+      <span class="activity-item-del" data-idx="${i}">✕</span>
+    </div>`;
+  }).join('');
+
+  const bars = week.map(d => {
+    const h = maxCal > 0 ? Math.max(8, Math.round((d.calories / maxCal) * 68)) : 8;
+    return `<div class="week-bar-wrap">
+      <div class="week-bar${d.isToday ? ' today' : ''}" style="height:${h}px" title="${d.calories} kcal"></div>
+      <span class="week-bar-label">${d.day}</span>
+    </div>`;
+  }).join('');
+
+  c.innerHTML = `<div class="screen activity-screen">
+    <div class="screen-header"><h1 class="screen-title">🏃 Bewegung</h1></div>
+
+    <div class="activity-hero">
+      <div class="activity-hero-left">
+        <div style="font-size:13px;opacity:.85;margin-bottom:4px">Heute verbrannt</div>
+        <div class="cal-big">${totalCal}</div>
+        <div class="cal-unit">kcal · ${totalMin} Minuten aktiv</div>
+      </div>
+      <div class="activity-hero-right">
+        <div class="steps-num">${(dayData.steps || 0).toLocaleString('de-DE')}</div>
+        <div class="steps-label">👟 Schritte</div>
+      </div>
+    </div>
+
+    <div class="activity-section">
+      <h3>👟 Heutige Schritte</h3>
+      <div class="steps-input-row">
+        <input type="number" id="inp-steps" min="0" max="99999" placeholder="z. B. 8500" value="${dayData.steps || ''}">
+        <button class="btn-primary" id="btn-save-steps" style="white-space:nowrap">Speichern</button>
+      </div>
+    </div>
+
+    <div class="activity-section">
+      <h3>➕ Sportart hinzufügen</h3>
+      <div class="sport-picker-row">
+        <select id="sel-sport" class="sport-select">${sportOptions}</select>
+        <input type="number" id="inp-minutes" class="minutes-input" min="1" max="600" placeholder="Min">
+      </div>
+      <button class="btn-primary" id="btn-add-sport" style="width:100%">Hinzufügen</button>
+      ${activityItems ? `<div class="activity-list" id="activity-list">${activityItems}</div>` : ''}
+    </div>
+
+    <div class="activity-section">
+      <h3>📊 Wochenverlauf (Kalorien)</h3>
+      <div class="week-chart">${bars}</div>
+    </div>
+  </div>`;
+
+  c.querySelector('#btn-save-steps').addEventListener('click', () => {
+    const steps = parseInt(c.querySelector('#inp-steps').value) || 0;
+    const current = activityRepo.getDay(today);
+    activityRepo.saveDay(today, { ...current, steps });
+    showToast('Schritte gespeichert ✓');
+    renderActivity(c);
+  });
+
+  c.querySelector('#btn-add-sport').addEventListener('click', () => {
+    const sportId = c.querySelector('#sel-sport').value;
+    const minutes = parseInt(c.querySelector('#inp-minutes').value);
+    if (!minutes || minutes < 1) { showToast('Bitte Minuten eingeben'); return; }
+    const sport = SPORTS.find(s => s.id === sportId);
+    const calories = calcCalories(sport.met, minutes, weightKg);
+    const current = activityRepo.getDay(today);
+    current.activities = current.activities || [];
+    current.activities.push({ sport: sportId, minutes, calories });
+    activityRepo.saveDay(today, current);
+    showToast(`${sport.emoji} ${sport.name} gespeichert`);
+    renderActivity(c);
+  });
+
+  c.querySelectorAll('.activity-item-del').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.idx);
+      const current = activityRepo.getDay(today);
+      current.activities.splice(idx, 1);
+      activityRepo.saveDay(today, current);
+      renderActivity(c);
+    });
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// SCREEN: ZYKLUS
+// ══════════════════════════════════════════════════════════
+const CYCLE_NUTRIENTS = {
+  menstruation: [
+    { emoji: '🩸', name: 'Eisen', why: 'Ausgleich des Blutverlusts' },
+    { emoji: '💊', name: 'Vitamin C', why: 'Verbessert Eisenaufnahme' },
+    { emoji: '🧘', name: 'Magnesium', why: 'Lindert Krämpfe und Schmerzen' },
+    { emoji: '🐟', name: 'Omega-3', why: 'Entzündungshemmend, reduziert Beschwerden' },
+  ],
+  follicular: [
+    { emoji: '🥬', name: 'Folat (B9)', why: 'Unterstützt Zellerneuerung und Östrogenphase' },
+    { emoji: '💪', name: 'Protein', why: 'Muskelaufbau in energiereicher Phase' },
+    { emoji: '⚡', name: 'Zink', why: 'Fördert Follikelwachstum' },
+    { emoji: '🌿', name: 'Eisen', why: 'Auffüllen der Speicher nach Periode' },
+  ],
+  ovulation: [
+    { emoji: '🥕', name: 'Vitamin E', why: 'Antioxidativer Schutz für Eizelle' },
+    { emoji: '🍊', name: 'Vitamin C', why: 'Stärkt Immunsystem in Ovulationsphase' },
+    { emoji: '⚡', name: 'Zink', why: 'Wichtig für die Eizellenreife' },
+    { emoji: '🐟', name: 'Omega-3', why: 'Unterstützt hormonelle Balance' },
+  ],
+  luteal: [
+    { emoji: '🧘', name: 'Magnesium', why: 'Reduziert PMS, Stimmungsschwankungen' },
+    { emoji: '💊', name: 'Vitamin B6', why: 'Stimmungsstabilisierung, Progesteronunterstützung' },
+    { emoji: '🦴', name: 'Calcium', why: 'Mildert PMS-Symptome nachweislich' },
+    { emoji: '🌾', name: 'Komplexe Kohlenhydrate', why: 'Stabilisiert Blutzucker, reduziert Heißhunger' },
+  ]
+};
+
+const CYCLE_PHASE_INFO = {
+  menstruation: { label: 'Menstruation', desc: 'Dein Körper reinigt sich. Schone dich, achte auf eisenreiche Ernährung und leichte Bewegung.', tipSport: '🧘 Yoga oder leichte Spaziergänge ideal — intensiver Sport eher meiden.' },
+  follicular:   { label: 'Follikelphase', desc: 'Östrogen steigt — du hast mehr Energie, bist kreativer und belastbarer. Gute Zeit für neue Projekte.', tipSport: '🏃 Gute Phase für intensiveren Sport und Krafttraining.' },
+  ovulation:    { label: 'Eisprung', desc: 'Energiepeak! Du strahlst, bist kommunikativ und körperlich auf dem Höhepunkt.', tipSport: '💪 Beste Zeit für HIIT, Wettkämpfe oder intensive Einheiten.' },
+  luteal:       { label: 'Lutealphase', desc: 'Progesteron dominiert. Energie sinkt in zweiter Hälfte. Körper bereitet sich auf nächste Periode vor.', tipSport: '🚶 Moderate Bewegung — Schwimmen, Yoga, Spazieren besonders wohltuend.' },
+};
+
+function renderCycle(c) {
+  const data = cycleRepo.get();
+  const phase = cycleRepo.getCurrentPhase();
+  const next = cycleRepo.predictNext();
+  const phaseKey = phase ? phase.phase : 'unknown';
+  const phaseInfo = CYCLE_PHASE_INFO[phaseKey] || {};
+  const nutrients = CYCLE_NUTRIENTS[phaseKey] || [];
+  const avgCycle = data.cycleLength || 28;
+  const today = new Date().toISOString().slice(0, 10);
+
+  const nutrientHTML = nutrients.map(n => `
+    <div class="cycle-nutrient-item">
+      <span class="cycle-nutrient-emoji">${n.emoji}</span>
+      <div>
+        <div class="cycle-nutrient-name">${n.name}</div>
+        <div class="cycle-nutrient-why">${n.why}</div>
+      </div>
+    </div>`).join('');
+
+  // Mini calendar — current month
+  const now = new Date();
+  const y = now.getFullYear(), m = now.getMonth();
+  const firstDay = new Date(y, m, 1).getDay(); // 0=Sun
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+  const offset = (firstDay + 6) % 7; // Mo=0
+
+  let calHTML = '';
+  for (let i = 0; i < offset; i++) calHTML += '<div class="cycle-day other-month"></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = dateStr === today;
+    let dayPhase = '';
+    if (data.periodStarts.length) {
+      const last = new Date(data.periodStarts[data.periodStarts.length - 1]);
+      const diff = Math.floor((new Date(dateStr) - last) / 86400000);
+      const cl = data.cycleLength || 28;
+      const pl = data.periodLength || 5;
+      const dayInCycle = ((diff % cl) + cl) % cl + 1;
+      if (dayInCycle <= pl) dayPhase = 'menstruation';
+      else if (dayInCycle <= 13) dayPhase = 'follicular';
+      else if (dayInCycle <= 15) dayPhase = 'ovulation';
+      else dayPhase = 'luteal';
+    }
+    calHTML += `<div class="cycle-day ${dayPhase}${isToday ? ' today' : ''}">${d}</div>`;
+  }
+
+  c.innerHTML = `<div class="screen cycle-screen">
+    <div class="screen-header"><h1 class="screen-title">🌙 Zyklus</h1></div>
+
+    <div class="cycle-phase-card ${phaseKey}">
+      <div class="cycle-phase-label">${phase ? `Tag ${phase.day} des Zyklus` : 'Noch keine Daten'}</div>
+      <div class="cycle-phase-name">${phase ? phaseInfo.label : 'Periode eintragen'}</div>
+      ${phase ? `<div class="cycle-phase-tip">${phaseInfo.desc}<br><br>${phaseInfo.tipSport}</div>` : '<div class="cycle-phase-tip">Trage dein letztes Periodendatum ein, um deine aktuelle Phase zu sehen.</div>'}
+    </div>
+
+    <div class="cycle-section">
+      <h3>📅 Periode eintragen</h3>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <input type="date" id="inp-period-start" style="flex:1;padding:10px;border:2px solid var(--border);border-radius:10px;font-size:14px" value="${today}">
+        <button class="btn-primary" id="btn-log-period">Periode beginnt</button>
+      </div>
+      ${data.periodStarts.length ? `<p style="font-size:12px;color:var(--text-secondary);margin-top:8px">Letzte Periode: ${new Date(data.periodStarts[data.periodStarts.length-1]).toLocaleDateString('de-DE', {day:'2-digit',month:'long',year:'numeric'})}</p>` : ''}
+    </div>
+
+    <div class="cycle-section">
+      <div class="cycle-stats-row">
+        <div class="cycle-stat">
+          <div class="cycle-stat-num">${avgCycle}</div>
+          <div class="cycle-stat-label">Tage Ø Zyklus</div>
+        </div>
+        <div class="cycle-stat">
+          <div class="cycle-stat-num">${data.periodLength || 5}</div>
+          <div class="cycle-stat-label">Tage Periode</div>
+        </div>
+        <div class="cycle-stat">
+          <div class="cycle-stat-num">${next ? next.daysUntil : '–'}</div>
+          <div class="cycle-stat-label">Tage bis nächste</div>
+        </div>
+      </div>
+      ${next ? `<p style="font-size:12px;color:var(--text-secondary);margin-top:10px;text-align:center">Nächste Periode voraussichtlich: <strong>${next.date}</strong></p>` : ''}
+    </div>
+
+    <div class="cycle-section">
+      <h3>🗓️ Monatsübersicht</h3>
+      <div class="cycle-cal-header">
+        <span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span>
+      </div>
+      <div class="cycle-calendar">${calHTML}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+        <span style="font-size:11px">🔴 Periode</span>
+        <span style="font-size:11px">🟠 Follikelphase</span>
+        <span style="font-size:11px">🟢 Eisprung</span>
+        <span style="font-size:11px">🟣 Lutealphase</span>
+      </div>
+    </div>
+
+    ${nutrients.length ? `<div class="cycle-section">
+      <h3>💊 Nährstoffe für diese Phase</h3>
+      <div class="cycle-nutrient-list">${nutrientHTML}</div>
+    </div>` : ''}
+
+    <div class="cycle-section">
+      <h3>⚙️ Zykluseinstellungen</h3>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div style="flex:1">
+          <label style="font-size:12px;color:var(--text-secondary)">Zykluslänge (Tage)</label>
+          <input type="number" id="inp-cycle-len" min="21" max="45" value="${data.cycleLength || 28}" style="width:100%;margin-top:4px;padding:10px;border:2px solid var(--border);border-radius:10px;font-size:16px;text-align:center">
+        </div>
+        <div style="flex:1">
+          <label style="font-size:12px;color:var(--text-secondary)">Periodenlänge (Tage)</label>
+          <input type="number" id="inp-period-len" min="2" max="10" value="${data.periodLength || 5}" style="width:100%;margin-top:4px;padding:10px;border:2px solid var(--border);border-radius:10px;font-size:16px;text-align:center">
+        </div>
+      </div>
+      <button class="btn-primary" id="btn-save-cycle" style="width:100%;margin-top:10px">Einstellungen speichern</button>
+    </div>
+  </div>`;
+
+  c.querySelector('#btn-log-period').addEventListener('click', () => {
+    const dateStr = c.querySelector('#inp-period-start').value;
+    if (!dateStr) { showToast('Bitte Datum wählen'); return; }
+    const d = cycleRepo.get();
+    d.periodStarts = [...d.periodStarts.filter(s => s !== dateStr), dateStr].sort();
+    cycleRepo.save(d);
+    showToast('Periode eingetragen ✓');
+    renderCycle(c);
+  });
+
+  c.querySelector('#btn-save-cycle').addEventListener('click', () => {
+    const cl = parseInt(c.querySelector('#inp-cycle-len').value) || 28;
+    const pl = parseInt(c.querySelector('#inp-period-len').value) || 5;
+    cycleRepo.save({ cycleLength: cl, periodLength: pl });
+    showToast('Einstellungen gespeichert ✓');
+    renderCycle(c);
+  });
 }
 
 // ══════════════════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded',()=>{
-  document.querySelectorAll('.nav-item').forEach(item=>item.addEventListener('click',()=>navigate(item.dataset.screen)));
-  const profile=profileRepo.get();
-  navigate(profile.onboardingDone?'dashboard':'onboarding');
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.nav-item').forEach(item => item.addEventListener('click', () => navigate(item.dataset.screen)));
+  const profile = profileRepo.get();
+  // Zyklus-Tab nur für weibliche Nutzer anzeigen
+  if (profile.sex === 'f') {
+    document.querySelectorAll('.nav-cycle').forEach(el => el.style.display = '');
+  }
+  navigate(profile.onboardingDone ? 'dashboard' : 'onboarding');
+
+  // Billing Store initialisieren sobald das Gerät bereit ist (Capacitor/Cordova)
+  document.addEventListener('deviceready', initBillingStore, false);
+
+  // Smart Reminders initialisieren (nur nativer Android-Build)
+  document.addEventListener('deviceready', initReminders, false);
 });
 </script>
 </body>
