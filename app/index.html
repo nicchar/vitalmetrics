@@ -187,6 +187,7 @@ ul { list-style: none; }
 .week-bar { width: 100%; background: var(--primary-light); border-radius: 6px 6px 0 0; transition: height 0.4s ease; min-height: 3px; }
 .week-bar.today { background: var(--primary); }
 .week-bar-label { font-size: 10px; color: var(--text-hint); font-weight: 600; }
+.week-bar-val { font-size: 9px; color: var(--text-secondary); font-weight: 700; text-align: center; min-height: 14px; }
 
 /* ── Cycle Screen ── */
 .cycle-screen { padding-bottom: 32px; }
@@ -5816,15 +5817,30 @@ function renderPremium(c) {
 // ══════════════════════════════════════════════════════════
 // SCREEN: BEWEGUNG
 // ══════════════════════════════════════════════════════════
+// Schritte → Kalorien: ca. 0.04 kcal/Schritt bei 70 kg, gewichtsbereinigt
+// Quelle: ACSM / Tudor-Locke et al. — Durchschnittswert ca. 0.57 kcal/Schritt pro 100 kg
+function calcStepCalories(steps, weightKg) {
+  return Math.round(steps * 0.0004 * (weightKg || 70));
+}
+
 function renderActivity(c) {
   const today = new Date().toISOString().slice(0, 10);
   const profile = profileRepo.get();
   const weightKg = profile.weight || 70;
   const week = activityRepo.getLast7Days();
   const dayData = activityRepo.getDay(today);
-  const totalCal = dayData.activities.reduce((s, a) => s + (a.calories || 0), 0);
+  const sportCal = dayData.activities.reduce((s, a) => s + (a.calories || 0), 0);
+  const stepCal  = calcStepCalories(dayData.steps || 0, weightKg);
+  const totalCal = sportCal + stepCal;
   const totalMin = dayData.activities.reduce((s, a) => s + (a.minutes || 0), 0);
-  const maxCal = Math.max(...week.map(d => d.calories), 1);
+
+  // Gesamtkalorien pro Tag inkl. Schritte für das Diagramm
+  const weekWithTotal = week.map(d => {
+    const sc = calcStepCalories(d.steps || 0, weightKg);
+    return { ...d, totalCalories: d.calories + sc };
+  });
+  const maxCal = Math.max(...weekWithTotal.map(d => d.totalCalories), 1);
+  const chartH = 100; // px Diagrammhöhe
 
   const sportOptions = SPORTS.map(s => `<option value="${s.id}">${s.emoji} ${s.name}</option>`).join('');
   const activityItems = dayData.activities.map((a, i) => {
@@ -5834,7 +5850,7 @@ function renderActivity(c) {
         <span class="activity-item-emoji">${sport.emoji}</span>
         <div>
           <div class="activity-item-name">${sport.name}</div>
-          <div class="activity-item-time">${a.minutes} Minuten</div>
+          <div class="activity-item-time">${a.minutes} Min</div>
         </div>
       </div>
       <span class="activity-item-cal">${a.calories} kcal</span>
@@ -5842,10 +5858,14 @@ function renderActivity(c) {
     </div>`;
   }).join('');
 
-  const bars = week.map(d => {
-    const h = maxCal > 0 ? Math.max(8, Math.round((d.calories / maxCal) * 68)) : 8;
+  // Y-Achse: 3 Beschriftungen (0, Mitte, Max)
+  const yMax = Math.ceil(maxCal / 50) * 50;
+  const yMid = Math.round(yMax / 2);
+  const bars = weekWithTotal.map(d => {
+    const barH = yMax > 0 ? Math.max(3, Math.round((d.totalCalories / yMax) * chartH)) : 3;
     return `<div class="week-bar-wrap">
-      <div class="week-bar${d.isToday ? ' today' : ''}" style="height:${h}px" title="${d.calories} kcal"></div>
+      <div class="week-bar-val">${d.totalCalories > 0 ? d.totalCalories : ''}</div>
+      <div class="week-bar${d.isToday ? ' today' : ''}" style="height:${barH}px"></div>
       <span class="week-bar-label">${d.day}</span>
     </div>`;
   }).join('');
@@ -5857,35 +5877,43 @@ function renderActivity(c) {
       <div class="activity-hero-left">
         <div style="font-size:13px;opacity:.85;margin-bottom:4px">Heute verbrannt</div>
         <div class="cal-big">${totalCal}</div>
-        <div class="cal-unit">kcal · ${totalMin} Minuten aktiv</div>
+        <div class="cal-unit">kcal gesamt · ${totalMin} Min Sport</div>
       </div>
       <div class="activity-hero-right">
         <div class="steps-num">${(dayData.steps || 0).toLocaleString('de-DE')}</div>
-        <div class="steps-label">👟 Schritte</div>
+        <div class="steps-label">👟 Schritte · ${stepCal} kcal</div>
       </div>
     </div>
 
     <div class="activity-section">
       <h3>👟 Heutige Schritte</h3>
       <div class="steps-input-row">
-        <input type="number" id="inp-steps" min="0" max="99999" placeholder="z. B. 8500" value="${dayData.steps || ''}">
+        <input type="text" inputmode="numeric" id="inp-steps" placeholder="z. B. 8500" value="${dayData.steps || ''}">
         <button class="btn-primary" id="btn-save-steps" style="white-space:nowrap">Speichern</button>
       </div>
+      ${stepCal > 0 ? `<p style="font-size:12px;color:var(--text-secondary);margin-top:8px">≈ ${stepCal} kcal durch Schritte</p>` : ''}
     </div>
 
     <div class="activity-section">
       <h3>➕ Sportart hinzufügen</h3>
       <div class="sport-picker-row">
         <select id="sel-sport" class="sport-select">${sportOptions}</select>
-        <input type="number" id="inp-minutes" class="minutes-input" min="1" max="600" placeholder="Min">
+        <input type="text" inputmode="numeric" id="inp-minutes" class="minutes-input" placeholder="Min">
       </div>
       <button class="btn-primary" id="btn-add-sport" style="width:100%">Hinzufügen</button>
-      ${activityItems ? `<div class="activity-list" id="activity-list">${activityItems}</div>` : ''}
+      ${activityItems ? `<div class="activity-list">${activityItems}</div>` : ''}
     </div>
 
     <div class="activity-section">
-      <h3>📊 Wochenverlauf (Kalorien)</h3>
-      <div class="week-chart">${bars}</div>
+      <h3>📊 Wochenverlauf</h3>
+      <div style="display:flex;gap:6px;align-items:flex-end">
+        <div style="display:flex;flex-direction:column;justify-content:space-between;height:${chartH+16}px;padding-bottom:20px;min-width:32px">
+          <span style="font-size:10px;color:var(--text-hint);text-align:right">${yMax}</span>
+          <span style="font-size:10px;color:var(--text-hint);text-align:right">${yMid}</span>
+          <span style="font-size:10px;color:var(--text-hint);text-align:right">0</span>
+        </div>
+        <div style="flex:1;display:flex;gap:4px;align-items:flex-end;height:${chartH+16}px;padding-bottom:20px;border-left:1px solid var(--border);padding-left:4px">${bars}</div>
+      </div>
     </div>
   </div>`;
 
