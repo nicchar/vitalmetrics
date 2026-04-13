@@ -6576,7 +6576,7 @@ function renderNutrition(c) {
     try {
       const url = `https://world.openfoodfacts.org/api/v2/search?`
         + `search_terms=${encodeURIComponent(query)}`
-        + `&lc=de&page_size=10`
+        + `&cc=de&page_size=8`
         + `&fields=product_name,brands,nutriments,categories_tags`;
       // AbortController statt AbortSignal.timeout (bessere Browser-Kompatibilität)
       const ctrl = new AbortController();
