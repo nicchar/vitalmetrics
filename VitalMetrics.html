@@ -1118,6 +1118,9 @@ ul { list-style: none; }
     <button class="nav-item" data-screen="activity">
       <span class="nav-icon-wrap"><span class="nav-icon">🏃</span></span><span class="nav-label">Bewegung</span>
     </button>
+    <button class="nav-item" data-screen="nutrition">
+      <span class="nav-icon-wrap"><span class="nav-icon">🥗</span></span><span class="nav-label">Ernährung</span>
+    </button>
     <button class="nav-item nav-cycle" data-screen="cycle" style="display:none">
       <span class="nav-icon-wrap"><span class="nav-icon">🌙</span></span><span class="nav-label">Zyklus</span>
     </button>
@@ -3770,7 +3773,7 @@ function navigate(screen, bmId) {
 function renderScreen(screen) {
   const c=document.getElementById('screen-container');
   c.innerHTML='';
-  const screens={dashboard:renderDashboard,entry:renderEntry,trend:renderTrend,profile:renderProfile,premium:renderPremium,onboarding:renderOnboarding,tools:renderToolsHub,fasting:renderFasting,glucose_day:renderGlucoseDay,cravings:renderCravings,activity:renderActivity,cycle:renderCycle};
+  const screens={dashboard:renderDashboard,entry:renderEntry,trend:renderTrend,profile:renderProfile,premium:renderPremium,onboarding:renderOnboarding,tools:renderToolsHub,fasting:renderFasting,glucose_day:renderGlucoseDay,cravings:renderCravings,activity:renderActivity,cycle:renderCycle,nutrition:renderNutrition};
   if (screens[screen]) screens[screen](c);
 }
 
@@ -4741,6 +4744,78 @@ function drawChart(measurements, bm, profile) {
 // ══════════════════════════════════════════════════════════
 // SCREEN: PROFILE
 // ══════════════════════════════════════════════════════════
+function renderIllnessDiary(el) {
+  const data = illnessRepo.get();
+  const condBadges = data.conditions.map((cond, i) =>
+    `<span style="background:var(--primary-light);color:var(--primary);border-radius:20px;padding:4px 10px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px">
+      ${cond}
+      <span style="cursor:pointer;font-weight:400" data-del-cond="${i}">✕</span>
+    </span>`
+  ).join('');
+
+  const entryList = data.entries.slice(0,20).map((e, i) =>
+    `<div style="border-left:3px solid var(--primary-light);padding:8px 12px;margin-bottom:8px;border-radius:0 8px 8px 0;background:var(--bg)">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span style="font-size:11px;color:var(--text-hint)">${e.date}</span>
+        <span style="font-size:11px;cursor:pointer;color:var(--text-hint)" data-del-entry="${i}">✕</span>
+      </div>
+      ${e.condition ? `<span style="font-size:11px;font-weight:700;color:var(--primary);margin-bottom:4px;display:block">${e.condition}</span>` : ''}
+      <p style="font-size:13px;margin:0;color:var(--text)">${e.note}</p>
+    </div>`
+  ).join('');
+
+  el.innerHTML = `
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">${condBadges || '<span style="font-size:12px;color:var(--text-hint)">Noch keine Diagnosen eingetragen.</span>'}</div>
+    <div style="display:flex;gap:6px;margin-bottom:14px">
+      <input type="text" id="inp-cond" placeholder="Diagnose hinzufügen (z. B. Hashimoto)" style="flex:1;padding:9px;border:2px solid var(--border);border-radius:10px;font-size:13px">
+      <button id="btn-add-cond" class="btn-primary" style="white-space:nowrap;font-size:13px">+ Diagnose</button>
+    </div>
+    <select id="sel-cond" style="width:100%;padding:9px;border:2px solid var(--border);border-radius:10px;font-size:13px;margin-bottom:8px">
+      <option value="">– Diagnose wählen (optional) –</option>
+      ${data.conditions.map(c => `<option value="${c}">${c}</option>`).join('')}
+    </select>
+    <textarea id="inp-note" placeholder="Wie geht es dir heute? Symptome, Verbesserungen, Beobachtungen..." style="width:100%;padding:9px;border:2px solid var(--border);border-radius:10px;font-size:13px;min-height:70px;resize:vertical;box-sizing:border-box"></textarea>
+    <button id="btn-add-entry" class="btn-primary" style="width:100%;margin-top:8px">Tagebucheintrag speichern</button>
+    ${entryList ? `<div style="margin-top:14px">${entryList}</div>` : ''}
+  `;
+
+  el.querySelector('#btn-add-cond').addEventListener('click', () => {
+    const name = el.querySelector('#inp-cond').value.trim();
+    if (!name) return;
+    illnessRepo.addCondition(name);
+    el.querySelector('#inp-cond').value = '';
+    renderIllnessDiary(el);
+  });
+
+  el.querySelector('#btn-add-entry').addEventListener('click', () => {
+    const note = el.querySelector('#inp-note').value.trim();
+    if (!note) { showToast('Bitte einen Eintrag schreiben'); return; }
+    const condition = el.querySelector('#sel-cond').value;
+    const date = new Date().toLocaleDateString('de-DE', { day:'2-digit', month:'long', year:'numeric' });
+    illnessRepo.addEntry({ date, condition, note });
+    el.querySelector('#inp-note').value = '';
+    showToast('Eintrag gespeichert ✓');
+    renderIllnessDiary(el);
+  });
+
+  el.querySelectorAll('[data-del-cond]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const d = illnessRepo.get();
+      d.conditions.splice(parseInt(btn.dataset.delCond), 1);
+      illnessRepo.save(d);
+      renderIllnessDiary(el);
+    });
+  });
+
+  el.querySelectorAll('[data-del-entry]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      illnessRepo.removeEntry(parseInt(btn.dataset.delEntry));
+      renderIllnessDiary(el);
+    });
+  });
+}
+
 function renderProfile(c) {
   const p=profileRepo.get();
   c.innerHTML=`<div class="screen profile-screen">
@@ -4842,6 +4917,12 @@ function renderProfile(c) {
       </div>
     </div>
 
+    <div class="profile-card">
+      <h3>📋 Gesundheitstagebuch</h3>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px">Trage Vorerkrankungen und Verlaufsnotizen ein. Nur lokal gespeichert.</p>
+      <div id="illness-content"></div>
+    </div>
+
     <div class="profile-card about-card">
       <h3>Über VitalMetrics</h3>
       <p class="disclaimer-text">⚠️ <strong>Kein Medizinprodukt.</strong> Diese App dient ausschließlich zur persönlichen Information und Orientierung. Sie ersetzt keine ärztliche Beratung, Diagnose oder Behandlung. Referenzwerte nach DGE (D-A-CH 2021/2024). Supplements sollten nur eingenommen werden, wenn der Bedarf über die Ernährung nachweislich nicht gedeckt werden kann – und idealerweise nach Rücksprache mit einem Arzt.</p>
@@ -4868,6 +4949,10 @@ function renderProfile(c) {
   c.querySelector('#btn-clear').addEventListener('click',()=>{
     if(confirm('Wirklich alle Messwerte löschen?')){measurementRepo.clear();showToast('Daten gelöscht.');navigate('dashboard');}
   });
+
+  // Gesundheitstagebuch rendern
+  const illDiv = c.querySelector('#illness-content');
+  if (illDiv) renderIllnessDiary(illDiv);
 
   // Reminder-Zeit speichern
   const btnSaveReminder = c.querySelector('#btn-save-reminder');
@@ -6122,6 +6207,458 @@ function renderCycle(c) {
     renderCycle(c);
   });
 }
+
+// ══════════════════════════════════════════════════════════
+// SCREEN: ERNÄHRUNG
+// ══════════════════════════════════════════════════════════
+
+// Lebensmitteldatenbank — Nährstoffe pro 100g (Quelle: BLS 4.0 / MRI)
+const FOOD_DB = [
+  { id:'rinderleber',   name:'Rinderleber',         emoji:'🥩', kal:136, vit_a:6100,vit_d:1.7,vit_e:0.6,vit_k:3,  vit_c:23, b1:0.26,b2:3.0, b3:13.0,b6:0.73,b12:65, folat:220,eisen:6.5,zink:5.9,mag:18, cal:6   },
+  { id:'huehnerbrust',  name:'Hühnerbrust',         emoji:'🍗', kal:110, vit_a:8,   vit_d:0.4,vit_e:0.3,vit_k:0,  vit_c:0,  b1:0.10,b2:0.13,b3:10.9,b6:0.90,b12:0.4,folat:5,  eisen:0.7,zink:1.5,mag:26, cal:11  },
+  { id:'lachs',         name:'Lachs',               emoji:'🐟', kal:180, vit_a:14,  vit_d:16, vit_e:1.6,vit_k:0,  vit_c:0,  b1:0.23,b2:0.17,b3:7.8, b6:0.82,b12:3.2,folat:14, eisen:0.5,zink:0.5,mag:29, cal:15  },
+  { id:'hering',        name:'Hering',              emoji:'🐟', kal:203, vit_a:30,  vit_d:26, vit_e:1.3,vit_k:0,  vit_c:0,  b1:0.04,b2:0.18,b3:3.8, b6:0.40,b12:8.5,folat:10, eisen:1.1,zink:1.5,mag:32, cal:60  },
+  { id:'thunfisch',     name:'Thunfisch (Dose)',     emoji:'🐠', kal:103, vit_a:18,  vit_d:5.8,vit_e:0.2,vit_k:0,  vit_c:0,  b1:0.05,b2:0.10,b3:11.0,b6:0.35,b12:2.0,folat:4,  eisen:1.2,zink:0.7,mag:30, cal:12  },
+  { id:'ei',            name:'Ei (1 Stück = 60g)',  emoji:'🥚', kal:156, vit_a:272, vit_d:2.9,vit_e:2.0,vit_k:3,  vit_c:0,  b1:0.09,b2:0.45,b3:0.1, b6:0.12,b12:1.9,folat:67, eisen:1.9,zink:1.4,mag:12, cal:56  },
+  { id:'vollmilch',     name:'Vollmilch',           emoji:'🥛', kal:64,  vit_a:52,  vit_d:0.1,vit_e:0.1,vit_k:0,  vit_c:1,  b1:0.04,b2:0.17,b3:0.1, b6:0.04,b12:0.4,folat:5,  eisen:0.1,zink:0.4,mag:12, cal:120 },
+  { id:'joghurt',       name:'Joghurt (3,5%)',      emoji:'🥛', kal:66,  vit_a:36,  vit_d:0.1,vit_e:0.1,vit_k:0,  vit_c:1,  b1:0.04,b2:0.18,b3:0.1, b6:0.06,b12:0.4,folat:8,  eisen:0.1,zink:0.5,mag:12, cal:120 },
+  { id:'emmentaler',    name:'Emmentaler',          emoji:'🧀', kal:390, vit_a:270, vit_d:1.1,vit_e:0.5,vit_k:2,  vit_c:0,  b1:0.03,b2:0.40,b3:0.1, b6:0.10,b12:1.5,folat:15, eisen:0.3,zink:4.2,mag:36, cal:1020},
+  { id:'quark',         name:'Magerquark',          emoji:'🥛', kal:71,  vit_a:3,   vit_d:0,  vit_e:0.1,vit_k:0,  vit_c:0,  b1:0.04,b2:0.16,b3:0.1, b6:0.08,b12:0.5,folat:11, eisen:0.1,zink:0.5,mag:9,  cal:93  },
+  { id:'spinat',        name:'Spinat',              emoji:'🥬', kal:23,  vit_a:380, vit_d:0,  vit_e:2.0,vit_k:483,vit_c:51, b1:0.10,b2:0.20,b3:0.8, b6:0.22,b12:0,  folat:145,eisen:3.4,zink:0.5,mag:58, cal:117 },
+  { id:'brokkoli',      name:'Brokkoli',            emoji:'🥦', kal:34,  vit_a:77,  vit_d:0,  vit_e:1.1,vit_k:102,vit_c:93, b1:0.07,b2:0.13,b3:0.7, b6:0.18,b12:0,  folat:71, eisen:0.7,zink:0.4,mag:25, cal:47  },
+  { id:'karotten',      name:'Karotten',            emoji:'🥕', kal:41,  vit_a:800, vit_d:0,  vit_e:0.5,vit_k:13, vit_c:6,  b1:0.06,b2:0.05,b3:0.9, b6:0.14,b12:0,  folat:27, eisen:0.4,zink:0.2,mag:12, cal:41  },
+  { id:'paprika_rot',   name:'Paprika (rot)',       emoji:'🫑', kal:31,  vit_a:157, vit_d:0,  vit_e:2.4,vit_k:9,  vit_c:140,b1:0.05,b2:0.08,b3:1.0, b6:0.37,b12:0,  folat:23, eisen:0.5,zink:0.2,mag:12, cal:10  },
+  { id:'gruenkohl',     name:'Grünkohl',            emoji:'🥬', kal:43,  vit_a:500, vit_d:0,  vit_e:1.7,vit_k:817,vit_c:105,b1:0.06,b2:0.13,b3:0.9, b6:0.27,b12:0,  folat:120,eisen:2.0,zink:0.3,mag:34, cal:212 },
+  { id:'suesskartoffel',name:'Süßkartoffel',        emoji:'🍠', kal:90,  vit_a:960, vit_d:0,  vit_e:0.3,vit_k:2,  vit_c:20, b1:0.08,b2:0.06,b3:0.9, b6:0.28,b12:0,  folat:6,  eisen:0.5,zink:0.3,mag:18, cal:32  },
+  { id:'avocado',       name:'Avocado',             emoji:'🥑', kal:160, vit_a:7,   vit_d:0,  vit_e:2.1,vit_k:21, vit_c:10, b1:0.07,b2:0.14,b3:1.7, b6:0.25,b12:0,  folat:62, eisen:0.5,zink:0.5,mag:29, cal:12  },
+  { id:'tomate',        name:'Tomate',              emoji:'🍅', kal:20,  vit_a:62,  vit_d:0,  vit_e:0.9,vit_k:8,  vit_c:25, b1:0.05,b2:0.04,b3:0.7, b6:0.10,b12:0,  folat:20, eisen:0.5,zink:0.2,mag:11, cal:11  },
+  { id:'banane',        name:'Banane',              emoji:'🍌', kal:95,  vit_a:4,   vit_d:0,  vit_e:0.3,vit_k:0,  vit_c:12, b1:0.04,b2:0.06,b3:0.6, b6:0.36,b12:0,  folat:14, eisen:0.3,zink:0.2,mag:28, cal:6   },
+  { id:'orange',        name:'Orange',              emoji:'🍊', kal:47,  vit_a:8,   vit_d:0,  vit_e:0.2,vit_k:0,  vit_c:53, b1:0.09,b2:0.04,b3:0.3, b6:0.06,b12:0,  folat:31, eisen:0.2,zink:0.1,mag:11, cal:43  },
+  { id:'kiwi',          name:'Kiwi',                emoji:'🥝', kal:58,  vit_a:3,   vit_d:0,  vit_e:1.5,vit_k:40, vit_c:93, b1:0.02,b2:0.04,b3:0.4, b6:0.13,b12:0,  folat:30, eisen:0.3,zink:0.1,mag:17, cal:34  },
+  { id:'erdbeeren',     name:'Erdbeeren',           emoji:'🍓', kal:32,  vit_a:1,   vit_d:0,  vit_e:0.1,vit_k:0,  vit_c:65, b1:0.03,b2:0.04,b3:0.4, b6:0.06,b12:0,  folat:20, eisen:0.4,zink:0.2,mag:13, cal:16  },
+  { id:'haferflocken',  name:'Haferflocken',        emoji:'🌾', kal:372, vit_a:0,   vit_d:0,  vit_e:1.5,vit_k:2,  vit_c:0,  b1:0.60,b2:0.14,b3:1.3, b6:0.12,b12:0,  folat:87, eisen:4.6,zink:3.7,mag:137,cal:79  },
+  { id:'vollkornbrot',  name:'Vollkornbrot',        emoji:'🍞', kal:213, vit_a:0,   vit_d:0,  vit_e:1.1,vit_k:2,  vit_c:0,  b1:0.27,b2:0.12,b3:3.5, b6:0.18,b12:0,  folat:30, eisen:2.2,zink:1.8,mag:68, cal:30  },
+  { id:'reis',          name:'Reis (gekocht)',      emoji:'🍚', kal:130, vit_a:0,   vit_d:0,  vit_e:0.1,vit_k:0,  vit_c:0,  b1:0.02,b2:0.01,b3:1.3, b6:0.05,b12:0,  folat:8,  eisen:0.2,zink:0.5,mag:13, cal:5   },
+  { id:'linsen',        name:'Linsen (gekocht)',    emoji:'🫘', kal:116, vit_a:0,   vit_d:0,  vit_e:0.1,vit_k:3,  vit_c:2,  b1:0.17,b2:0.07,b3:1.1, b6:0.18,b12:0,  folat:80, eisen:3.3,zink:1.6,mag:36, cal:19  },
+  { id:'kichererbsen',  name:'Kichererbsen (gek.)',emoji:'🫘', kal:164, vit_a:1,   vit_d:0,  vit_e:0.3,vit_k:4,  vit_c:1,  b1:0.12,b2:0.06,b3:0.5, b6:0.14,b12:0,  folat:72, eisen:2.9,zink:1.5,mag:45, cal:49  },
+  { id:'tofu',          name:'Tofu',               emoji:'🟨', kal:80,  vit_a:0,   vit_d:0,  vit_e:0.1,vit_k:2,  vit_c:0,  b1:0.08,b2:0.05,b3:0.2, b6:0.05,b12:0,  folat:19, eisen:1.6,zink:0.8,mag:30, cal:130 },
+  { id:'mandeln',       name:'Mandeln',            emoji:'🥜', kal:575, vit_a:0,   vit_d:0,  vit_e:26,  vit_k:0,  vit_c:0,  b1:0.21,b2:0.74,b3:3.6, b6:0.13,b12:0,  folat:44, eisen:3.7,zink:3.1,mag:258,cal:248 },
+  { id:'walnuesse',     name:'Walnüsse',           emoji:'🥜', kal:654, vit_a:0,   vit_d:0,  vit_e:0.7,vit_k:3,  vit_c:3,  b1:0.34,b2:0.14,b3:1.3, b6:0.54,b12:0,  folat:77, eisen:2.9,zink:2.7,mag:158,cal:98  },
+  { id:'paranuss',      name:'Paranüsse',          emoji:'🥜', kal:685, vit_a:0,   vit_d:0,  vit_e:5.7,vit_k:0,  vit_c:0,  b1:0.62,b2:0.03,b3:0.3, b6:0.25,b12:0,  folat:22, eisen:2.4,zink:4.1,mag:376,cal:160 },
+  { id:'sonnenblumen',  name:'Sonnenblumenkerne',  emoji:'🌻', kal:584, vit_a:0,   vit_d:0,  vit_e:35,  vit_k:0,  vit_c:1,  b1:1.48,b2:0.36,b3:4.1, b6:0.77,b12:0,  folat:237,eisen:6.3,zink:5.3,mag:325,cal:116 },
+  { id:'dunkle_schoko', name:'Dunkle Schokolade',  emoji:'🍫', kal:540, vit_a:0,   vit_d:0,  vit_e:0.6,vit_k:7,  vit_c:0,  b1:0.04,b2:0.06,b3:0.4, b6:0.04,b12:0,  folat:10, eisen:8.0,zink:2.0,mag:115,cal:52  },
+  { id:'blaubeeren',    name:'Blaubeeren',         emoji:'🫐', kal:57,  vit_a:3,   vit_d:0,  vit_e:0.6,vit_k:19, vit_c:10, b1:0.04,b2:0.04,b3:0.4, b6:0.05,b12:0,  folat:6,  eisen:0.3,zink:0.2,mag:6,  cal:6   },
+  { id:'quinoa',        name:'Quinoa (gekocht)',   emoji:'🌾', kal:120, vit_a:0,   vit_d:0,  vit_e:0.6,vit_k:0,  vit_c:0,  b1:0.10,b2:0.11,b3:0.4, b6:0.12,b12:0,  folat:42, eisen:1.5,zink:1.1,mag:64, cal:17  },
+];
+
+// DGE-Referenzwerte für Erwachsene (alters- und geschlechtsangepasst)
+function getDGERef(ageGroup, sex) {
+  const isF = sex === 'f';
+  const is51 = ageGroup === '51-70' || ageGroup === '70+';
+  const is70 = ageGroup === '70+';
+  return {
+    vit_a:  { label:'Vitamin A',  unit:'µg', ref: isF ? 700 : 850 },
+    vit_d:  { label:'Vitamin D',  unit:'µg', ref: is51 ? 20 : 20 },
+    vit_e:  { label:'Vitamin E',  unit:'mg', ref: isF ? 12 : 15 },
+    vit_k:  { label:'Vitamin K',  unit:'µg', ref: isF ? 60 : 70 },
+    vit_c:  { label:'Vitamin C',  unit:'mg', ref: 110 },
+    b1:     { label:'Vitamin B1', unit:'mg', ref: isF ? 1.0 : 1.3 },
+    b2:     { label:'Vitamin B2', unit:'mg', ref: isF ? 1.1 : 1.4 },
+    b3:     { label:'Vitamin B3', unit:'mg', ref: isF ? 13 : 16 },
+    b6:     { label:'Vitamin B6', unit:'mg', ref: is51 ? (isF ? 1.5 : 1.7) : (isF ? 1.4 : 1.6) },
+    b12:    { label:'Vitamin B12',unit:'µg', ref: 4.0 },
+    folat:  { label:'Folat',      unit:'µg', ref: 300 },
+    eisen:  { label:'Eisen',      unit:'mg', ref: isF && !is51 ? 15 : 10 },
+    zink:   { label:'Zink',       unit:'mg', ref: isF ? 8 : 11 },
+    mag:    { label:'Magnesium',  unit:'mg', ref: isF ? 300 : 350 },
+    cal:    { label:'Calcium',    unit:'mg', ref: is70 ? 1200 : 1000 },
+  };
+}
+
+// Ernährungs-Repository
+const nutritionRepo = {
+  _key: 'vm_nutrition',
+  _load() { return storage.get(this._key) || {}; },
+  getDay(dateStr) { return this._load()[dateStr] || []; },
+  addEntry(dateStr, entry) {
+    const all = this._load();
+    all[dateStr] = [...(all[dateStr] || []), entry];
+    storage.set(this._key, all);
+  },
+  removeEntry(dateStr, idx) {
+    const all = this._load();
+    all[dateStr] = (all[dateStr] || []).filter((_,i) => i !== idx);
+    storage.set(this._key, all);
+  },
+  getDayTotals(dateStr) {
+    const entries = this.getDay(dateStr);
+    const keys = ['vit_a','vit_d','vit_e','vit_k','vit_c','b1','b2','b3','b6','b12','folat','eisen','zink','mag','cal'];
+    const totals = Object.fromEntries(keys.map(k => [k, 0]));
+    totals.kcal = 0; totals.protein = 0; totals.fat = 0; totals.carbs = 0;
+    for (const e of entries) {
+      // Support both new format {food:{...}, grams} and old format {foodId:'...', grams}
+      const food = e.food ? e.food : FOOD_DB.find(f => f.id === e.foodId);
+      if (!food) continue;
+      const factor = e.grams / 100;
+      totals.kcal += Math.round(food.kal * factor);
+      totals.protein = Math.round((totals.protein + (food.protein || 0) * factor) * 10) / 10;
+      totals.fat     = Math.round((totals.fat     + (food.fat     || 0) * factor) * 10) / 10;
+      totals.carbs   = Math.round((totals.carbs   + (food.carbs   || 0) * factor) * 10) / 10;
+      for (const k of keys) totals[k] = Math.round((totals[k] + (food[k] || 0) * factor) * 10) / 10;
+    }
+    return totals;
+  }
+};
+
+// ── Open Food Facts helpers ──────────────────────────────────────────────────
+function _offEmoji(product) {
+  const cats = (product.categories_tags || []).join(' ');
+  if (/en:fruits|obst/.test(cats))   return '🍎';
+  if (/en:vegetables|gemüse/.test(cats)) return '🥦';
+  if (/en:meats|fleisch/.test(cats)) return '🥩';
+  if (/en:fish|fisch/.test(cats))   return '🐟';
+  if (/en:dairy|milch/.test(cats))  return '🥛';
+  if (/en:breads|brot/.test(cats))  return '🍞';
+  if (/en:beverages|getränk/.test(cats)) return '🥤';
+  if (/en:sweet|süß/.test(cats))    return '🍫';
+  if (/en:cereals/.test(cats))      return '🥣';
+  if (/en:nuts/.test(cats))         return '🥜';
+  return '🍽️';
+}
+
+function mapOFFFood(product) {
+  const n = product.nutriments || {};
+  const rawName = (product.product_name || '').trim() || 'Unbekannt';
+  const brand   = product.brands ? product.brands.split(',')[0].trim() : '';
+  return {
+    name:    rawName.slice(0, 50),
+    brand,
+    emoji:   _offEmoji(product),
+    kal:     Math.round(n['energy-kcal_100g'] || (n['energy_100g'] || 0) / 4.184),
+    protein: Math.round((n['proteins_100g']       || 0) * 10) / 10,
+    fat:     Math.round((n['fat_100g']            || 0) * 10) / 10,
+    carbs:   Math.round((n['carbohydrates_100g']  || 0) * 10) / 10,
+    // Micronutrients as supplied by OFF (units may vary; best-effort)
+    vit_a:  n['vitamin-a_100g']  || 0,
+    vit_d:  n['vitamin-d_100g']  || 0,
+    vit_e:  n['vitamin-e_100g']  || 0,
+    vit_k:  n['vitamin-k_100g']  || 0,
+    vit_c:  n['vitamin-c_100g']  || 0,
+    b1:     n['vitamin-b1_100g'] || 0,
+    b2:     n['vitamin-b2_100g'] || 0,
+    b3:     n['niacin_100g']     || 0,
+    b6:     n['vitamin-b6_100g'] || 0,
+    b12:    n['vitamin-b12_100g']|| 0,
+    folat:  n['folates_100g']    || 0,
+    eisen:  n['iron_100g']       || 0,
+    zink:   n['zinc_100g']       || 0,
+    mag:    n['magnesium_100g']  || 0,
+    cal:    n['calcium_100g']    || 0,
+    source: 'openfoodfacts'
+  };
+}
+
+// Module-level state for the nutrition search (survives DOM re-renders within screen)
+let _nutrState = { selectedFood: null, searchProducts: [], searchTimer: null };
+
+function renderNutrition(c) {
+  _nutrState.selectedFood  = null;
+  _nutrState.searchProducts = [];
+
+  const today   = new Date().toISOString().slice(0, 10);
+  const profile = profileRepo.get();
+  const ref     = getDGERef(profile.ageGroup, profile.sex);
+  const entries = nutritionRepo.getDay(today);
+  const totals  = nutritionRepo.getDayTotals(today);
+
+  // ── Entry list ──────────────────────────────────────────────────────────────
+  const entryList = entries.map((e, i) => {
+    const food = e.food ? e.food : FOOD_DB.find(f => f.id === e.foodId);
+    if (!food) return '';
+    const kcal = Math.round(food.kal * e.grams / 100);
+    return `<div class="activity-item">
+      <div class="activity-item-left">
+        <span class="activity-item-emoji">${food.emoji || '🍽️'}</span>
+        <div>
+          <div class="activity-item-name">${food.name}</div>
+          <div class="activity-item-time">${e.grams} g · ${kcal} kcal</div>
+        </div>
+      </div>
+      <span class="activity-item-del" data-idx="${i}">✕</span>
+    </div>`;
+  }).join('');
+
+  // ── Macro tiles ─────────────────────────────────────────────────────────────
+  const macrosHtml = entries.length ? `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
+      <div style="text-align:center;background:var(--surface2);border-radius:8px;padding:8px">
+        <div style="font-size:18px;font-weight:700;color:var(--primary)">${Math.round(totals.protein)}g</div>
+        <div style="font-size:11px;color:var(--text-secondary)">Protein</div>
+      </div>
+      <div style="text-align:center;background:var(--surface2);border-radius:8px;padding:8px">
+        <div style="font-size:18px;font-weight:700;color:#f59e0b">${Math.round(totals.fat)}g</div>
+        <div style="font-size:11px;color:var(--text-secondary)">Fett</div>
+      </div>
+      <div style="text-align:center;background:var(--surface2);border-radius:8px;padding:8px">
+        <div style="font-size:18px;font-weight:700;color:#3b82f6">${Math.round(totals.carbs)}g</div>
+        <div style="font-size:11px;color:var(--text-secondary)">Kohlenhydrate</div>
+      </div>
+    </div>` : '';
+
+  // ── Micronutrient bars ──────────────────────────────────────────────────────
+  const nutrients = Object.entries(ref).map(([key, info]) => {
+    const val = totals[key] || 0;
+    const pct = Math.min(100, Math.round((val / info.ref) * 100));
+    const color = pct >= 100 ? 'var(--primary)' : pct >= 60 ? '#f59e0b' : '#ef4444';
+    return `<div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px">
+        <span style="font-weight:600">${info.label}</span>
+        <span style="color:var(--text-secondary)">${val} / ${info.ref} ${info.unit}
+          <span style="color:${color};font-weight:700"> ${pct}%</span></span>
+      </div>
+      <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:${color};border-radius:3px;transition:width .4s"></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // ── Render ──────────────────────────────────────────────────────────────────
+  c.innerHTML = `<div class="screen">
+    <div class="screen-header"><h1 class="screen-title">🥗 Ernährung</h1></div>
+
+    <div class="activity-hero">
+      <div class="activity-hero-left">
+        <div style="font-size:13px;opacity:.85;margin-bottom:4px">Heute gegessen</div>
+        <div class="cal-big">${totals.kcal}</div>
+        <div class="cal-unit">kcal · ${entries.length} Mahlzeit${entries.length !== 1 ? 'en' : ''}</div>
+      </div>
+    </div>
+
+    <div class="activity-section">
+      <h3>➕ Lebensmittel hinzufügen</h3>
+
+      <!-- Search bar -->
+      <div style="position:relative;margin-bottom:8px">
+        <input type="text" id="inp-food-search" class="sport-select"
+          style="width:100%;padding-right:36px"
+          placeholder="🔍 Lebensmittel suchen (Open Food Facts)…">
+        <button id="btn-search-clear"
+          style="position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--text-secondary);font-size:18px;display:none;background:none;border:none;cursor:pointer">✕</button>
+      </div>
+
+      <!-- Search results injected here -->
+      <div id="nutr-results" style="margin-bottom:8px"></div>
+
+      <!-- Selected food confirmation card -->
+      <div id="nutr-card" style="display:none;background:var(--primary-light);border-radius:10px;padding:12px;margin-bottom:10px">
+        <div id="nutr-card-name" style="font-size:13px;font-weight:600;margin-bottom:8px"></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="text" inputmode="numeric" id="inp-grams"
+            class="minutes-input" placeholder="Gramm" style="flex:1">
+          <button class="btn-primary" id="btn-add-food" style="flex:2">Hinzufügen</button>
+        </div>
+      </div>
+
+      <!-- Manual entry toggle -->
+      <button id="btn-custom-toggle"
+        style="width:100%;padding:10px;border:2px dashed var(--border);border-radius:8px;
+               color:var(--text-secondary);font-size:13px;background:none;cursor:pointer">
+        ✏️ Eigenes Lebensmittel manuell eingeben
+      </button>
+
+      <!-- Manual entry form -->
+      <div id="nutr-custom-form" style="display:none;background:var(--surface2);border-radius:10px;padding:14px;margin-top:8px">
+        <div style="font-weight:600;margin-bottom:10px">Eigenes Lebensmittel (pro 100 g)</div>
+        <input type="text" id="inp-c-name"   class="sport-select" style="width:100%;margin-bottom:6px" placeholder="Name (z. B. Omas Linseneintopf)">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">
+          <input type="text" inputmode="numeric" id="inp-c-kal"     class="minutes-input" placeholder="kcal / 100 g">
+          <input type="text" inputmode="numeric" id="inp-c-protein"  class="minutes-input" placeholder="Protein g">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">
+          <input type="text" inputmode="numeric" id="inp-c-fat"      class="minutes-input" placeholder="Fett g">
+          <input type="text" inputmode="numeric" id="inp-c-carbs"    class="minutes-input" placeholder="Kohlenhydrate g">
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="text" inputmode="numeric" id="inp-c-grams"    class="minutes-input" placeholder="Gramm" style="flex:1">
+          <button class="btn-primary" id="btn-add-custom" style="flex:2">Hinzufügen</button>
+        </div>
+      </div>
+
+      ${entryList ? `<div class="activity-list" style="margin-top:14px">${entryList}</div>` : ''}
+    </div>
+
+    <div class="activity-section">
+      <h3>📊 Makros heute</h3>
+      ${macrosHtml || '<p style="font-size:13px;color:var(--text-secondary)">Noch keine Einträge.</p>'}
+      ${entries.length ? `
+        <h3 style="margin-top:4px">🧬 Mikronährstoffe</h3>
+        <p style="font-size:11px;color:var(--text-secondary);margin-bottom:12px">
+          DGE-Referenzwerte · Bei Fertigprodukten können Mikronährstoffe fehlen
+        </p>
+        ${nutrients}` : ''}
+    </div>
+  </div>`;
+
+  // ── DOM refs ────────────────────────────────────────────────────────────────
+  const searchInput   = c.querySelector('#inp-food-search');
+  const searchClear   = c.querySelector('#btn-search-clear');
+  const resultsBox    = c.querySelector('#nutr-results');
+  const card          = c.querySelector('#nutr-card');
+  const cardName      = c.querySelector('#nutr-card-name');
+  const gramsInput    = c.querySelector('#inp-grams');
+  const addBtn        = c.querySelector('#btn-add-food');
+  const customToggle  = c.querySelector('#btn-custom-toggle');
+  const customForm    = c.querySelector('#nutr-custom-form');
+
+  // ── Search ──────────────────────────────────────────────────────────────────
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim();
+    searchClear.style.display = q ? '' : 'none';
+    card.style.display = 'none';
+    _nutrState.selectedFood = null;
+    clearTimeout(_nutrState.searchTimer);
+    if (q.length < 2) { resultsBox.innerHTML = ''; return; }
+    resultsBox.innerHTML = `<div style="text-align:center;padding:12px;color:var(--text-secondary);font-size:13px">🔍 Suche läuft…</div>`;
+    _nutrState.searchTimer = setTimeout(() => _offSearch(q), 500);
+  });
+
+  searchClear.addEventListener('click', () => {
+    searchInput.value = '';
+    searchClear.style.display = 'none';
+    resultsBox.innerHTML = '';
+    card.style.display = 'none';
+    _nutrState.selectedFood = null;
+  });
+
+  // ── Add from search ─────────────────────────────────────────────────────────
+  addBtn.addEventListener('click', () => {
+    const grams = parseInt(gramsInput.value);
+    if (!grams || grams < 1) { showToast('Bitte Gramm eingeben'); return; }
+    if (!_nutrState.selectedFood) return;
+    nutritionRepo.addEntry(today, { food: _nutrState.selectedFood, grams });
+    showToast(`${_nutrState.selectedFood.emoji} ${_nutrState.selectedFood.name} hinzugefügt`);
+    renderNutrition(c);
+  });
+
+  // ── Manual entry ────────────────────────────────────────────────────────────
+  customToggle.addEventListener('click', () => {
+    customForm.style.display = customForm.style.display === 'none' ? 'block' : 'none';
+  });
+
+  c.querySelector('#btn-add-custom').addEventListener('click', () => {
+    const name   = c.querySelector('#inp-c-name').value.trim();
+    const kal    = parseFloat(c.querySelector('#inp-c-kal').value)    || 0;
+    const protein= parseFloat(c.querySelector('#inp-c-protein').value) || 0;
+    const fat    = parseFloat(c.querySelector('#inp-c-fat').value)    || 0;
+    const carbs  = parseFloat(c.querySelector('#inp-c-carbs').value)  || 0;
+    const grams  = parseInt(c.querySelector('#inp-c-grams').value)    || 0;
+    if (!name)  { showToast('Bitte einen Namen eingeben'); return; }
+    if (!grams) { showToast('Bitte Gramm eingeben'); return; }
+    const food = { name, emoji:'🍽️', kal, protein, fat, carbs,
+      vit_a:0, vit_d:0, vit_e:0, vit_k:0, vit_c:0,
+      b1:0, b2:0, b3:0, b6:0, b12:0, folat:0, eisen:0, zink:0, mag:0, cal:0,
+      source:'custom' };
+    nutritionRepo.addEntry(today, { food, grams });
+    showToast(`✏️ ${name} hinzugefügt`);
+    renderNutrition(c);
+  });
+
+  // ── Delete entry ────────────────────────────────────────────────────────────
+  c.querySelectorAll('.activity-item-del').forEach(btn => {
+    btn.addEventListener('click', () => {
+      nutritionRepo.removeEntry(today, parseInt(btn.dataset.idx));
+      renderNutrition(c);
+    });
+  });
+
+  // ── OFF search function (async, scoped here) ────────────────────────────────
+  async function _offSearch(query) {
+    try {
+      const url = `https://world.openfoodfacts.org/cgi/search.pl?`
+        + `search_terms=${encodeURIComponent(query)}`
+        + `&json=1&lc=de&page_size=10&search_simple=1`
+        + `&fields=product_name,brands,nutriments,categories_tags`;
+      const resp = await fetch(url, { signal: AbortSignal.timeout(8000) });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const data = await resp.json();
+      const products = (data.products || [])
+        .filter(p => p.product_name && (p.nutriments?.['energy-kcal_100g'] || p.nutriments?.['energy_100g']));
+
+      if (!products.length) {
+        resultsBox.innerHTML = `<div style="text-align:center;padding:12px;color:var(--text-secondary);font-size:13px">
+          Keine Ergebnisse. Anderen Suchbegriff probieren oder manuell eingeben.</div>`;
+        return;
+      }
+
+      _nutrState.searchProducts = products.map(mapOFFFood);
+
+      resultsBox.innerHTML = `<div style="border:1px solid var(--border);border-radius:10px;overflow:hidden">
+        ${_nutrState.searchProducts.map((food, i) => `
+          <div class="off-result" data-idx="${i}"
+            style="padding:10px 12px;${i > 0 ? 'border-top:1px solid var(--border)' : ''};
+                   cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+                   background:var(--surface)">
+            <div style="flex:1;min-width:0;margin-right:8px">
+              <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                ${food.emoji} ${food.name}
+              </div>
+              ${food.brand ? `<div style="font-size:11px;color:var(--text-secondary)">${food.brand}</div>` : ''}
+            </div>
+            <div style="font-size:13px;font-weight:700;color:var(--primary);white-space:nowrap">
+              ${food.kal} kcal
+            </div>
+          </div>`).join('')}
+      </div>`;
+
+      resultsBox.querySelectorAll('.off-result').forEach(el => {
+        el.addEventListener('click', () => {
+          const food = _nutrState.searchProducts[parseInt(el.dataset.idx)];
+          _nutrState.selectedFood = food;
+          cardName.innerHTML = `${food.emoji} <strong>${food.name}</strong>`
+            + (food.brand ? ` · <span style="color:var(--text-secondary)">${food.brand}</span>` : '')
+            + `<br><span style="font-size:11px;color:var(--text-secondary)">
+               ${food.kal} kcal · ${food.protein}g P · ${food.fat}g F · ${food.carbs}g KH pro 100 g</span>`;
+          card.style.display = 'block';
+          resultsBox.innerHTML = '';
+          searchInput.value = food.name.slice(0, 40);
+          searchClear.style.display = '';
+          gramsInput.value = '';
+          gramsInput.focus();
+        });
+      });
+    } catch (err) {
+      resultsBox.innerHTML = `<div style="text-align:center;padding:12px;color:#ef4444;font-size:13px">
+        ⚠️ Keine Verbindung zu Open Food Facts.<br>
+        <span style="color:var(--text-secondary)">Internetverbindung prüfen oder Lebensmittel manuell eingeben.</span></div>`;
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// SCREEN: VORERKRANKUNGEN
+// ══════════════════════════════════════════════════════════
+const illnessRepo = {
+  _key: 'vm_illness',
+  get() { return storage.get(this._key) || { conditions: [], entries: [] }; },
+  save(data) { storage.set(this._key, data); },
+  addCondition(name) {
+    const d = this.get();
+    if (!d.conditions.includes(name)) d.conditions.push(name);
+    this.save(d);
+  },
+  addEntry(entry) {
+    const d = this.get();
+    d.entries.unshift(entry);
+    this.save(d);
+  },
+  removeEntry(idx) {
+    const d = this.get();
+    d.entries.splice(idx, 1);
+    this.save(d);
+  }
+};
+
+// Vorerkrankungs-Screen wird im Profil-Screen eingebettet (siehe renderProfile)
 
 // ══════════════════════════════════════════════════════════
 // INIT
