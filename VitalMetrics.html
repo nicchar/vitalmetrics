@@ -3723,30 +3723,50 @@ const activityRepo = {
 // Cycle Repository
 const cycleRepo = {
   _key: 'vm_cycle',
-  get() { return storage.get(this._key) || { periodStarts: [], cycleLength: 28, periodLength: 5 }; },
-  save(data) { storage.set(this._key, Object.assign(this.get(), data)); },
+  get() {
+    return storage.get(this._key) || { periodStarts: [], periodLength: 5, avgCycleLength: null };
+  },
+  save(data) { storage.set(this._key, data); },
+  // Berechnet Zykluslängen aus den Abständen zwischen den Periodenstarts
+  calcStats() {
+    const d = this.get();
+    const starts = [...d.periodStarts].sort();
+    if (starts.length < 2) return { avgCycle: null, cycles: [] };
+    const cycles = [];
+    for (let i = 1; i < starts.length; i++) {
+      const days = Math.round((new Date(starts[i]) - new Date(starts[i-1])) / 86400000);
+      if (days >= 15 && days <= 60) cycles.push(days); // plausible range
+    }
+    const avg = cycles.length ? Math.round(cycles.reduce((a, b) => a + b, 0) / cycles.length) : null;
+    return { avgCycle: avg, cycles };
+  },
   getCurrentPhase() {
     const d = this.get();
-    if (!d.periodStarts.length) return null;
-    const last = new Date(d.periodStarts[d.periodStarts.length - 1]);
+    const starts = [...d.periodStarts].sort();
+    if (!starts.length) return null;
+    const last = new Date(starts[starts.length - 1]);
     const today = new Date(); today.setHours(0,0,0,0);
     const dayOfCycle = Math.floor((today - last) / 86400000) + 1;
-    const cl = d.cycleLength || 28;
+    const stats = this.calcStats();
+    const cl = stats.avgCycle || d.avgCycleLength || 28;
     const pl = d.periodLength || 5;
     const dayInCycle = ((dayOfCycle - 1) % cl) + 1;
-    if (dayInCycle <= pl) return { phase: 'menstruation', day: dayInCycle, label: 'Menstruation', emoji: '🔴' };
-    if (dayInCycle <= 13) return { phase: 'follicular', day: dayInCycle, label: 'Follikelphase', emoji: '🟠' };
-    if (dayInCycle <= 15) return { phase: 'ovulation', day: dayInCycle, label: 'Eisprung', emoji: '🟢' };
-    return { phase: 'luteal', day: dayInCycle, label: 'Lutealphase', emoji: '🟣' };
+    if (dayInCycle <= pl) return { phase: 'menstruation', day: dayInCycle, cycleLen: cl };
+    if (dayInCycle <= Math.round(cl * 0.45)) return { phase: 'follicular', day: dayInCycle, cycleLen: cl };
+    if (dayInCycle <= Math.round(cl * 0.55)) return { phase: 'ovulation', day: dayInCycle, cycleLen: cl };
+    return { phase: 'luteal', day: dayInCycle, cycleLen: cl };
   },
   predictNext() {
     const d = this.get();
-    if (!d.periodStarts.length) return null;
-    const last = new Date(d.periodStarts[d.periodStarts.length - 1]);
-    const next = new Date(last); next.setDate(next.getDate() + (d.cycleLength || 28));
+    const starts = [...d.periodStarts].sort();
+    if (!starts.length) return null;
+    const stats = this.calcStats();
+    const cl = stats.avgCycle || d.avgCycleLength || 28;
+    const last = new Date(starts[starts.length - 1]);
+    const next = new Date(last); next.setDate(next.getDate() + cl);
     const today = new Date(); today.setHours(0,0,0,0);
     const daysUntil = Math.round((next - today) / 86400000);
-    return { date: next.toLocaleDateString('de-DE', { day:'2-digit', month:'long' }), daysUntil };
+    return { date: next.toLocaleDateString('de-DE', { day:'2-digit', month:'long', year:'numeric' }), daysUntil, cl };
   }
 };
 
@@ -4858,11 +4878,10 @@ function renderProfile(c) {
       <p class="hint-text">VitalMetrics erinnert dich täglich mit einem personalisierten Tipp basierend auf deinen Biomarkern.</p>
       <div class="form-group reminder-time-group">
         <label>Uhrzeit der Erinnerung</label>
-        <div class="reminder-time-row">
-          <input type="time" id="reminder-time-input" class="form-control reminder-time-input"
-            value="${localStorage.getItem('vitalmetrics_reminder_time') || '09:00'}">
-          <button class="btn-primary btn-save-reminder" id="btn-save-reminder">Speichern</button>
-        </div>
+        <input type="time" id="reminder-time-input" class="form-control reminder-time-input"
+          style="width:100%;margin-bottom:8px"
+          value="${localStorage.getItem('vitalmetrics_reminder_time') || '09:00'}">
+        <button class="btn-primary btn-save-reminder" id="btn-save-reminder" style="width:100%">Erinnerung speichern</button>
       </div>
       <p class="hint-text reminder-note">⚡ Funktioniert nur auf dem Android-Gerät, nicht im Browser.</p>
     </div>
@@ -5226,12 +5245,27 @@ function renderToolsHub(c) {
         </div>
         <div class="tool-card-arrow">›</div>
       </div>
+      ${(() => {
+        const cd = JSON.parse(localStorage.getItem('vm_cycle') || '{}');
+        const starts = (cd.periodStarts || []).length;
+        const avg = cd.avgCycleLength ? `Ø ${cd.avgCycleLength} Tage` : (starts >= 2 ? 'wird berechnet' : 'noch keine Daten');
+        return `<div class="tool-card" id="tool-cycle">
+          <div class="tool-card-icon">🌙</div>
+          <div class="tool-card-body">
+            <div class="tool-card-title">Zyklustracker</div>
+            <div class="tool-card-desc">Monatliche Einträge · automatische Zyklusberechnung · Phasen</div>
+            <div class="tool-card-meta">${starts > 0 ? `📅 ${starts} Einträge · ${avg}` : 'Noch keine Einträge'}</div>
+          </div>
+          <div class="tool-card-arrow">›</div>
+        </div>`;
+      })()}
     </div>
   </div>`;
 
   c.querySelector('#tool-fasting').addEventListener('click', () => navigate('fasting'));
   c.querySelector('#tool-glucose').addEventListener('click', () => navigate('glucose_day'));
   c.querySelector('#tool-cravings').addEventListener('click', () => navigate('cravings'));
+  c.querySelector('#tool-cycle').addEventListener('click', () => navigate('cycle'));
 }
 
 // ══════════════════════════════════════════════════════════
@@ -5972,11 +6006,9 @@ function renderActivity(c) {
 
     <div class="activity-section">
       <h3>👟 Heutige Schritte</h3>
-      <div class="steps-input-row">
-        <input type="text" inputmode="numeric" id="inp-steps" placeholder="z. B. 8500" value="${dayData.steps || ''}">
-        <button class="btn-primary" id="btn-save-steps" style="white-space:nowrap">Speichern</button>
-      </div>
-      ${stepCal > 0 ? `<p style="font-size:12px;color:var(--text-secondary);margin-top:8px">≈ ${stepCal} kcal durch Schritte</p>` : ''}
+      <input type="text" inputmode="numeric" id="inp-steps" class="sport-select" style="width:100%;margin-bottom:8px" placeholder="z. B. 8500" value="${dayData.steps || ''}">
+      ${stepCal > 0 ? `<p style="font-size:12px;color:var(--text-secondary);margin-bottom:8px">≈ ${stepCal} kcal durch Schritte</p>` : ''}
+      <button class="btn-primary" id="btn-save-steps" style="width:100%">Schritte speichern</button>
     </div>
 
     <div class="activity-section">
@@ -5990,7 +6022,7 @@ function renderActivity(c) {
     </div>
 
     <div class="activity-section">
-      <h3>📊 Wochenverlauf</h3>
+      <h3>📊 Wochenverlauf Kalorien</h3>
       <div style="display:flex;gap:6px;align-items:flex-end">
         <div style="display:flex;flex-direction:column;justify-content:space-between;height:${chartH+16}px;padding-bottom:20px;min-width:32px">
           <span style="font-size:10px;color:var(--text-hint);text-align:right">${yMax}</span>
@@ -5999,6 +6031,37 @@ function renderActivity(c) {
         </div>
         <div style="flex:1;display:flex;gap:4px;align-items:flex-end;height:${chartH+16}px;padding-bottom:20px;border-left:1px solid var(--border);padding-left:4px">${bars}</div>
       </div>
+    </div>
+
+    <div class="activity-section">
+      <h3>⏱️ Wochenverlauf Aktive Zeit</h3>
+      ${(() => {
+        const minData = week.map(d => ({
+          day: d.day,
+          isToday: d.isToday,
+          minutes: (d.activities || []).reduce((s, a) => s + (a.minutes || 0), 0)
+        }));
+        const maxMin = Math.max(...minData.map(d => d.minutes), 1);
+        const yMaxM = Math.ceil(maxMin / 10) * 10 || 10;
+        const yMidM = Math.round(yMaxM / 2);
+        const minBars = minData.map(d => {
+          const bh = Math.max(d.minutes > 0 ? 3 : 0, Math.round((d.minutes / yMaxM) * chartH));
+          return `<div class="week-bar-wrap">
+            <div class="week-bar-val">${d.minutes > 0 ? d.minutes + '' : ''}</div>
+            <div class="week-bar${d.isToday ? ' today' : ''}" style="height:${bh}px;background:var(--primary-light);border:2px solid var(--primary)"></div>
+            <span class="week-bar-label">${d.day}</span>
+          </div>`;
+        }).join('');
+        return `<div style="display:flex;gap:6px;align-items:flex-end">
+          <div style="display:flex;flex-direction:column;justify-content:space-between;height:${chartH+16}px;padding-bottom:20px;min-width:32px">
+            <span style="font-size:10px;color:var(--text-hint);text-align:right">${yMaxM}</span>
+            <span style="font-size:10px;color:var(--text-hint);text-align:right">${yMidM}</span>
+            <span style="font-size:10px;color:var(--text-hint);text-align:right">0</span>
+          </div>
+          <div style="flex:1;display:flex;gap:4px;align-items:flex-end;height:${chartH+16}px;padding-bottom:20px;border-left:1px solid var(--border);padding-left:4px">${minBars}</div>
+        </div>
+        <p style="font-size:11px;color:var(--text-secondary);margin-top:6px">Minuten aktive Sportzeit pro Tag</p>`;
+      })()}
     </div>
   </div>`;
 
@@ -6073,94 +6136,125 @@ const CYCLE_PHASE_INFO = {
 };
 
 function renderCycle(c) {
-  const data = cycleRepo.get();
+  const data  = cycleRepo.get();
+  const stats = cycleRepo.calcStats();
   const phase = cycleRepo.getCurrentPhase();
-  const next = cycleRepo.predictNext();
+  const next  = cycleRepo.predictNext();
   const phaseKey = phase ? phase.phase : 'unknown';
   const phaseInfo = CYCLE_PHASE_INFO[phaseKey] || {};
   const nutrients = CYCLE_NUTRIENTS[phaseKey] || [];
-  const avgCycle = data.cycleLength || 28;
   const today = new Date().toISOString().slice(0, 10);
+  const starts = [...data.periodStarts].sort();
+  const avgCycle = stats.avgCycle || data.avgCycleLength || 28;
 
-  const nutrientHTML = nutrients.map(n => `
-    <div class="cycle-nutrient-item">
-      <span class="cycle-nutrient-emoji">${n.emoji}</span>
+  // ── Eingabeliste aller Zyklusstarts ──────────────────────────────────────
+  const startsList = starts.slice().reverse().map((s, i) => {
+    const realIdx = starts.length - 1 - i;
+    const prev = starts[realIdx - 1];
+    const len  = prev ? Math.round((new Date(s) - new Date(prev)) / 86400000) : null;
+    return `<div style="display:flex;justify-content:space-between;align-items:center;
+                         padding:8px 0;border-bottom:1px solid var(--border)">
       <div>
-        <div class="cycle-nutrient-name">${n.name}</div>
-        <div class="cycle-nutrient-why">${n.why}</div>
+        <div style="font-weight:600;font-size:13px">${new Date(s).toLocaleDateString('de-DE',{day:'2-digit',month:'long',year:'numeric'})}</div>
+        ${len ? `<div style="font-size:11px;color:var(--text-secondary)">${len} Tage seit vorherigem Zyklus</div>` : '<div style="font-size:11px;color:var(--text-secondary)">Erster Eintrag</div>'}
       </div>
-    </div>`).join('');
+      <button class="activity-item-del" data-date="${s}" style="font-size:18px;color:var(--text-secondary);background:none;border:none;cursor:pointer">✕</button>
+    </div>`;
+  }).join('');
 
-  // Mini calendar — current month
+  // ── Monatskalender ────────────────────────────────────────────────────────
   const now = new Date();
   const y = now.getFullYear(), m = now.getMonth();
-  const firstDay = new Date(y, m, 1).getDay(); // 0=Sun
   const daysInMonth = new Date(y, m + 1, 0).getDate();
-  const offset = (firstDay + 6) % 7; // Mo=0
-
+  const offset = (new Date(y, m, 1).getDay() + 6) % 7;
   let calHTML = '';
   for (let i = 0; i < offset; i++) calHTML += '<div class="cycle-day other-month"></div>';
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const isToday = dateStr === today;
     let dayPhase = '';
-    if (data.periodStarts.length) {
-      const last = new Date(data.periodStarts[data.periodStarts.length - 1]);
+    if (starts.length) {
+      const last = new Date(starts[starts.length - 1]);
       const diff = Math.floor((new Date(dateStr) - last) / 86400000);
-      const cl = data.cycleLength || 28;
+      const cl = avgCycle;
       const pl = data.periodLength || 5;
-      const dayInCycle = ((diff % cl) + cl) % cl + 1;
-      if (dayInCycle <= pl) dayPhase = 'menstruation';
-      else if (dayInCycle <= 13) dayPhase = 'follicular';
-      else if (dayInCycle <= 15) dayPhase = 'ovulation';
+      const dic = ((diff % cl) + cl) % cl + 1;
+      if (dic <= pl) dayPhase = 'menstruation';
+      else if (dic <= Math.round(cl * 0.45)) dayPhase = 'follicular';
+      else if (dic <= Math.round(cl * 0.55)) dayPhase = 'ovulation';
       else dayPhase = 'luteal';
     }
     calHTML += `<div class="cycle-day ${dayPhase}${isToday ? ' today' : ''}">${d}</div>`;
   }
 
+  const nutrientHTML = nutrients.map(n => `
+    <div class="cycle-nutrient-item">
+      <span class="cycle-nutrient-emoji">${n.emoji}</span>
+      <div><div class="cycle-nutrient-name">${n.name}</div><div class="cycle-nutrient-why">${n.why}</div></div>
+    </div>`).join('');
+
   c.innerHTML = `<div class="screen cycle-screen">
-    <div class="screen-header"><h1 class="screen-title">🌙 Zyklus</h1></div>
-
-    <div class="cycle-phase-card ${phaseKey}">
-      <div class="cycle-phase-label">${phase ? `Tag ${phase.day} des Zyklus` : 'Noch keine Daten'}</div>
-      <div class="cycle-phase-name">${phase ? phaseInfo.label : 'Periode eintragen'}</div>
-      ${phase ? `<div class="cycle-phase-tip">${phaseInfo.desc}<br><br>${phaseInfo.tipSport}</div>` : '<div class="cycle-phase-tip">Trage dein letztes Periodendatum ein, um deine aktuelle Phase zu sehen.</div>'}
+    <div class="screen-header" style="display:flex;align-items:center;gap:10px;padding:16px">
+      <button id="btn-back-cycle" style="background:none;font-size:22px;cursor:pointer;border:none">←</button>
+      <h1 class="screen-title" style="margin:0">🌙 Zyklustracker</h1>
     </div>
 
-    <div class="cycle-section">
-      <h3>📅 Periode eintragen</h3>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <input type="date" id="inp-period-start" style="flex:1;padding:10px;border:2px solid var(--border);border-radius:10px;font-size:14px" value="${today}">
-        <button class="btn-primary" id="btn-log-period">Periode beginnt</button>
-      </div>
-      ${data.periodStarts.length ? `<p style="font-size:12px;color:var(--text-secondary);margin-top:8px">Letzte Periode: ${new Date(data.periodStarts[data.periodStarts.length-1]).toLocaleDateString('de-DE', {day:'2-digit',month:'long',year:'numeric'})}</p>` : ''}
+    <!-- Aktuelle Phase -->
+    <div class="cycle-phase-card ${phaseKey}" style="margin:0 16px 16px">
+      <div class="cycle-phase-label">${phase ? `Tag ${phase.day} · Zykluslänge ${phase.cycleLen} Tage` : 'Noch keine Daten'}</div>
+      <div class="cycle-phase-name">${phase ? phaseInfo.label : 'Ersten Zyklus eintragen'}</div>
+      ${phase ? `<div class="cycle-phase-tip">${phaseInfo.desc}<br><br>${phaseInfo.tipSport}</div>`
+               : '<div class="cycle-phase-tip">Trage deinen ersten Periodenstart ein. Ab zwei Einträgen wird dein Zyklus automatisch berechnet.</div>'}
     </div>
 
+    <!-- Statistik -->
     <div class="cycle-section">
       <div class="cycle-stats-row">
         <div class="cycle-stat">
-          <div class="cycle-stat-num">${avgCycle}</div>
-          <div class="cycle-stat-label">Tage Ø Zyklus</div>
+          <div class="cycle-stat-num">${stats.avgCycle ? stats.avgCycle : '–'}</div>
+          <div class="cycle-stat-label">Ø Zykluslänge</div>
         </div>
         <div class="cycle-stat">
           <div class="cycle-stat-num">${data.periodLength || 5}</div>
-          <div class="cycle-stat-label">Tage Periode</div>
+          <div class="cycle-stat-label">Periodenlänge</div>
         </div>
         <div class="cycle-stat">
-          <div class="cycle-stat-num">${next ? next.daysUntil : '–'}</div>
+          <div class="cycle-stat-num">${next ? (next.daysUntil >= 0 ? next.daysUntil : 0) : '–'}</div>
           <div class="cycle-stat-label">Tage bis nächste</div>
         </div>
       </div>
-      ${next ? `<p style="font-size:12px;color:var(--text-secondary);margin-top:10px;text-align:center">Nächste Periode voraussichtlich: <strong>${next.date}</strong></p>` : ''}
+      ${next ? `<p style="font-size:12px;color:var(--text-secondary);margin-top:10px;text-align:center">
+        Nächste Periode voraussichtlich: <strong>${next.date}</strong>
+        ${stats.cycles.length >= 2 ? `<br><span style="font-size:11px">(aus ${stats.cycles.length} gemessenen Zyklen berechnet)</span>` : ''}
+      </p>` : ''}
     </div>
 
+    <!-- Neuen Periodenstart eintragen -->
     <div class="cycle-section">
-      <h3>🗓️ Monatsübersicht</h3>
+      <h3>➕ Periodenstart eintragen</h3>
+      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:10px">
+        Trage jeden Monat den ersten Tag deiner Periode ein. Die Zykluslänge wird automatisch aus den Abständen berechnet.
+      </p>
+      <input type="date" id="inp-period-start"
+        style="width:100%;padding:10px;border:2px solid var(--border);border-radius:10px;font-size:15px;margin-bottom:8px"
+        value="${today}">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <label style="font-size:13px;color:var(--text-secondary);flex:1">Periodenlänge (Tage)</label>
+        <input type="text" inputmode="numeric" id="inp-period-len"
+          style="width:60px;padding:8px;border:2px solid var(--border);border-radius:8px;font-size:15px;text-align:center"
+          value="${data.periodLength || 5}">
+      </div>
+      <button class="btn-primary" id="btn-log-period" style="width:100%">Periodenstart speichern</button>
+    </div>
+
+    <!-- Kalender -->
+    <div class="cycle-section">
+      <h3>🗓️ ${now.toLocaleDateString('de-DE',{month:'long',year:'numeric'})}</h3>
       <div class="cycle-cal-header">
         <span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span>
       </div>
       <div class="cycle-calendar">${calHTML}</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
         <span style="font-size:11px">🔴 Periode</span>
         <span style="font-size:11px">🟠 Follikelphase</span>
         <span style="font-size:11px">🟢 Eisprung</span>
@@ -6173,38 +6267,42 @@ function renderCycle(c) {
       <div class="cycle-nutrient-list">${nutrientHTML}</div>
     </div>` : ''}
 
-    <div class="cycle-section">
-      <h3>⚙️ Zykluseinstellungen</h3>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <div style="flex:1">
-          <label style="font-size:12px;color:var(--text-secondary)">Zykluslänge (Tage)</label>
-          <input type="number" id="inp-cycle-len" min="21" max="45" value="${data.cycleLength || 28}" style="width:100%;margin-top:4px;padding:10px;border:2px solid var(--border);border-radius:10px;font-size:16px;text-align:center">
-        </div>
-        <div style="flex:1">
-          <label style="font-size:12px;color:var(--text-secondary)">Periodenlänge (Tage)</label>
-          <input type="number" id="inp-period-len" min="2" max="10" value="${data.periodLength || 5}" style="width:100%;margin-top:4px;padding:10px;border:2px solid var(--border);border-radius:10px;font-size:16px;text-align:center">
-        </div>
-      </div>
-      <button class="btn-primary" id="btn-save-cycle" style="width:100%;margin-top:10px">Einstellungen speichern</button>
-    </div>
+    <!-- Eintragshistorie -->
+    ${starts.length ? `<div class="cycle-section">
+      <h3>📋 Eingetragene Perioden (${starts.length})</h3>
+      ${startsList}
+    </div>` : ''}
   </div>`;
+
+  c.querySelector('#btn-back-cycle').addEventListener('click', () => navigate('tools'));
 
   c.querySelector('#btn-log-period').addEventListener('click', () => {
     const dateStr = c.querySelector('#inp-period-start').value;
+    const pl = parseInt(c.querySelector('#inp-period-len').value) || 5;
     if (!dateStr) { showToast('Bitte Datum wählen'); return; }
     const d = cycleRepo.get();
-    d.periodStarts = [...d.periodStarts.filter(s => s !== dateStr), dateStr].sort();
-    cycleRepo.save(d);
-    showToast('Periode eingetragen ✓');
+    d.periodStarts = [...(d.periodStarts || []).filter(s => s !== dateStr), dateStr].sort();
+    d.periodLength = pl;
+    // Zykluslänge auto aus Einträgen berechnen und speichern
+    const s2 = cycleRepo;
+    s2.save(d);
+    const computed = s2.calcStats();
+    if (computed.avgCycle) { d.avgCycleLength = computed.avgCycle; s2.save(d); }
+    showToast('✓ Periodenstart gespeichert');
     renderCycle(c);
   });
 
-  c.querySelector('#btn-save-cycle').addEventListener('click', () => {
-    const cl = parseInt(c.querySelector('#inp-cycle-len').value) || 28;
-    const pl = parseInt(c.querySelector('#inp-period-len').value) || 5;
-    cycleRepo.save({ cycleLength: cl, periodLength: pl });
-    showToast('Einstellungen gespeichert ✓');
-    renderCycle(c);
+  c.querySelectorAll('[data-date]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const date = btn.dataset.date;
+      if (!confirm(`Eintrag vom ${new Date(date).toLocaleDateString('de-DE')} löschen?`)) return;
+      const d = cycleRepo.get();
+      d.periodStarts = d.periodStarts.filter(s => s !== date);
+      const computed = cycleRepo.calcStats();
+      if (computed.avgCycle) d.avgCycleLength = computed.avgCycle;
+      cycleRepo.save(d);
+      renderCycle(c);
+    });
   });
 }
 
@@ -7385,10 +7483,7 @@ const illnessRepo = {
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.nav-item').forEach(item => item.addEventListener('click', () => navigate(item.dataset.screen)));
   const profile = profileRepo.get();
-  // Zyklus-Tab nur für weibliche Nutzer anzeigen
-  if (profile.sex === 'f') {
-    document.querySelectorAll('.nav-cycle').forEach(el => el.style.display = '');
-  }
+  // Zyklus-Tab ist in Tools integriert — Nav-Button bleibt ausgeblendet
   navigate(profile.onboardingDone ? 'dashboard' : 'onboarding');
 
   // Billing Store initialisieren sobald das Gerät bereit ist (Capacitor/Cordova)
