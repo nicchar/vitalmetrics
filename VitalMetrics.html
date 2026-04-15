@@ -37,13 +37,13 @@
 
 /* ── Reset & Base ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 button { cursor: pointer; border: none; background: none; font-family: inherit; }
 input, select, textarea { font-family: inherit; }
 ul { list-style: none; }
 
 /* ── App Shell ── */
-#app { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+#app { display: flex; flex-direction: column; height: 100vh; overflow: hidden; max-width: 100vw; }
 
 #screen-container {
   flex: 1;
@@ -54,7 +54,7 @@ ul { list-style: none; }
 }
 
 /* ── Screen Base ── */
-.screen { padding: 16px; max-width: 600px; margin: 0 auto; padding-bottom: 24px; }
+.screen { padding: 16px; max-width: 600px; margin: 0 auto; padding-bottom: 24px; overflow-x: hidden; width: 100%; }
 
 /* ── Screen Header ── */
 .screen-header { margin-bottom: 20px; }
@@ -4032,9 +4032,9 @@ function renderLongevityHub(latestAll, profile) {
         <div class="longevity-score-big" style="color:${scoreColor}">${score}<small>/100</small></div>
         ${bioAge?`<div class="longevity-bio-age">Biologisches Alter: <strong>${bioAge} Jahre</strong>${ageDiffLabel?` · <span style="color:${ageDiff>0?'#43A047':'#EF5350'}">${ageDiffLabel}</span>`:''}</div>`:''}
         <div class="longevity-score-ring-wrap">
-          <svg viewBox="0 0 40 8" width="120" height="14">
-            <rect x="0" y="2" width="120" height="5" rx="3" fill="#E5E7EB"/>
-            <rect x="0" y="2" width="${Math.round(score*1.2)}" height="5" rx="3" fill="${scoreColor}"/>
+          <svg viewBox="0 0 100 8" width="120" height="14" style="overflow:hidden">
+            <rect x="0" y="2" width="100" height="5" rx="3" fill="#E5E7EB"/>
+            <rect x="0" y="2" width="${score}" height="5" rx="3" fill="${scoreColor}"/>
           </svg>
         </div>
       </div>
