@@ -1,10 +1,14 @@
 {
   "categories": {
+    "longevity": "🧬 Longevity & Langlebigkeit",
     "fat_soluble": "Fettlösliche Vitamine",
     "water_soluble": "Wasserlösliche Vitamine",
     "trace_elements": "Spurenelemente",
     "lab_values": "Laborwerte",
-    "body": "Körpermesswerte"
+    "body": "Körpermesswerte",
+    "gut": "🦠 Darm & Mikrobiom",
+    "cognitive": "🧠 Kognitive Gesundheit",
+    "consumption": "Konsum-Tracking"
   },
   "biomarkers": [
     {
@@ -12,422 +16,1204 @@
       "name": "Vitamin A",
       "category": "fat_soluble",
       "unit": "µg",
-      "refMin": 750, "refMax": 1000,
-      "refByGender": { "m": { "min": 850, "max": 1000 }, "f": { "min": 700, "max": 900 } },
+      "refMin": 750,
+      "refMax": 1000,
+      "refByGender": {
+        "m": {
+          "min": 850,
+          "max": 1000
+        },
+        "f": {
+          "min": 700,
+          "max": 900
+        }
+      },
       "premium": true,
       "selfTestAvailable": false,
       "description": "Fettlösliches Vitamin, wichtig für Sehkraft und Immunsystem",
       "function": "Sehkraft (v. a. Dämmerungssehen), Haut und Schleimhäute, Immunsystem",
-      "foods": ["Leber", "Karotten", "Süßkartoffeln", "Spinat", "Kürbis", "Paprika"],
-      "deficiencySymptoms": ["Nachtblindheit", "Trockene Augen", "Trockene Haut", "Erhöhte Infektanfälligkeit", "Schleimhautveränderungen"],
-      "tips": ["Vitamin A aus tierischen Quellen (Retinol) wird besser aufgenommen als pflanzliches Beta-Carotin.", "Fett verbessert die Aufnahme – Karotten am besten mit etwas Öl essen."]
+      "foods": [
+        "Leber",
+        "Karotten",
+        "Süßkartoffeln",
+        "Spinat",
+        "Kürbis",
+        "Paprika"
+      ],
+      "deficiencySymptoms": [
+        "Nachtblindheit",
+        "Trockene Augen",
+        "Trockene Haut",
+        "Erhöhte Infektanfälligkeit",
+        "Schleimhautveränderungen"
+      ],
+      "tips": [
+        "Vitamin A aus tierischen Quellen (Retinol) wird besser aufgenommen als pflanzliches Beta-Carotin.",
+        "Fett verbessert die Aufnahme – Karotten am besten mit etwas Öl essen."
+      ],
+      "intakeTracking": true,
+      "intakeKey": "vit_a",
+      "accessTier": "diary"
     },
     {
       "id": "vitamin_d",
       "name": "Vitamin D",
       "category": "fat_soluble",
       "unit": "µg",
-      "refMin": 20, "refMax": 50,
-      "refByGender": { "m": { "min": 20, "max": 50 }, "f": { "min": 20, "max": 50 } },
+      "refMin": 20,
+      "refMax": 50,
+      "refByGender": {
+        "m": {
+          "min": 20,
+          "max": 50
+        },
+        "f": {
+          "min": 20,
+          "max": 50
+        }
+      },
       "premium": false,
       "selfTestAvailable": true,
       "selfTestNote": "Heimtest verfügbar (z. B. cerascreen, BIOGENA) · Empfehlung: 1–2× jährlich",
       "description": "Das Sonnenvitamin – wird hauptsächlich durch UV-Strahlung in der Haut gebildet",
       "function": "Knochen- und Zahnstabilität, Calciumaufnahme, Muskelfunktion, Immunsystem",
-      "foods": ["Lachs", "Hering", "Makrele", "Eigelb", "Rinderleber", "Champignons"],
-      "deficiencySymptoms": ["Knochenschmerzen", "Muskelschwäche", "Erhöhtes Frakturrisiko", "Müdigkeit", "Infektanfälligkeit", "Depressive Verstimmung"],
-      "tips": ["Im Winter (Oktober–März) reicht die Sonneneinstrahlung in Deutschland oft nicht für die Vitamin-D-Synthese.", "Regelmäßiges Blutbild prüfen lassen, besonders im Winter."]
+      "foods": [
+        "Lachs",
+        "Hering",
+        "Makrele",
+        "Eigelb",
+        "Rinderleber",
+        "Champignons"
+      ],
+      "deficiencySymptoms": [
+        "Knochenschmerzen",
+        "Muskelschwäche",
+        "Erhöhtes Frakturrisiko",
+        "Müdigkeit",
+        "Infektanfälligkeit",
+        "Depressive Verstimmung"
+      ],
+      "tips": [
+        "Im Winter (Oktober–März) reicht die Sonneneinstrahlung in Deutschland oft nicht für die Vitamin-D-Synthese.",
+        "Regelmäßiges Blutbild prüfen lassen, besonders im Winter.",
+        "Warnhinweis des BfR (Stellungnahme 09/2025): Hochdosierte Einzeldosen ('Bolusdosen', z. B. alle 1–4 Wochen) bergen Risiken wie erhöhte Sturz- und Frakturgefahr, besonders bei bereits gut versorgten Personen. Das BfR empfiehlt, die tägliche Zufuhr über Nahrungsergänzung 20 µg (800 I.E.) nicht zu überschreiten – Bolusdosen nur nach ärztlicher Anweisung und mit ärztlicher Kontrolle."
+      ],
+      "intakeTracking": true,
+      "intakeKey": "vit_d",
+      "accessTier": "diary"
     },
     {
       "id": "vitamin_e",
       "name": "Vitamin E",
       "category": "fat_soluble",
       "unit": "mg",
-      "refMin": 12, "refMax": 15,
-      "refByGender": { "m": { "min": 15, "max": 20 }, "f": { "min": 12, "max": 17 } },
+      "refMin": 8,
+      "refMax": 10,
+      "refByGender": {
+        "m": {
+          "min": 8,
+          "max": 10
+        },
+        "f": {
+          "min": 8,
+          "max": 10
+        }
+      },
       "premium": true,
       "selfTestAvailable": false,
       "description": "Starkes Antioxidans, schützt Zellmembranen vor oxidativem Stress",
       "function": "Zellschutz (Antioxidans), Schutz der Zellmembranen, Immunsystem",
-      "foods": ["Weizenkeimöl", "Sonnenblumenöl", "Mandeln", "Haselnüsse", "Sonnenblumenkerne", "Avocado"],
-      "deficiencySymptoms": ["Muskelschwäche", "Neurologische Störungen", "Koordinationsprobleme"],
-      "tips": ["Vitamin E ist in Nüssen und Pflanzenölen reichlich enthalten.", "Ein echter Mangel ist bei ausgewogener Ernährung selten."]
+      "foods": [
+        "Weizenkeimöl",
+        "Sonnenblumenöl",
+        "Mandeln",
+        "Haselnüsse",
+        "Sonnenblumenkerne",
+        "Avocado"
+      ],
+      "deficiencySymptoms": [
+        "Muskelschwäche",
+        "Neurologische Störungen",
+        "Koordinationsprobleme"
+      ],
+      "tips": [
+        "Vitamin E ist in Nüssen und Pflanzenölen reichlich enthalten.",
+        "Ein echter Mangel ist bei ausgewogener Ernährung selten.",
+        "DGE-Referenzwert seit der 3. Auflage (2025): 8 mg/Tag als Schätzwert für α-Tocopherol, einheitlich für Frauen und Männer – nicht mehr nach Geschlecht gestaffelt und nicht mehr als Tocopherol-Äquivalent berechnet."
+      ],
+      "intakeTracking": true,
+      "intakeKey": "vit_e",
+      "accessTier": "diary"
     },
     {
       "id": "vitamin_k",
       "name": "Vitamin K",
       "category": "fat_soluble",
       "unit": "µg",
-      "refMin": 60, "refMax": 80,
-      "refByGender": { "m": { "min": 70, "max": 90 }, "f": { "min": 60, "max": 80 } },
+      "refMin": 60,
+      "refMax": 80,
+      "refByGender": {
+        "m": {
+          "min": 70,
+          "max": 90
+        },
+        "f": {
+          "min": 60,
+          "max": 80
+        }
+      },
       "premium": true,
       "selfTestAvailable": false,
       "description": "Essentiell für die Blutgerinnung und den Knochenstoffwechsel",
       "function": "Blutgerinnung, Knochengesundheit",
-      "foods": ["Grünkohl", "Spinat", "Brokkoli", "Rosenkohl", "Salat", "Petersilie"],
-      "deficiencySymptoms": ["Blutungsneigung", "Hämatome", "Verzögerte Wundheilung", "Erhöhtes Osteoporose-Risiko"],
-      "tips": ["Grünes Blattgemüse täglich essen deckt den Bedarf zuverlässig.", "Achtung bei Einnahme von Blutverdünnern – Arzt konsultieren."]
+      "foods": [
+        "Grünkohl",
+        "Spinat",
+        "Brokkoli",
+        "Rosenkohl",
+        "Salat",
+        "Petersilie"
+      ],
+      "deficiencySymptoms": [
+        "Blutungsneigung",
+        "Hämatome",
+        "Verzögerte Wundheilung",
+        "Erhöhtes Osteoporose-Risiko"
+      ],
+      "tips": [
+        "Grünes Blattgemüse täglich essen deckt den Bedarf zuverlässig.",
+        "Achtung bei Einnahme von Blutverdünnern – Arzt konsultieren."
+      ],
+      "intakeTracking": true,
+      "intakeKey": "vit_k",
+      "accessTier": "diary"
     },
     {
       "id": "vitamin_c",
       "name": "Vitamin C",
       "category": "water_soluble",
       "unit": "mg",
-      "refMin": 95, "refMax": 110,
-      "refByGender": { "m": { "min": 110, "max": 150 }, "f": { "min": 95, "max": 135 } },
+      "refMin": 95,
+      "refMax": 110,
+      "refByGender": {
+        "m": {
+          "min": 110,
+          "max": 150
+        },
+        "f": {
+          "min": 95,
+          "max": 135
+        }
+      },
       "premium": true,
       "selfTestAvailable": false,
       "description": "Wasserlösliches Vitamin mit starker antioxidativer Wirkung",
       "function": "Immunsystem, Wundheilung, Eisenaufnahme, Antioxidans",
-      "foods": ["Paprika", "Zitrusfrüchte", "Kiwi", "Erdbeeren", "Brokkoli", "Sanddorn"],
-      "deficiencySymptoms": ["Müdigkeit", "Zahnfleischbluten", "Schlechte Wundheilung", "Infektanfälligkeit"],
-      "tips": ["Vitamin C verbessert die Aufnahme von pflanzlichem Eisen – kombiniere Hülsenfrüchte mit Zitronensaft.", "Hitze zerstört Vitamin C – rohes Gemüse bevorzugen."]
+      "foods": [
+        "Paprika",
+        "Zitrusfrüchte",
+        "Kiwi",
+        "Erdbeeren",
+        "Brokkoli",
+        "Sanddorn"
+      ],
+      "deficiencySymptoms": [
+        "Müdigkeit",
+        "Zahnfleischbluten",
+        "Schlechte Wundheilung",
+        "Infektanfälligkeit"
+      ],
+      "tips": [
+        "Vitamin C verbessert die Aufnahme von pflanzlichem Eisen – kombiniere Hülsenfrüchte mit Zitronensaft.",
+        "Hitze zerstört Vitamin C – rohes Gemüse bevorzugen."
+      ],
+      "intakeTracking": true,
+      "intakeKey": "vit_c",
+      "accessTier": "diary"
     },
     {
       "id": "vitamin_b1",
       "name": "Vitamin B1 (Thiamin)",
       "category": "water_soluble",
       "unit": "mg",
-      "refMin": 1.0, "refMax": 1.2,
-      "refByGender": { "m": { "min": 1.2, "max": 1.5 }, "f": { "min": 1.0, "max": 1.3 } },
+      "refMin": 1.0,
+      "refMax": 1.2,
+      "refByGender": {
+        "m": {
+          "min": 1.2,
+          "max": 1.5
+        },
+        "f": {
+          "min": 1.0,
+          "max": 1.3
+        }
+      },
       "premium": true,
       "selfTestAvailable": false,
       "description": "Wichtig für den Energiestoffwechsel und das Nervensystem",
       "function": "Energiestoffwechsel, Nervenfunktion, Herzfunktion",
-      "foods": ["Vollkornbrot", "Haferflocken", "Hülsenfrüchte", "Schweinefleisch", "Weizenkeime", "Sonnenblumenkerne"],
-      "deficiencySymptoms": ["Müdigkeit", "Konzentrationsstörungen", "Kribbeln/Taubheit", "Muskelschwäche"],
-      "tips": ["Alkohol hemmt die Aufnahme und Speicherung von B1 erheblich.", "Vollkornprodukte sind die beste pflanzliche Quelle."]
+      "foods": [
+        "Vollkornbrot",
+        "Haferflocken",
+        "Hülsenfrüchte",
+        "Schweinefleisch",
+        "Weizenkeime",
+        "Sonnenblumenkerne"
+      ],
+      "deficiencySymptoms": [
+        "Müdigkeit",
+        "Konzentrationsstörungen",
+        "Kribbeln/Taubheit",
+        "Muskelschwäche"
+      ],
+      "tips": [
+        "Alkohol hemmt die Aufnahme und Speicherung von B1 erheblich.",
+        "Vollkornprodukte sind die beste pflanzliche Quelle."
+      ],
+      "intakeTracking": true,
+      "intakeKey": "b1",
+      "accessTier": "diary"
     },
     {
       "id": "vitamin_b2",
       "name": "Vitamin B2 (Riboflavin)",
       "category": "water_soluble",
       "unit": "mg",
-      "refMin": 1.1, "refMax": 1.4,
-      "refByGender": { "m": { "min": 1.4, "max": 1.8 }, "f": { "min": 1.1, "max": 1.5 } },
+      "refMin": 1.1,
+      "refMax": 1.4,
+      "refByGender": {
+        "m": {
+          "min": 1.4,
+          "max": 1.8
+        },
+        "f": {
+          "min": 1.1,
+          "max": 1.5
+        }
+      },
       "premium": true,
       "selfTestAvailable": false,
       "description": "Beteiligt am Energiestoffwechsel und am Schutz der Zellen",
       "function": "Energiestoffwechsel, Haut, Augen, Nervensystem",
-      "foods": ["Milch", "Joghurt", "Käse", "Eier", "Mandeln", "Rinderleber"],
-      "deficiencySymptoms": ["Rissige Mundwinkel", "Entzündete Zunge", "Hautveränderungen", "Lichtempfindlichkeit"],
-      "tips": ["Milchprodukte und Eier sind die besten Quellen.", "Licht zerstört Riboflavin – Milch nicht im Sonnenlicht lagern."]
+      "foods": [
+        "Milch",
+        "Joghurt",
+        "Käse",
+        "Eier",
+        "Mandeln",
+        "Rinderleber"
+      ],
+      "deficiencySymptoms": [
+        "Rissige Mundwinkel",
+        "Entzündete Zunge",
+        "Hautveränderungen",
+        "Lichtempfindlichkeit"
+      ],
+      "tips": [
+        "Milchprodukte und Eier sind die besten Quellen.",
+        "Licht zerstört Riboflavin – Milch nicht im Sonnenlicht lagern."
+      ],
+      "intakeTracking": true,
+      "intakeKey": "b2",
+      "accessTier": "diary"
     },
     {
       "id": "vitamin_b3",
       "name": "Vitamin B3 (Niacin)",
       "category": "water_soluble",
       "unit": "mg",
-      "refMin": 13, "refMax": 16,
-      "refByGender": { "m": { "min": 16, "max": 20 }, "f": { "min": 13, "max": 17 } },
+      "refMin": 13,
+      "refMax": 16,
+      "refByGender": {
+        "m": {
+          "min": 16,
+          "max": 20
+        },
+        "f": {
+          "min": 13,
+          "max": 17
+        }
+      },
       "premium": true,
       "selfTestAvailable": false,
       "description": "Wichtig für Energiegewinnung und DNA-Reparatur",
       "function": "Energiestoffwechsel, Haut, Nervensystem, DNA-Reparatur",
-      "foods": ["Fleisch", "Fisch", "Erdnüsse", "Pilze", "Vollkorn", "Geflügel"],
-      "deficiencySymptoms": ["Hautentzündungen", "Durchfall", "Psychische Veränderungen"],
-      "tips": ["Kann aus der Aminosäure Tryptophan selbst gebildet werden.", "Fleischesser decken ihren Bedarf meist problemlos."]
+      "foods": [
+        "Fleisch",
+        "Fisch",
+        "Erdnüsse",
+        "Pilze",
+        "Vollkorn",
+        "Geflügel"
+      ],
+      "deficiencySymptoms": [
+        "Hautentzündungen",
+        "Durchfall",
+        "Psychische Veränderungen"
+      ],
+      "tips": [
+        "Kann aus der Aminosäure Tryptophan selbst gebildet werden.",
+        "Fleischesser decken ihren Bedarf meist problemlos."
+      ],
+      "intakeTracking": true,
+      "intakeKey": "b3",
+      "accessTier": "diary"
     },
     {
       "id": "vitamin_b5",
       "name": "Vitamin B5 (Pantothensäure)",
       "category": "water_soluble",
       "unit": "mg",
-      "refMin": 5, "refMax": 6,
-      "refByGender": { "m": { "min": 5, "max": 6 }, "f": { "min": 5, "max": 6 } },
+      "refMin": 5,
+      "refMax": 6,
+      "refByGender": {
+        "m": {
+          "min": 5,
+          "max": 6
+        },
+        "f": {
+          "min": 5,
+          "max": 6
+        }
+      },
       "premium": true,
       "selfTestAvailable": false,
       "description": "Wichtig für Hormonproduktion und Energiestoffwechsel",
       "function": "Hormonbildung, Energiestoffwechsel, Wundheilung",
-      "foods": ["Pilze", "Avocado", "Hülsenfrüchte", "Eier", "Lachs", "Brokkoli"],
-      "deficiencySymptoms": ["Selten: Müdigkeit", "Kopfschmerzen", "Reizbarkeit"],
-      "tips": ["Ein Mangel ist bei ausgewogener Ernährung sehr selten.", "Pantothensäure steckt in fast allen Lebensmitteln."]
+      "foods": [
+        "Pilze",
+        "Avocado",
+        "Hülsenfrüchte",
+        "Eier",
+        "Lachs",
+        "Brokkoli"
+      ],
+      "deficiencySymptoms": [
+        "Selten: Müdigkeit",
+        "Kopfschmerzen",
+        "Reizbarkeit"
+      ],
+      "tips": [
+        "Ein Mangel ist bei ausgewogener Ernährung sehr selten.",
+        "Pantothensäure steckt in fast allen Lebensmitteln."
+      ],
+      "infoOnly": true,
+      "accessTier": "lab_common"
     },
     {
       "id": "vitamin_b6",
       "name": "Vitamin B6",
       "category": "water_soluble",
       "unit": "mg",
-      "refMin": 1.4, "refMax": 1.6,
-      "refByGender": { "m": { "min": 1.6, "max": 2.0 }, "f": { "min": 1.4, "max": 1.8 } },
+      "refMin": 1.4,
+      "refMax": 1.6,
+      "refByGender": {
+        "m": {
+          "min": 1.6,
+          "max": 2.0
+        },
+        "f": {
+          "min": 1.4,
+          "max": 1.8
+        }
+      },
       "premium": true,
       "selfTestAvailable": false,
       "description": "Essentiell für Eiweißstoffwechsel und Blutbildung",
       "function": "Eiweißstoffwechsel, Nervenfunktion, Blutbildung, Hormonsynthese",
-      "foods": ["Lachs", "Thunfisch", "Kartoffeln", "Bananen", "Geflügel", "Kichererbsen"],
-      "deficiencySymptoms": ["Reizbarkeit", "Depressive Verstimmung", "Blutarmut", "Nervenschäden"],
-      "tips": ["Besonders wichtig in der Schwangerschaft.", "Hohe Dosen als Supplement (>100 mg/Tag) können Nervenschäden verursachen."]
+      "foods": [
+        "Lachs",
+        "Thunfisch",
+        "Kartoffeln",
+        "Bananen",
+        "Geflügel",
+        "Kichererbsen"
+      ],
+      "deficiencySymptoms": [
+        "Reizbarkeit",
+        "Depressive Verstimmung",
+        "Blutarmut",
+        "Nervenschäden"
+      ],
+      "tips": [
+        "Besonders wichtig in der Schwangerschaft.",
+        "Hohe Dosen als Supplement (>100 mg/Tag) können Nervenschäden verursachen."
+      ],
+      "intakeTracking": true,
+      "intakeKey": "b6",
+      "accessTier": "diary"
     },
     {
       "id": "vitamin_b7",
       "name": "Vitamin B7 (Biotin)",
       "category": "water_soluble",
       "unit": "µg",
-      "refMin": 30, "refMax": 60,
-      "refByGender": { "m": { "min": 30, "max": 60 }, "f": { "min": 30, "max": 60 } },
+      "refMin": 30,
+      "refMax": 60,
+      "refByGender": {
+        "m": {
+          "min": 30,
+          "max": 60
+        },
+        "f": {
+          "min": 30,
+          "max": 60
+        }
+      },
       "premium": true,
       "selfTestAvailable": false,
       "description": "Das 'Schönheitsvitamin' für Haare, Haut und Nägel",
       "function": "Haut, Haare, Nägel, Fett- und Kohlenhydratstoffwechsel",
-      "foods": ["Eier", "Nüsse", "Haferflocken", "Erdnüsse", "Pilze", "Hülsenfrüchte"],
-      "deficiencySymptoms": ["Haarausfall", "Hautausschläge", "Brüchige Nägel", "Müdigkeit"],
-      "tips": ["Rohes Eiweiß bindet Biotin und hemmt seine Aufnahme – Eier besser gekocht essen.", "Ein echter Mangel ist selten, da Darmbakterien Biotin produzieren."]
+      "foods": [
+        "Eier",
+        "Nüsse",
+        "Haferflocken",
+        "Erdnüsse",
+        "Pilze",
+        "Hülsenfrüchte"
+      ],
+      "deficiencySymptoms": [
+        "Haarausfall",
+        "Hautausschläge",
+        "Brüchige Nägel",
+        "Müdigkeit"
+      ],
+      "tips": [
+        "Rohes Eiweiß bindet Biotin und hemmt seine Aufnahme – Eier besser gekocht essen.",
+        "Ein echter Mangel ist selten, da Darmbakterien Biotin produzieren."
+      ],
+      "infoOnly": true,
+      "accessTier": "lab_common"
     },
     {
       "id": "vitamin_b9",
       "name": "Vitamin B9 (Folat)",
       "category": "water_soluble",
       "unit": "µg",
-      "refMin": 300, "refMax": 400,
-      "refByGender": { "m": { "min": 300, "max": 400 }, "f": { "min": 300, "max": 400 } },
+      "refMin": 300,
+      "refMax": 400,
+      "refByGender": {
+        "m": {
+          "min": 300,
+          "max": 400
+        },
+        "f": {
+          "min": 300,
+          "max": 400
+        }
+      },
       "premium": true,
       "selfTestAvailable": true,
       "selfTestNote": "Heimtest verfügbar (z. B. cerascreen Folat-Test) · Empfehlung: 1× jährlich",
       "description": "Essentiell für Zellteilung und Blutbildung, besonders in der Schwangerschaft",
       "function": "Zellteilung, Blutbildung, DNA-Synthese, Entwicklung des Nervensystems",
-      "foods": ["Spinat", "Grünkohl", "Linsen", "Kichererbsen", "Spargel", "Weizenkeime", "Orangen"],
-      "deficiencySymptoms": ["Blutarmut", "Müdigkeit", "Konzentrationsprobleme", "In Schwangerschaft: Fehlbildungen"],
-      "tips": ["Bei Kinderwunsch und in der Schwangerschaft: 400 µg/Tag empfohlen.", "Folat ist hitzeempfindlich – rohes grünes Gemüse bevorzugen."]
+      "foods": [
+        "Spinat",
+        "Grünkohl",
+        "Linsen",
+        "Kichererbsen",
+        "Spargel",
+        "Weizenkeime",
+        "Orangen"
+      ],
+      "deficiencySymptoms": [
+        "Blutarmut",
+        "Müdigkeit",
+        "Konzentrationsprobleme",
+        "In Schwangerschaft: Fehlbildungen"
+      ],
+      "tips": [
+        "Bei Kinderwunsch und in der Schwangerschaft: 400 µg/Tag empfohlen.",
+        "Folat ist hitzeempfindlich – rohes grünes Gemüse bevorzugen."
+      ],
+      "intakeTracking": true,
+      "intakeKey": "folat",
+      "accessTier": "diary"
     },
     {
       "id": "vitamin_b12",
       "name": "Vitamin B12",
       "category": "water_soluble",
       "unit": "µg",
-      "refMin": 4.0, "refMax": 8.0,
-      "refByGender": { "m": { "min": 4.0, "max": 8.0 }, "f": { "min": 4.0, "max": 8.0 } },
+      "refMin": 4.0,
+      "refMax": 8.0,
+      "refByGender": {
+        "m": {
+          "min": 4.0,
+          "max": 8.0
+        },
+        "f": {
+          "min": 4.0,
+          "max": 8.0
+        }
+      },
       "premium": false,
       "selfTestAvailable": true,
       "selfTestNote": "Aktiver Holotranscobalamin-Test verfügbar (z. B. cerascreen, Aportha) · Empfehlung: 1× jährlich",
       "description": "Wichtig für Blutbildung und Nervensystem; kommt nur in tierischen Produkten vor",
       "function": "Blutbildung, Nervensystem, DNA-Synthese",
-      "foods": ["Rindfleisch", "Lachs", "Makrele", "Eier", "Milch", "Käse"],
-      "deficiencySymptoms": ["Blutarmut", "Kribbeln/Taubheit in Händen und Füßen", "Gangunsicherheit", "Gedächtnis- und Konzentrationsstörungen", "Depression"],
-      "tips": ["Veganer und Vegetarier sollten B12 supplementieren.", "Magensäuremangel (oft im Alter) reduziert die Aufnahme stark."]
+      "foods": [
+        "Rindfleisch",
+        "Lachs",
+        "Makrele",
+        "Eier",
+        "Milch",
+        "Käse"
+      ],
+      "deficiencySymptoms": [
+        "Blutarmut",
+        "Kribbeln/Taubheit in Händen und Füßen",
+        "Gangunsicherheit",
+        "Gedächtnis- und Konzentrationsstörungen",
+        "Depression"
+      ],
+      "tips": [
+        "Veganer und Vegetarier sollten B12 supplementieren.",
+        "Magensäuremangel (oft im Alter) reduziert die Aufnahme stark."
+      ],
+      "intakeTracking": true,
+      "intakeKey": "b12",
+      "accessTier": "diary"
     },
     {
       "id": "eisen",
       "name": "Eisen",
       "category": "trace_elements",
       "unit": "mg",
-      "refMin": 11, "refMax": 16,
-      "refByGender": { "m": { "min": 11, "max": 14 }, "f": { "min": 16, "max": 20 } },
+      "refMin": 11,
+      "refMax": 16,
+      "refByGender": {
+        "m": {
+          "min": 10,
+          "max": 12
+        },
+        "f": {
+          "min": 14,
+          "max": 16
+        }
+      },
       "premium": false,
       "selfTestAvailable": true,
       "selfTestNote": "Ferritin-Selbsttest verfügbar (z. B. cerascreen, meinlabtest.de) · Empfehlung: 1–2× jährlich",
       "description": "Essentiell für den Sauerstofftransport im Blut – Frauen haben deutlich höheren Bedarf",
       "function": "Sauerstofftransport im Blut, Leistungsfähigkeit, Immunsystem",
-      "foods": ["Rotes Fleisch", "Leber", "Linsen", "Spinat", "Kürbiskerne", "Quinoa"],
-      "deficiencySymptoms": ["Müdigkeit und Erschöpfung", "Blässe", "Kurzatmigkeit", "Kalte Hände und Füße", "Brüchige Nägel", "Diffuser Haarausfall"],
-      "tips": ["Pflanzliches Eisen zusammen mit Vitamin C essen – das verbessert die Aufnahme deutlich.", "Kaffee und Tee hemmen die Eisenaufnahme – mindestens 30 Minuten Abstand zu Mahlzeiten."]
+      "foods": [
+        "Rotes Fleisch",
+        "Leber",
+        "Linsen",
+        "Spinat",
+        "Kürbiskerne",
+        "Quinoa"
+      ],
+      "deficiencySymptoms": [
+        "Müdigkeit und Erschöpfung",
+        "Blässe",
+        "Kurzatmigkeit",
+        "Kalte Hände und Füße",
+        "Brüchige Nägel",
+        "Diffuser Haarausfall"
+      ],
+      "tips": [
+        "Pflanzliches Eisen zusammen mit Vitamin C essen – das verbessert die Aufnahme deutlich.",
+        "Kaffee und Tee hemmen die Eisenaufnahme – mindestens 30 Minuten Abstand zu Mahlzeiten.",
+        "DGE-Referenzwert seit 2024 überarbeitet: Männer 11 mg/Tag, Frauen 14–16 mg/Tag (statt zuvor 16–20 mg für Frauen)."
+      ],
+      "intakeTracking": true,
+      "intakeKey": "eisen",
+      "accessTier": "diary"
     },
     {
       "id": "zink",
       "name": "Zink",
       "category": "trace_elements",
       "unit": "mg",
-      "refMin": 8, "refMax": 14,
-      "refByGender": { "m": { "min": 14, "max": 18 }, "f": { "min": 8, "max": 11 } },
+      "refMin": 8,
+      "refMax": 14,
+      "refByGender": {
+        "m": {
+          "min": 14,
+          "max": 18
+        },
+        "f": {
+          "min": 8,
+          "max": 11
+        }
+      },
       "premium": true,
       "selfTestAvailable": false,
       "description": "Wichtig für Immunsystem, Wundheilung und viele Enzymreaktionen",
       "function": "Immunsystem, Wundheilung, Enzyme, Hautgesundheit",
-      "foods": ["Rindfleisch", "Käse", "Kürbiskerne", "Linsen", "Haferflocken", "Cashewkerne"],
-      "deficiencySymptoms": ["Infektanfälligkeit", "Schlechte Wundheilung", "Haarausfall", "Hautveränderungen", "Appetitlosigkeit"],
-      "tips": ["Tierisches Zink wird besser aufgenommen als pflanzliches.", "Vegetarier und Veganer haben erhöhten Bedarf."]
+      "foods": [
+        "Rindfleisch",
+        "Käse",
+        "Kürbiskerne",
+        "Linsen",
+        "Haferflocken",
+        "Cashewkerne"
+      ],
+      "deficiencySymptoms": [
+        "Infektanfälligkeit",
+        "Schlechte Wundheilung",
+        "Haarausfall",
+        "Hautveränderungen",
+        "Appetitlosigkeit"
+      ],
+      "tips": [
+        "Tierisches Zink wird besser aufgenommen als pflanzliches.",
+        "Vegetarier und Veganer haben erhöhten Bedarf."
+      ],
+      "intakeTracking": true,
+      "intakeKey": "zink",
+      "accessTier": "diary"
     },
     {
       "id": "jod",
       "name": "Jod",
       "category": "trace_elements",
       "unit": "µg",
-      "refMin": 150, "refMax": 200,
-      "refByGender": { "m": { "min": 150, "max": 200 }, "f": { "min": 150, "max": 200 } },
+      "refMin": 150,
+      "refMax": 180,
+      "refByGender": {
+        "m": {
+          "min": 150,
+          "max": 180
+        },
+        "f": {
+          "min": 150,
+          "max": 180
+        }
+      },
       "premium": true,
       "selfTestAvailable": false,
       "description": "Unentbehrlich für die Produktion von Schilddrüsenhormonen",
       "function": "Schilddrüsenhormone, Stoffwechsel, Wachstum",
-      "foods": ["Jodsalz", "Kabeljau", "Lachs", "Meeresfrüchte", "Milch", "Joghurt"],
-      "deficiencySymptoms": ["Schilddrüsenvergrößerung (Kropf)", "Müdigkeit", "Gewichtszunahme", "Konzentrationsprobleme", "Kältegefühl"],
-      "tips": ["Deutschland ist ein Jodmangelgebiet – konsequente Verwendung von Jodsalz ist wichtig.", "Schwangere und Stillende haben erhöhten Bedarf."]
+      "foods": [
+        "Jodsalz",
+        "Kabeljau",
+        "Lachs",
+        "Meeresfrüchte",
+        "Milch",
+        "Joghurt"
+      ],
+      "deficiencySymptoms": [
+        "Schilddrüsenvergrößerung (Kropf)",
+        "Müdigkeit",
+        "Gewichtszunahme",
+        "Konzentrationsprobleme",
+        "Kältegefühl"
+      ],
+      "tips": [
+        "Deutschland ist ein Jodmangelgebiet – konsequente Verwendung von Jodsalz ist wichtig.",
+        "Schwangere und Stillende haben erhöhten Bedarf.",
+        "DGE-Referenzwert seit der 3. Auflage (2025): 150 µg/Tag für Erwachsene – niedriger als der bisherige Wert (200 µg bzw. 180 µg ab 51 Jahren)."
+      ],
+      "infoOnly": true,
+      "accessTier": "lab_common"
     },
     {
       "id": "selen",
       "name": "Selen",
       "category": "trace_elements",
       "unit": "µg",
-      "refMin": 60, "refMax": 70,
-      "refByGender": { "m": { "min": 70, "max": 90 }, "f": { "min": 60, "max": 80 } },
+      "refMin": 60,
+      "refMax": 70,
+      "refByGender": {
+        "m": {
+          "min": 70,
+          "max": 90
+        },
+        "f": {
+          "min": 60,
+          "max": 80
+        }
+      },
       "premium": true,
       "selfTestAvailable": true,
       "selfTestNote": "Selbsttest verfügbar (z. B. cerascreen Selen-Test) · Empfehlung: 1× jährlich",
       "description": "Starkes Antioxidans, wichtig für Schilddrüse und Immunsystem",
       "function": "Antioxidativer Schutz, Schilddrüse, Immunsystem",
-      "foods": ["Paranüsse", "Thunfisch", "Lachs", "Eier", "Hülsenfrüchte", "Vollkornbrot"],
-      "deficiencySymptoms": ["Muskelschwäche", "Erhöhte Infektanfälligkeit", "Schilddrüsenprobleme", "Müdigkeit"],
-      "tips": ["Schon 2–3 Paranüsse pro Tag decken den Selenbedarf.", "Böden in Deutschland sind selenarm – Supplementierung oft sinnvoll."]
+      "foods": [
+        "Paranüsse",
+        "Thunfisch",
+        "Lachs",
+        "Eier",
+        "Hülsenfrüchte",
+        "Vollkornbrot"
+      ],
+      "deficiencySymptoms": [
+        "Muskelschwäche",
+        "Erhöhte Infektanfälligkeit",
+        "Schilddrüsenprobleme",
+        "Müdigkeit"
+      ],
+      "tips": [
+        "Schon 2–3 Paranüsse pro Tag decken den Selenbedarf.",
+        "Böden in Deutschland sind selenarm – Supplementierung oft sinnvoll."
+      ],
+      "infoOnly": true,
+      "accessTier": "selftest"
     },
     {
       "id": "kupfer",
       "name": "Kupfer",
       "category": "trace_elements",
       "unit": "mg",
-      "refMin": 1.0, "refMax": 1.5,
-      "refByGender": { "m": { "min": 1.0, "max": 1.5 }, "f": { "min": 1.0, "max": 1.5 } },
+      "refMin": 1.0,
+      "refMax": 1.5,
+      "refByGender": {
+        "m": {
+          "min": 1.0,
+          "max": 1.5
+        },
+        "f": {
+          "min": 1.0,
+          "max": 1.5
+        }
+      },
       "premium": true,
       "selfTestAvailable": false,
       "description": "Wichtig für Eisenstoffwechsel, Bindegewebe und Nervenfunktion",
       "function": "Eisenstoffwechsel, Bindegewebe, Immunsystem",
-      "foods": ["Nüsse", "Kakao", "Hülsenfrüchte", "Leber", "Meeresfrüchte", "Pilze"],
-      "deficiencySymptoms": ["Blutarmut", "Knochenveränderungen", "Infektanfälligkeit", "Nervenprobleme"],
-      "tips": ["Kupfermangel ist selten, kann aber bei sehr einseitiger Ernährung auftreten.", "Übermäßige Zinkzufuhr hemmt die Kupferaufnahme."]
+      "foods": [
+        "Nüsse",
+        "Kakao",
+        "Hülsenfrüchte",
+        "Leber",
+        "Meeresfrüchte",
+        "Pilze"
+      ],
+      "deficiencySymptoms": [
+        "Blutarmut",
+        "Knochenveränderungen",
+        "Infektanfälligkeit",
+        "Nervenprobleme"
+      ],
+      "tips": [
+        "Kupfermangel ist selten, kann aber bei sehr einseitiger Ernährung auftreten.",
+        "Übermäßige Zinkzufuhr hemmt die Kupferaufnahme."
+      ],
+      "infoOnly": true,
+      "accessTier": "lab_common"
     },
     {
       "id": "mangan",
       "name": "Mangan",
       "category": "trace_elements",
       "unit": "mg",
-      "refMin": 2, "refMax": 5,
-      "refByGender": { "m": { "min": 2, "max": 5 }, "f": { "min": 2, "max": 5 } },
+      "refMin": 2,
+      "refMax": 5,
+      "refByGender": {
+        "m": {
+          "min": 2,
+          "max": 5
+        },
+        "f": {
+          "min": 2,
+          "max": 5
+        }
+      },
       "premium": true,
       "selfTestAvailable": false,
       "description": "Wichtig für Knochenstoffwechsel und antioxidative Enzyme",
       "function": "Knochenstoffwechsel, Enzyme, Blutgerinnung",
-      "foods": ["Vollkornprodukte", "Nüsse", "Hülsenfrüchte", "Tee", "Ananas", "Blattgemüse"],
-      "deficiencySymptoms": ["Selten: Knochenveränderungen", "Wachstumsstörungen"],
-      "tips": ["Mangan kommt in pflanzlichen Lebensmitteln reichlich vor.", "Ein Mangel ist bei ausgewogener Ernährung sehr selten."]
+      "foods": [
+        "Vollkornprodukte",
+        "Nüsse",
+        "Hülsenfrüchte",
+        "Tee",
+        "Ananas",
+        "Blattgemüse"
+      ],
+      "deficiencySymptoms": [
+        "Selten: Knochenveränderungen",
+        "Wachstumsstörungen"
+      ],
+      "tips": [
+        "Mangan kommt in pflanzlichen Lebensmitteln reichlich vor.",
+        "Ein Mangel ist bei ausgewogener Ernährung sehr selten."
+      ],
+      "infoOnly": true,
+      "accessTier": "lab_common"
     },
     {
       "id": "magnesium",
       "name": "Magnesium",
       "category": "trace_elements",
       "unit": "mg",
-      "refMin": 300, "refMax": 400,
-      "refByGender": { "m": { "min": 400, "max": 450 }, "f": { "min": 300, "max": 350 } },
+      "refMin": 300,
+      "refMax": 400,
+      "refByGender": {
+        "m": {
+          "min": 400,
+          "max": 450
+        },
+        "f": {
+          "min": 300,
+          "max": 350
+        }
+      },
       "premium": true,
       "selfTestAvailable": true,
       "selfTestNote": "Selbsttest verfügbar (z. B. cerascreen Magnesium-Test) · Empfehlung: 1× jährlich",
       "description": "Mengenelement, wichtig für Muskeln, Nerven und über 300 Enzymreaktionen",
       "function": "Muskelentspannung, Nervenfunktion, Energiestoffwechsel, Schlaf",
-      "foods": ["Nüsse", "Samen", "Vollkornprodukte", "Hülsenfrüchte", "Bananen", "Dunkle Schokolade"],
-      "deficiencySymptoms": ["Muskelkrämpfe (Wadenkrämpfe)", "Nervosität", "Schlafprobleme", "Kopfschmerzen", "Herzrasen"],
-      "tips": ["Wadenkrämpfe nachts können ein erstes Zeichen für Magnesiummangel sein.", "Stress erhöht den Magnesiumbedarf deutlich."]
+      "foods": [
+        "Nüsse",
+        "Samen",
+        "Vollkornprodukte",
+        "Hülsenfrüchte",
+        "Bananen",
+        "Dunkle Schokolade"
+      ],
+      "deficiencySymptoms": [
+        "Muskelkrämpfe (Wadenkrämpfe)",
+        "Nervosität",
+        "Schlafprobleme",
+        "Kopfschmerzen",
+        "Herzrasen"
+      ],
+      "tips": [
+        "Wadenkrämpfe nachts können ein erstes Zeichen für Magnesiummangel sein.",
+        "Stress erhöht den Magnesiumbedarf deutlich."
+      ],
+      "intakeTracking": true,
+      "intakeKey": "mag",
+      "accessTier": "diary"
     },
     {
       "id": "chrom",
       "name": "Chrom",
       "category": "trace_elements",
       "unit": "µg",
-      "refMin": 30, "refMax": 100,
-      "refByGender": { "m": { "min": 30, "max": 100 }, "f": { "min": 30, "max": 100 } },
+      "refMin": 30,
+      "refMax": 100,
+      "refByGender": {
+        "m": {
+          "min": 30,
+          "max": 100
+        },
+        "f": {
+          "min": 30,
+          "max": 100
+        }
+      },
       "premium": true,
       "selfTestAvailable": false,
       "description": "Unterstützt die Insulinwirkung und Blutzuckerregulation",
       "function": "Blutzuckerregulation, Insulinsensitivität, Energiestoffwechsel",
-      "foods": ["Vollkornprodukte", "Brokkoli", "Fleisch", "Käse", "Hülsenfrüchte", "Bierhefe"],
-      "deficiencySymptoms": ["Erhöhter Blutzucker", "Heißhunger auf Süßes", "Gewichtszunahme"],
-      "tips": ["Raffinierter Zucker und Weißmehl erhöhen den Chrombedarf.", "Vollkornprodukte statt Weißbrot wählen."]
+      "foods": [
+        "Vollkornprodukte",
+        "Brokkoli",
+        "Fleisch",
+        "Käse",
+        "Hülsenfrüchte",
+        "Bierhefe"
+      ],
+      "deficiencySymptoms": [
+        "Erhöhter Blutzucker",
+        "Heißhunger auf Süßes",
+        "Gewichtszunahme"
+      ],
+      "tips": [
+        "Raffinierter Zucker und Weißmehl erhöhen den Chrombedarf.",
+        "Vollkornprodukte statt Weißbrot wählen."
+      ],
+      "infoOnly": true,
+      "accessTier": "lab_common"
     },
     {
       "id": "molybdaen",
       "name": "Molybdän",
       "category": "trace_elements",
       "unit": "µg",
-      "refMin": 50, "refMax": 100,
-      "refByGender": { "m": { "min": 50, "max": 100 }, "f": { "min": 50, "max": 100 } },
+      "refMin": 50,
+      "refMax": 100,
+      "refByGender": {
+        "m": {
+          "min": 50,
+          "max": 100
+        },
+        "f": {
+          "min": 50,
+          "max": 100
+        }
+      },
       "premium": true,
       "selfTestAvailable": false,
       "description": "Bestandteil wichtiger Enzyme im Stoffwechsel",
       "function": "Enzymfunktionen, Entgiftung, Harnsäurestoffwechsel",
-      "foods": ["Hülsenfrüchte", "Getreideprodukte", "Nüsse", "Leber", "Milchprodukte"],
-      "deficiencySymptoms": ["Extrem selten: Kopfschmerzen", "Herzrasen", "Sehstörungen"],
-      "tips": ["Molybdän steckt in vielen Lebensmitteln – ein Mangel ist sehr selten."]
+      "foods": [
+        "Hülsenfrüchte",
+        "Getreideprodukte",
+        "Nüsse",
+        "Leber",
+        "Milchprodukte"
+      ],
+      "deficiencySymptoms": [
+        "Extrem selten: Kopfschmerzen",
+        "Herzrasen",
+        "Sehstörungen"
+      ],
+      "tips": [
+        "Molybdän steckt in vielen Lebensmitteln – ein Mangel ist sehr selten."
+      ],
+      "infoOnly": true,
+      "accessTier": "lab_common"
     },
     {
       "id": "fluorid",
       "name": "Fluorid",
       "category": "trace_elements",
       "unit": "mg",
-      "refMin": 3, "refMax": 4,
-      "refByGender": { "m": { "min": 3.8, "max": 4.5 }, "f": { "min": 3.1, "max": 3.8 } },
+      "refMin": 2.7,
+      "refMax": 3.5,
+      "refByGender": {
+        "m": {
+          "min": 3.2,
+          "max": 3.5
+        },
+        "f": {
+          "min": 2.7,
+          "max": 3.2
+        }
+      },
       "premium": true,
       "selfTestAvailable": false,
       "description": "Schützt den Zahnschmelz und stärkt die Knochen",
       "function": "Zahnschmelz, Kariesprophylaxe, Knochengesundheit",
-      "foods": ["Fluoridiertes Mineralwasser", "Schwarzer Tee", "Meeresfisch", "Vollkornprodukte"],
-      "deficiencySymptoms": ["Erhöhtes Kariesrisiko", "Schwächere Knochen"],
-      "tips": ["Fluoridierte Zahnpasta deckt einen großen Teil des Bedarfs."]
+      "foods": [
+        "Fluoridiertes Mineralwasser",
+        "Schwarzer Tee",
+        "Meeresfisch",
+        "Vollkornprodukte"
+      ],
+      "deficiencySymptoms": [
+        "Erhöhtes Kariesrisiko",
+        "Schwächere Knochen"
+      ],
+      "tips": [
+        "Fluoridierte Zahnpasta deckt einen großen Teil des Bedarfs.",
+        "DGE-Referenzwert seit 2024 überarbeitet: Gesamtzufuhr (Nahrung, Trink-/Mineralwasser, ggf. Supplemente) 2,7–3,5 mg/Tag für Jugendliche und Erwachsene – niedriger als zuvor."
+      ],
+      "infoOnly": true,
+      "accessTier": "lab_common"
+    },
+    {
+      "id": "calcium",
+      "name": "Calcium",
+      "category": "trace_elements",
+      "unit": "mg",
+      "refMin": 1000,
+      "refMax": 1200,
+      "refByGender": {
+        "m": {
+          "min": 1000,
+          "max": 1200
+        },
+        "f": {
+          "min": 1000,
+          "max": 1200
+        }
+      },
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Mengenelement, unverzichtbar für Knochen, Zähne und Muskelfunktion",
+      "function": "Knochen- und Zahnstabilität, Muskelkontraktion, Blutgerinnung, Nervenreizübertragung",
+      "foods": [
+        "Milch",
+        "Joghurt",
+        "Hartkäse (z. B. Emmentaler)",
+        "Grünkohl",
+        "Brokkoli",
+        "Mandeln",
+        "Calciumreiches Mineralwasser"
+      ],
+      "deficiencySymptoms": [
+        "Muskelkrämpfe",
+        "Erhöhtes Osteoporose-Risiko",
+        "Brüchige Knochen",
+        "Kribbeln in Händen/Füßen"
+      ],
+      "tips": [
+        "Vitamin D verbessert die Calciumaufnahme im Darm deutlich – beide Werte hängen eng zusammen.",
+        "Schon 1/4 Liter Milch plus 2 Scheiben Hartkäse decken über 1000 mg Calcium.",
+        "DGE-Referenzwert: 1000 mg/Tag für Erwachsene, ab 70 Jahren wird teils bis zu 1200 mg empfohlen."
+      ],
+      "intakeTracking": true,
+      "intakeKey": "cal",
+      "accessTier": "diary"
     },
     {
       "id": "omega3",
       "name": "Omega-3-Index",
       "category": "lab_values",
       "unit": "%",
-      "refMin": 8, "refMax": 12,
-      "refByGender": { "m": { "min": 8, "max": 12 }, "f": { "min": 8, "max": 12 } },
+      "refMin": 8,
+      "refMax": 12,
+      "refByGender": {
+        "m": {
+          "min": 8,
+          "max": 12
+        },
+        "f": {
+          "min": 8,
+          "max": 12
+        }
+      },
       "premium": true,
       "selfTestAvailable": true,
       "selfTestNote": "Heimtest verfügbar (z. B. NORSAN, cerascreen, verisana) · Empfehlung: 1× jährlich",
       "description": "Anteil von EPA und DHA in den roten Blutkörperchen – Herzrisiko-Marker",
       "function": "Herzgesundheit, Entzündungshemmung, Gehirnfunktion, Stimmung",
-      "foods": ["Lachs", "Makrele", "Hering", "Sardinen", "Walnüsse", "Leinöl", "Chiasamen"],
-      "deficiencySymptoms": ["Erhöhtes Herzrisiko", "Entzündungsneigung", "Konzentrationsprobleme", "Trockene Haut", "Depressive Stimmung"],
-      "tips": ["Ein Omega-3-Index unter 4 % gilt als kritisch erhöhtes Herzrisiko.", "Fetter Seefisch 2× pro Woche kann den Index deutlich verbessern."]
+      "foods": [
+        "Lachs",
+        "Makrele",
+        "Hering",
+        "Sardinen",
+        "Walnüsse",
+        "Leinöl",
+        "Chiasamen"
+      ],
+      "deficiencySymptoms": [
+        "Erhöhtes Herzrisiko",
+        "Entzündungsneigung",
+        "Konzentrationsprobleme",
+        "Trockene Haut",
+        "Depressive Stimmung"
+      ],
+      "tips": [
+        "Ein Omega-3-Index unter 4 % gilt als kritisch erhöhtes Herzrisiko.",
+        "Fetter Seefisch 2× pro Woche kann den Index deutlich verbessern."
+      ],
+      "accessTier": "selftest"
     },
     {
       "id": "ferritin",
       "name": "Ferritin (Eisenspeicher)",
       "category": "lab_values",
       "unit": "µg/L",
-      "refMin": 20, "refMax": 200,
-      "refByGender": { "m": { "min": 30, "max": 300 }, "f": { "min": 15, "max": 150 } },
+      "refMin": 20,
+      "refMax": 200,
+      "refByGender": {
+        "m": {
+          "min": 30,
+          "max": 300
+        },
+        "f": {
+          "min": 15,
+          "max": 150
+        }
+      },
       "premium": true,
       "selfTestAvailable": true,
       "selfTestNote": "Ferritin-Heimtest verfügbar (z. B. cerascreen, meinlabtest.de) · Empfehlung: 1–2× jährlich",
       "description": "Misst den Eisenspeicher im Körper – präziser als einfacher Eisen-Wert",
       "function": "Eisenspeicher, Frühindikator für Eisenmangel vor Anämie",
-      "foods": ["Rotes Fleisch", "Leber", "Hülsenfrüchte", "Kürbiskerne", "Vollkorn"],
-      "deficiencySymptoms": ["Müdigkeit", "Haarausfall", "Konzentrationsprobleme", "Kurzatmigkeit", "Kalte Extremitäten"],
-      "tips": ["Ferritin sinkt früher als Hämoglobin – daher als Frühindikator optimal.", "Werte unter 30 µg/L gelten als funktioneller Eisenmangel."]
+      "foods": [
+        "Rotes Fleisch",
+        "Leber",
+        "Hülsenfrüchte",
+        "Kürbiskerne",
+        "Vollkorn"
+      ],
+      "deficiencySymptoms": [
+        "Müdigkeit",
+        "Haarausfall",
+        "Konzentrationsprobleme",
+        "Kurzatmigkeit",
+        "Kalte Extremitäten"
+      ],
+      "tips": [
+        "Ferritin sinkt früher als Hämoglobin – daher als Frühindikator optimal.",
+        "Werte unter 30 µg/L gelten als funktioneller Eisenmangel."
+      ],
+      "accessTier": "selftest"
     },
     {
       "id": "homocystein",
       "name": "Homocystein",
       "category": "lab_values",
       "unit": "µmol/L",
-      "refMin": 0, "refMax": 10,
-      "refByGender": { "m": { "min": 0, "max": 12 }, "f": { "min": 0, "max": 10 } },
+      "refMin": 0,
+      "refMax": 10,
+      "refByGender": {
+        "m": {
+          "min": 0,
+          "max": 12
+        },
+        "f": {
+          "min": 0,
+          "max": 10
+        }
+      },
       "premium": true,
       "selfTestAvailable": true,
       "selfTestNote": "Heimtest verfügbar (z. B. cerascreen Homocystein-Test) · Empfehlung: 1× jährlich",
       "description": "Frühindikator für Mangel an B12, B6 und Folat – und für Herzrisiko",
       "function": "Indikator für B-Vitamin-Status, Herzrisiko-Marker",
-      "foods": ["Hülsenfrüchte", "Spinat", "Fleisch", "Fisch", "Milchprodukte"],
-      "deficiencySymptoms": ["Erhöhter Wert: Herzrisiko", "B-Vitamin-Mangel", "Kognitive Beeinträchtigungen"],
-      "tips": ["Ein Homocystein-Wert unter 10 µmol/L ist optimal.", "Erhöhte Werte sprechen oft auf B12+B6+Folat-Supplementierung an.", "Ein einzelner Test gibt Auskunft über drei B-Vitamine gleichzeitig."]
+      "foods": [
+        "Hülsenfrüchte",
+        "Spinat",
+        "Fleisch",
+        "Fisch",
+        "Milchprodukte"
+      ],
+      "deficiencySymptoms": [
+        "Erhöhter Wert: Herzrisiko",
+        "B-Vitamin-Mangel",
+        "Kognitive Beeinträchtigungen"
+      ],
+      "tips": [
+        "Ein Homocystein-Wert unter 10 µmol/L ist optimal.",
+        "Erhöhte Werte sprechen oft auf B12+B6+Folat-Supplementierung an.",
+        "Ein einzelner Test gibt Auskunft über drei B-Vitamine gleichzeitig."
+      ],
+      "accessTier": "selftest"
     },
     {
       "id": "tsh",
       "name": "TSH (Schilddrüse)",
       "category": "lab_values",
       "unit": "mIU/L",
-      "refMin": 0.4, "refMax": 4.0,
-      "refByGender": { "m": { "min": 0.4, "max": 4.0 }, "f": { "min": 0.4, "max": 4.0 } },
+      "refMin": 0.4,
+      "refMax": 4.0,
+      "refByGender": {
+        "m": {
+          "min": 0.4,
+          "max": 4.0
+        },
+        "f": {
+          "min": 0.4,
+          "max": 4.0
+        }
+      },
       "premium": true,
       "selfTestAvailable": true,
       "selfTestNote": "TSH-Heimtest verfügbar (z. B. cerascreen, Aportha) · Empfehlung: 1× jährlich",
       "description": "Schilddrüsen-Stimulationshormon – Hinweis auf Schilddrüsenfunktion",
       "function": "Reguliert den gesamten Stoffwechsel, Energie, Gewicht, Stimmung",
-      "foods": ["Jodsalz", "Seefisch", "Milchprodukte"],
-      "deficiencySymptoms": ["Zu hoch: Unterfunktion – Müdigkeit, Gewichtszunahme, Kälteempfindlichkeit", "Zu niedrig: Überfunktion – Herzrasen, Gewichtsabnahme, Nervosität"],
-      "tips": ["TSH ist ein Screening-Wert. Bei Auffälligkeiten sollte ein Arzt fT3 und fT4 prüfen.", "Jodmangel ist eine häufige Ursache für Schilddrüsenstörungen in Deutschland."]
+      "foods": [
+        "Jodsalz",
+        "Seefisch",
+        "Milchprodukte"
+      ],
+      "deficiencySymptoms": [
+        "Zu hoch: Unterfunktion – Müdigkeit, Gewichtszunahme, Kälteempfindlichkeit",
+        "Zu niedrig: Überfunktion – Herzrasen, Gewichtsabnahme, Nervosität"
+      ],
+      "tips": [
+        "TSH ist ein Screening-Wert. Bei Auffälligkeiten sollte ein Arzt fT3 und fT4 prüfen.",
+        "Jodmangel ist eine häufige Ursache für Schilddrüsenstörungen in Deutschland."
+      ],
+      "accessTier": "selftest"
     },
     {
       "id": "gewicht",
       "name": "Gewicht",
       "category": "body",
       "unit": "kg",
-      "refMin": null, "refMax": null,
+      "refMin": null,
+      "refMax": null,
       "refByGender": null,
       "premium": false,
       "selfTestAvailable": false,
@@ -435,37 +1221,667 @@
       "function": "Körpergewicht tracken und Entwicklung beobachten",
       "foods": [],
       "deficiencySymptoms": [],
-      "tips": ["Setze dir ein Zielgewicht in den Einstellungen, um deinen Fortschritt zu sehen.", "Wiege dich immer zur gleichen Tageszeit für verlässliche Vergleichswerte."]
+      "tips": [
+        "Setze dir ein Zielgewicht in den Einstellungen, um deinen Fortschritt zu sehen.",
+        "Wiege dich immer zur gleichen Tageszeit für verlässliche Vergleichswerte."
+      ],
+      "accessTier": "selftest"
     },
     {
       "id": "bmi",
       "name": "BMI",
       "category": "body",
       "unit": "kg/m²",
-      "refMin": 18.5, "refMax": 25.0,
-      "refByGender": { "m": { "min": 18.5, "max": 25.0 }, "f": { "min": 18.5, "max": 25.0 } },
+      "refMin": 18.5,
+      "refMax": 25.0,
+      "refByGender": {
+        "m": {
+          "min": 18.5,
+          "max": 25.0
+        },
+        "f": {
+          "min": 18.5,
+          "max": 25.0
+        }
+      },
       "premium": true,
       "selfTestAvailable": false,
       "description": "Body-Mass-Index: Verhältnis von Gewicht zu Körpergröße",
       "function": "Orientierungswert für Gewichtsstatus",
       "foods": [],
       "deficiencySymptoms": [],
-      "tips": ["BMI Unter 18,5 = Untergewicht, 18,5–25 = Normalgewicht, 25–30 = Übergewicht, über 30 = Adipositas.", "Der BMI berücksichtigt nicht die Muskelmasse – Sportler können höhere Werte haben."]
+      "tips": [
+        "BMI Unter 18,5 = Untergewicht, 18,5–25 = Normalgewicht, 25–30 = Übergewicht, über 30 = Adipositas.",
+        "Der BMI berücksichtigt nicht die Muskelmasse – Sportler können höhere Werte haben."
+      ],
+      "accessTier": "selftest"
     },
     {
       "id": "taillenumfang",
       "name": "Taillenumfang",
       "category": "body",
       "unit": "cm",
-      "refMin": 60, "refMax": 88,
-      "refByGender": { "m": { "min": 60, "max": 94 }, "f": { "min": 60, "max": 80 } },
+      "refMin": 60,
+      "refMax": 88,
+      "refByGender": {
+        "m": {
+          "min": 60,
+          "max": 94
+        },
+        "f": {
+          "min": 60,
+          "max": 80
+        }
+      },
       "premium": true,
       "selfTestAvailable": false,
       "description": "Bauchumfang als Risikofaktor für Herz-Kreislauf-Erkrankungen",
       "function": "Messung von Bauchfett als Risikofaktor",
       "foods": [],
       "deficiencySymptoms": [],
-      "tips": ["WHO-Grenzwerte: Männer >94 cm, Frauen >80 cm = erhöhtes Risiko.", "Messung morgens, auf Bauchhöhe (zwischen unterster Rippe und Hüftknochen)."]
+      "tips": [
+        "WHO-Grenzwerte: Männer >94 cm, Frauen >80 cm = erhöhtes Risiko.",
+        "Messung morgens, auf Bauchhöhe (zwischen unterster Rippe und Hüftknochen)."
+      ],
+      "accessTier": "selftest"
+    },
+    {
+      "id": "coq10",
+      "name": "Coenzym Q10",
+      "category": "longevity",
+      "unit": "µmol/L",
+      "refMin": 0.4,
+      "refMax": 1.9,
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Coenzym Q10 ist entscheidend für die Energieproduktion in den Mitochondrien und wirkt als starkes Antioxidans.",
+      "function": "Zellenergie-Produktion & Antioxidantien-Schutz",
+      "foods": [
+        "Rinderherz",
+        "Rinderleber",
+        "Makrele",
+        "Sardinen",
+        "Erdnüsse",
+        "Sesam",
+        "Pistazien",
+        "Brokkoli",
+        "Spinat",
+        "Weizenkeime"
+      ],
+      "deficiencySymptoms": [
+        "Chronische Erschöpfung",
+        "Muskelschwäche",
+        "Konzentrationsprobleme",
+        "Herz-Rhythmusstörungen",
+        "Beschleunigte Hautalterung"
+      ],
+      "tips": [
+        "Werte sinken ab dem 40. Lebensjahr natürlich ab.",
+        "Ubiquinol (reduzierte Form) wird besser aufgenommen als Ubiquinon.",
+        "Statine (Cholesterinsenker) können CoQ10 deutlich reduzieren.",
+        "Essen geht vor: Rinderherz enthält ~113 mg/100g CoQ10 – deutlich mehr als Supplemente nötig machen."
+      ],
+      "accessTier": "lab_common"
+    },
+    {
+      "id": "hscrp",
+      "name": "hsCRP (hochsensitiv)",
+      "category": "longevity",
+      "unit": "mg/L",
+      "lowerIsBetter": true,
+      "refMin": 0,
+      "refMax": 1.0,
+      "premium": true,
+      "selfTestAvailable": true,
+      "selfTestNote": "Heimtest verfügbar (Bluttropfen-Test, Apotheke/Drogerie) · Empfehlung: 1× jährlich",
+      "description": "Hochsensitives C-reaktives Protein ist der empfindlichste Marker für stille, systemische Entzündungen.",
+      "function": "Entzündungsmarker – stille Entzündungen erkennen",
+      "foods": [
+        "Fetthaltiger Fisch (Omega-3)",
+        "Olivenöl (extra vergine)",
+        "Kurkuma",
+        "Ingwer",
+        "Dunkle Beeren",
+        "Grünes Blattgemüse",
+        "Walnüsse",
+        "Tomaten"
+      ],
+      "deficiencySymptoms": [],
+      "highSymptoms": [
+        "Stille Entzündung (erhöhtes Herzerkrankungsrisiko)",
+        "Beschleunigtes Zellaltern",
+        "Müdigkeit & Energiemangel",
+        "Erhöhtes Risiko für Diabetes Typ 2"
+      ],
+      "tips": [
+        "<1 mg/L = niedriges Risiko · 1–3 mg/L = mittleres Risiko · >3 mg/L = hohes Risiko.",
+        "Entzündungsarme Ernährung (mediterran) senkt hsCRP nachweislich.",
+        "Akute Infekte können hsCRP kurzfristig stark erhöhen – erst nach Erholung messen.",
+        "Regelmäßige moderate Bewegung senkt chronische Entzündungsmarker."
+      ],
+      "accessTier": "selftest"
+    },
+    {
+      "id": "hba1c",
+      "name": "HbA1c (Langzeitblutzucker)",
+      "category": "longevity",
+      "unit": "%",
+      "lowerIsBetter": true,
+      "refMin": 4.5,
+      "refMax": 5.6,
+      "premium": true,
+      "selfTestAvailable": true,
+      "selfTestNote": "HbA1c-Selbsttest verfügbar (Bluttropfen-Test, Apotheke) · Empfehlung: 1–2× jährlich",
+      "description": "HbA1c spiegelt den durchschnittlichen Blutzucker der letzten 2–3 Monate wider.",
+      "function": "Langzeitblutzucker – Insulinresistenz & Stoffwechselgesundheit",
+      "foods": [
+        "Blattgemüse (Spinat, Kohl)",
+        "Hülsenfrüchte",
+        "Beeren",
+        "Nüsse & Samen",
+        "Vollkornprodukte",
+        "Fettarmer Fisch",
+        "Zimt",
+        "Apfelessig"
+      ],
+      "deficiencySymptoms": [],
+      "highSymptoms": [
+        "Erhöhtes Diabetesrisiko (>6,5% = Diabetes)",
+        "Beschleunigtes Altern durch Glykierung",
+        "Erhöhtes Herzerkrankungsrisiko",
+        "Kognitive Einschränkungen"
+      ],
+      "tips": [
+        "Unter 5,6% = optimal · 5,7–6,4% = Prä-Diabetes · ≥6,5% = Diabetes.",
+        "Jeder Prozentpunkt Senkung reduziert Komplikationsrisiko um ~30%.",
+        "Regelmäßige Bewegung nach dem Essen senkt den Langzeitblutzucker.",
+        "Ballaststoffreiche Ernährung stabilisiert den Blutzucker langfristig."
+      ],
+      "accessTier": "selftest"
+    },
+    {
+      "id": "glucose",
+      "name": "Nüchternblutzucker",
+      "category": "longevity",
+      "unit": "mmol/L",
+      "lowerIsBetter": true,
+      "refMin": 3.9,
+      "refMax": 5.6,
+      "premium": true,
+      "selfTestAvailable": true,
+      "selfTestNote": "Blutzucker-Messgeräte und Teststreifen in jeder Apotheke erhältlich",
+      "description": "Nüchternblutzucker gemessen nach 8 Stunden Nahrungspause. Zeigt die Fähigkeit des Körpers, Blutzucker zu regulieren.",
+      "function": "Insulinsensitivität & Stoffwechselgesundheit",
+      "foods": [
+        "Nicht-stärkehaltiges Gemüse",
+        "Hülsenfrüchte",
+        "Nüsse",
+        "Beeren",
+        "Griechischer Joghurt",
+        "Lachs",
+        "Avocado",
+        "Eier"
+      ],
+      "deficiencySymptoms": [
+        "Hypoglykämie-Symptome: Zittern, Schwitzen, Herzrasen (bei sehr niedrigen Werten)"
+      ],
+      "highSymptoms": [
+        "Insulinresistenz",
+        "Erhöhtes Diabetesrisiko",
+        "Energieschwankungen",
+        "Erhöhtes Entzündungsrisiko"
+      ],
+      "tips": [
+        "3,9–5,6 mmol/L nüchtern = optimal · 5,6–7,0 = Prä-Diabetes · ≥7,0 = Diabetes.",
+        "Messung morgens nach mind. 8 Stunden Fasten.",
+        "Kaffee (auch schwarz) kann Nüchternblutzucker kurzfristig erhöhen – Messung davor.",
+        "Regelmäßige Bewegung verbessert die Insulinsensitivität nachhaltig."
+      ],
+      "accessTier": "selftest"
+    },
+    {
+      "id": "testosteron",
+      "name": "Testosteron (Gesamt)",
+      "category": "longevity",
+      "unit": "nmol/L",
+      "refMin": 8.0,
+      "refMax": 30.0,
+      "refByGender": {
+        "m": {
+          "min": 10.0,
+          "max": 35.0
+        },
+        "f": {
+          "min": 0.3,
+          "max": 2.8
+        }
+      },
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Testosteron ist ein Schlüsselhormon für Muskelkraft, Energie, Libido und Vitalität – bei beiden Geschlechtern.",
+      "function": "Muskelmasse, Energie, Libido & Knochendichte",
+      "foods": [
+        "Austern",
+        "Rindfleisch (Weide)",
+        "Eier",
+        "Thunfisch",
+        "Olivenöl",
+        "Knoblauch",
+        "Granatapfel",
+        "Zwiebeln",
+        "Ingwer",
+        "Avocado"
+      ],
+      "deficiencySymptoms": [
+        "Anhaltende Müdigkeit & Antriebslosigkeit",
+        "Muskelschwund & Kraftverlust",
+        "Stimmungsschwankungen & Depression",
+        "Reduzierte Libido",
+        "Knochenabbau (Osteoporose-Risiko)"
+      ],
+      "tips": [
+        "Werte sinken ab dem 30. Lebensjahr um ~1% pro Jahr natürlich ab.",
+        "Ausreichend Schlaf (7–9h) ist entscheidend für die Testosteronproduktion.",
+        "Übergewicht (besonders Bauchfett) senkt Testosteron durch Aromatasierung.",
+        "Ausreichend Zink und Vitamin D sind Voraussetzung für die Hormonproduktion.",
+        "Morgens messen – dann sind die Werte am höchsten."
+      ],
+      "accessTier": "lab_common"
+    },
+    {
+      "id": "cortisol",
+      "name": "Cortisol (Morgenwert)",
+      "category": "longevity",
+      "unit": "nmol/L",
+      "lowerIsBetter": true,
+      "refMin": 140,
+      "refMax": 690,
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Cortisol ist das primäre Stresshormon. Chronisch erhöhte Werte beschleunigen das Altern, chronisch niedrige zeigen Erschöpfung an.",
+      "function": "Stressregulation, Immunsystem & Entzündungshemmung",
+      "foods": [
+        "Dunkle Schokolade (>85%)",
+        "Bananen",
+        "Hafer",
+        "Fetthaltige Fische",
+        "Ashwagandha (Adaptogen)",
+        "Grüner Tee",
+        "Blaubeeren",
+        "Kürbiskerne"
+      ],
+      "deficiencySymptoms": [
+        "Extreme Erschöpfung (Burnout)",
+        "Hypoglykämie",
+        "Niedriger Blutdruck",
+        "Salzgelüste",
+        "Immunschwäche"
+      ],
+      "highSymptoms": [
+        "Chronischer Stress",
+        "Schlafstörungen",
+        "Gewichtszunahme (Bauchfett)",
+        "Beschleunigtes Altern",
+        "Gedächtnisprobleme"
+      ],
+      "tips": [
+        "Morgens (7–9 Uhr) messen – dann ist Cortisol natürlicherweise am höchsten.",
+        "Chronischer Stress ist der stärkste Treiber hoher Cortisol-Werte.",
+        "Meditationsbasierte Techniken (Atemübungen, MBSR) senken Cortisol nachweislich.",
+        "Schlafmangel erhöht Cortisol – 7–9h Schlaf ist entscheidend.",
+        "Adaptogene wie Ashwagandha können chronisch hohe Werte reduzieren."
+      ],
+      "accessTier": "lab_common"
+    },
+    {
+      "id": "gut_diversity",
+      "name": "Mikrobiom-Diversität (Shannon-Index)",
+      "category": "gut",
+      "unit": "Index",
+      "refMin": 3.0,
+      "refMax": 5.0,
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Die Diversität des Darmmikrobioms ist ein zentraler Marker für Darmgesundheit. Ein höherer Shannon-Index steht für mehr verschiedene Bakterienarten – was mit besserer Immunfunktion, niedrigerem Entzündungsrisiko und stabilerem Stoffwechsel assoziiert ist.",
+      "function": "Immunregulation, Verdauung, Entzündungsschutz, Stimmung (Darm-Hirn-Achse)",
+      "foods": [
+        "Joghurt (Naturjoghurt)",
+        "Kefir",
+        "Sauerkraut",
+        "Kimchi",
+        "Miso",
+        "Tempeh",
+        "Kombucha",
+        "Artischocken",
+        "Chicorée",
+        "Zwiebeln"
+      ],
+      "deficiencySymptoms": [
+        "Häufige Infekte",
+        "Blähungen & Verdauungsprobleme",
+        "Stimmungsschwankungen",
+        "Erhöhte Entzündungsmarker",
+        "Nahrungsmittelunverträglichkeiten"
+      ],
+      "tips": [
+        "Fermentierte Lebensmittel täglich essen (Joghurt, Kefir, Sauerkraut).",
+        "30 verschiedene Pflanzensorten pro Woche – auch Kräuter und Gewürze zählen.",
+        "Präbiotika (Inulin, FOS) aus Chicorée, Zwiebeln und Artischocken füttern Darmbakterien.",
+        "Antibiotika nur bei echter Indikation – zerstören Diversität nachhaltig.",
+        "Bewegung (besonders Ausdauer) erhöht die Mikrobiom-Diversität nachweislich."
+      ],
+      "accessTier": "lab_specialist"
+    },
+    {
+      "id": "scfa",
+      "name": "Kurzkettige Fettsäuren (SCFA)",
+      "category": "gut",
+      "unit": "mmol/kg",
+      "refMin": 60,
+      "refMax": 200,
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Kurzkettige Fettsäuren (Butyrat, Propionat, Acetat) entstehen durch Fermentation von Ballaststoffen durch Darmbakterien. Sie sind der Hauptbrennstoff der Darmschleimhaut, schützen vor Leaky Gut und wirken entzündungshemmend.",
+      "function": "Darmschutzschicht, Entzündungshemmung, Immuntraining, Energieversorgung Dickdarm",
+      "foods": [
+        "Hafer",
+        "Hülsenfrüchte",
+        "Topinambur",
+        "Kartoffeln (gekühlt)",
+        "Bananen (unreif)",
+        "Roggenbrot",
+        "Leinsamen",
+        "Gerste",
+        "resistente Stärke"
+      ],
+      "deficiencySymptoms": [
+        "Löchriger Darm (Leaky Gut)",
+        "Chronische Darmentzündung",
+        "Schlechte Nährstoffaufnahme",
+        "Erhöhter hsCRP"
+      ],
+      "tips": [
+        "30 g Ballaststoffe täglich sind die Basis für SCFA-Produktion.",
+        "Resistente Stärke (abgekühlter Reis/Kartoffeln) ist besonders SCFA-fördernd.",
+        "Roggenbrot liefert mehr fermentierbare Fasern als Weizenbrot.",
+        "Hülsenfrüchte 3–4× pro Woche einplanen.",
+        "Langsames Einführen von Ballaststoffen verhindert Blähungen."
+      ],
+      "accessTier": "lab_specialist"
+    },
+    {
+      "id": "zonulin",
+      "name": "Zonulin (Leaky Gut Marker)",
+      "category": "gut",
+      "unit": "ng/mL",
+      "lowerIsBetter": true,
+      "refMin": 0,
+      "refMax": 40,
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Zonulin reguliert die Durchlässigkeit der Darmschleimhaut. Erhöhte Werte zeigen einen 'löchrigen Darm' (Leaky Gut) an – Bakterienbestandteile können in den Blutkreislauf gelangen und systemische Entzündungen auslösen.",
+      "function": "Regulation der Darmschranke, Schutz vor Endotoxämie",
+      "foods": [
+        "Knochenbrühe",
+        "Collagen",
+        "Sauerkraut",
+        "Kefir",
+        "Ingwer",
+        "Kurkuma",
+        "Zink-reiche Lebensmittel",
+        "L-Glutamin (aus Fleisch)",
+        "Blaubeeren"
+      ],
+      "deficiencySymptoms": [],
+      "highSymptoms": [
+        "Systemische Entzündung",
+        "Nahrungsmittelunverträglichkeiten",
+        "Autoimmunreaktionen",
+        "Hautprobleme (Akne, Ekzem)",
+        "Gehirnnebel (Brain Fog)"
+      ],
+      "tips": [
+        "Gluten und Milchprodukte kurzfristig reduzieren, um Zonulin zu senken.",
+        "L-Glutamin (aus Ernährung) repariert die Darmschleimhaut.",
+        "Knochenbrühe enthält Kollagen und Gelatine – regenerieren den Darm.",
+        "Chronischer Stress erhöht Zonulin – Stressmanagement ist entscheidend.",
+        "Probiotika (Lactobacillus rhamnosus) senken nachweislich Zonulin."
+      ],
+      "accessTier": "lab_specialist"
+    },
+    {
+      "id": "calprotectin",
+      "name": "Calprotectin (Darmentzündung)",
+      "category": "gut",
+      "unit": "µg/g",
+      "lowerIsBetter": true,
+      "refMin": 0,
+      "refMax": 50,
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Calprotectin ist ein Entzündungsmarker im Stuhl. Erhöhte Werte können auf chronisch entzündliche Darmerkrankungen (Morbus Crohn, Colitis ulcerosa) oder andere Entzündungsprozesse im Darm hinweisen.",
+      "function": "Nachweis von Darmentzündungen, Differenzierung zwischen organischen und funktionellen Darmerkrankungen",
+      "foods": [
+        "Omega-3-reiche Fische",
+        "Kurkuma (Curcumin)",
+        "Ingwer",
+        "Blaubeeren",
+        "Brokkoli (Sulforaphan)",
+        "Grüner Tee",
+        "natives Olivenöl",
+        "Granatapfel"
+      ],
+      "deficiencySymptoms": [],
+      "highSymptoms": [
+        "Durchfall / veränderte Stuhlgewohnheiten",
+        "Bauchschmerzen",
+        "Blut im Stuhl",
+        "Gewichtsverlust",
+        "Erschöpfung"
+      ],
+      "tips": [
+        "Erhöhtes Calprotectin immer mit einem Arzt besprechen.",
+        "Entzündungshemmende Ernährung (mediterran) kann helfen.",
+        "Probiotika können bei leicht erhöhten Werten unterstützen.",
+        "Curcumin (Kurkuma) hat nachgewiesene anti-entzündliche Wirkung im Darm.",
+        "Stress-Reduktion ist ein wichtiger Faktor bei chronischen Darmentzündungen."
+      ],
+      "accessTier": "lab_specialist"
+    },
+    {
+      "id": "serotonin_gut",
+      "name": "Serotonin (Darm-Hirn-Achse)",
+      "category": "gut",
+      "unit": "ng/mL",
+      "refMin": 50,
+      "refMax": 220,
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Ca. 90–95% des körpereigenen Serotonins werden im Darm produziert – nicht im Gehirn. Das Darmmikrobiom beeinflusst die Serotoninsynthese erheblich.",
+      "function": "Stimmung, Schlaf, Appetit, Darmmotilität, Darm-Hirn-Achse",
+      "foods": [
+        "Truthahn / Pute",
+        "Hühnerei",
+        "Haferflocken",
+        "Nüsse (Walnüsse, Cashews)",
+        "Bananen",
+        "Ananas",
+        "Lachs",
+        "Tofu",
+        "dunkle Schokolade (>85%)"
+      ],
+      "deficiencySymptoms": [
+        "Depressive Verstimmung",
+        "Schlechter Schlaf",
+        "Heißhunger auf Kohlenhydrate",
+        "Reizbarkeit",
+        "Antriebslosigkeit"
+      ],
+      "tips": [
+        "Tryptophan-reiche Lebensmittel (Truthahn, Eier) sind Vorstufen von Serotonin.",
+        "Probiotika erhöhen die intestinale Serotoninsynthese.",
+        "Bewegung (Ausdauer) steigert Serotoninspiegel nachweislich.",
+        "Morgensonne und Tageslicht fördern die Serotoninproduktion.",
+        "Vitamin B6 ist Cofaktor bei der Umwandlung von Tryptophan zu Serotonin."
+      ],
+      "accessTier": "lab_specialist"
+    },
+    {
+      "id": "phosphatidylserine",
+      "name": "Phosphatidylserin (PS)",
+      "category": "cognitive",
+      "unit": "µg/mL",
+      "refMin": 15,
+      "refMax": 40,
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Phosphatidylserin ist ein essentieller Bestandteil der Nervenzellmembranen — besonders im Gehirn. Es ist entscheidend für die Signalübertragung zwischen Neuronen, das Arbeitsgedächtnis und die kognitive Flexibilität.",
+      "function": "Nervenzellmembranen, Gedächtnis, Lernfähigkeit, Stressresistenz",
+      "foods": [
+        "Rinderleber",
+        "Hühnerleber",
+        "Makrele",
+        "Lachs",
+        "Thunfisch",
+        "Sojabohnen",
+        "Weißbohnen",
+        "Hühnerei"
+      ],
+      "deficiencySymptoms": [
+        "Gedächtnisabbau",
+        "Konzentrationsprobleme",
+        "Erhöhter Cortisol-Spiegel",
+        "Verlangsamtes Denken",
+        "Stimmungsschwankungen"
+      ],
+      "tips": [
+        "Tierische Quellen (Leber, Fisch) sind reichste PS-Quellen.",
+        "Soja-Lecithin ist eine pflanzliche Alternative, aber geringere Bioverfügbarkeit.",
+        "PS-Supplementierung ist gut studiert bei älteren Erwachsenen.",
+        "Fettlöslich — am besten mit einer fetthaltigen Mahlzeit einnehmen.",
+        "Kombination mit Omega-3 DHA verstärkt die Wirkung auf Membrangesundheit."
+      ],
+      "accessTier": "lab_specialist"
+    },
+    {
+      "id": "cholin",
+      "name": "Cholin",
+      "category": "cognitive",
+      "unit": "µmol/L",
+      "refMin": 7,
+      "refMax": 20,
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Cholin ist die direkte Vorstufe des Neurotransmitters Acetylcholin — dem wichtigsten Botenstoff für Gedächtnis, Aufmerksamkeit und Muskelkontrolle. Ca. 90% der Bevölkerung nehmen laut Studien zu wenig Cholin auf.",
+      "function": "Acetylcholin-Produktion, Gedächtnis, Nervenleitung, Leberstoffwechsel",
+      "foods": [
+        "Rinderleber",
+        "Hühnerleber",
+        "Eigelb",
+        "Lachs",
+        "Rindfleisch",
+        "Hühnerbrust",
+        "Brokkoli",
+        "Blumenkohl",
+        "Edamame",
+        "Quinoa"
+      ],
+      "deficiencySymptoms": [
+        "Gedächtnis- & Konzentrationsprobleme",
+        "Muskelkrämpfe",
+        "Fettleber",
+        "Erhöhte Müdigkeit",
+        "Kopfschmerzen"
+      ],
+      "tips": [
+        "Eigelb ist die reichste und bioverfügbarste Cholinquelle — 2 Eier/Tag decken ~50% des Tagesbedarfs.",
+        "Tagesbedarf: 425 mg (Frauen), 550 mg (Männer) nach US-Empfehlung.",
+        "Veganer sind besonders gefährdet — pflanzliche Quellen haben geringeren Cholingehalt.",
+        "Leber 1–2× pro Woche ist ideal für Cholin, PS und B12 kombiniert.",
+        "Alpha-GPC-Supplement hat die höchste Bioverfügbarkeit aller Cholin-Formen."
+      ],
+      "accessTier": "lab_specialist"
+    },
+    {
+      "id": "bdnf",
+      "name": "BDNF (Neuroplastizität)",
+      "category": "cognitive",
+      "unit": "ng/mL",
+      "refMin": 20,
+      "refMax": 40,
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Der Brain-Derived Neurotrophic Factor (BDNF) ist das wichtigste Wachstumshormon des Gehirns. Er fördert die Bildung neuer Neuronen (Neurogenese), die Stärkung bestehender Synapsen und schützt Nervenzellen vor dem Absterben. Chronisch niedrige BDNF-Werte sind mit Depression, Demenz (Alzheimer) und kognitivem Abbau assoziiert.",
+      "function": "Neurogenese, Synaptische Plastizität, Lernfähigkeit, Stimmungsregulation, Demenzschutz",
+      "foods": [
+        "Blaubeeren",
+        "Dunkle Schokolade (>85%)",
+        "Grüner Tee (EGCG)",
+        "Kurkuma (Curcumin)",
+        "Walnüsse",
+        "Lachs (DHA)",
+        "Olivenöl",
+        "Rosenkohl",
+        "Brokkoli",
+        "Kaffee"
+      ],
+      "deficiencySymptoms": [
+        "Konzentrationsprobleme & Brain Fog",
+        "Depressive Verstimmung",
+        "Gedächtnisprobleme",
+        "Verlangsamtes Lernen",
+        "Erhöhtes Demenzrisiko"
+      ],
+      "tips": [
+        "Ausdauersport (30 min, 3×/Woche) ist der stärkste bekannte BDNF-Booster — erhöht Werte um bis zu 200–300%.",
+        "Intervallfasten erhöht BDNF nachweislich.",
+        "Kälteexposition (kalte Dusche) stimuliert BDNF-Ausschüttung.",
+        "Curcumin (Kurkuma) überquert die Blut-Hirn-Schranke und erhöht BDNF.",
+        "Chronischer Stress und Schlafmangel sind die stärksten BDNF-Killer."
+      ],
+      "accessTier": "lab_specialist"
+    },
+    {
+      "id": "alkohol",
+      "name": "Alkohol",
+      "category": "consumption",
+      "unit": "Einheiten/Tag",
+      "refMin": null,
+      "refMax": null,
+      "refByGender": null,
+      "premium": false,
+      "selfTestAvailable": false,
+      "description": "Tägliches Alkohol-Tracking (1 Einheit ≈ 0,25 l Bier oder 0,1 l Wein) – kein Referenzbereich, da die DGE keine 'gesunde' Zufuhrmenge, sondern nur eine Obergrenze bei ohnehin bestehendem Konsum nennt.",
+      "function": "Konsum-Tracking – kein Biomarker im engeren Sinn",
+      "foods": [],
+      "deficiencySymptoms": [],
+      "tips": [
+        "Alkohol hemmt die Aufnahme und Speicherung von Vitamin B1 erheblich – bei regelmäßigem Konsum steigt der B1-Bedarf.",
+        "Alkohol verschlechtert außerdem die Aufnahme von Zink, Magnesium und Folat.",
+        "Die DGE empfiehlt, möglichst keinen Alkohol zu trinken – ein gesundheitlich unbedenkliches Maß gibt es nicht."
+      ],
+      "accessTier": "selftest"
+    },
+    {
+      "id": "koffein",
+      "name": "Koffein",
+      "category": "consumption",
+      "unit": "mg/Tag",
+      "refMin": null,
+      "refMax": 400,
+      "refByGender": null,
+      "premium": false,
+      "selfTestAvailable": false,
+      "description": "Tägliches Koffein-Tracking (1 Tasse Filterkaffee ≈ 90 mg). Orientierungswert der EFSA: bis 400 mg/Tag für gesunde Erwachsene unbedenklich.",
+      "function": "Konsum-Tracking – kein Biomarker im engeren Sinn",
+      "foods": [],
+      "deficiencySymptoms": [],
+      "tips": [
+        "Kaffee und schwarzer/grüner Tee hemmen die Eisenaufnahme – mindestens 30 Minuten Abstand zu eisenreichen Mahlzeiten einhalten.",
+        "Koffein am Nachmittag/Abend kann die Schlafqualität verschlechtern – das beeinflusst wiederum Cortisol und BDNF.",
+        "EFSA-Orientierungswert: bis 400 mg/Tag (gesunde Erwachsene), Einzeldosis bis 200 mg."
+      ],
+      "accessTier": "selftest"
     }
   ]
 }

@@ -4,6 +4,8 @@
     <application
         android:allowBackup="false"
         android:fullBackupOnly="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -39,4 +41,22 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Benachrichtigungen (Android 13+ / API 33) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Geplante Notifications nach Gerät-Reboot wieder starten -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- Hinweis: KEINE SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM Permissions.
+         Google Play erlaubt exakte Alarme nur fuer Wecker- oder Kalender-Apps.
+         Fuer Gesundheits-Reminder reicht der Standard-Inexact-Alarm (+/- Minuten),
+         den @capacitor/local-notifications automatisch nutzt, wenn diese
+         Permissions fehlen. -->
+
+    <!-- Vibrations-Feedback bei Notifications -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- In-App Purchases (Google Play Billing) -->
+    <uses-permission android:name="com.android.vending.BILLING" />
 </manifest>

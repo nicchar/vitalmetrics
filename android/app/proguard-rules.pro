@@ -1,21 +1,68 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# ==============================================================================
+# VitalMetrics – ProGuard/R8 Regeln
+# ==============================================================================
+# Kommentar-Konvention: Warum die Regel da ist, nicht nur was sie macht.
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# ------------------------------------------------------------------------------
+# Debugging: Zeilennummern und Quellfile im Stacktrace behalten,
+# damit Crash-Reports in der Play Console lesbar bleiben.
+# ------------------------------------------------------------------------------
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# ------------------------------------------------------------------------------
+# Capacitor Core — JavaScript-Bridge darf nicht verschleiert werden,
+# sonst kommen keine Plugin-Calls vom WebView durch.
+# ------------------------------------------------------------------------------
+-keep class com.getcapacitor.** { *; }
+-keep @com.getcapacitor.annotation.CapacitorPlugin class * { *; }
+-keep class * extends com.getcapacitor.Plugin { *; }
+-keepclassmembers class * {
+    @com.getcapacitor.PluginMethod public *;
+    @com.getcapacitor.annotation.PermissionCallback public *;
+    @com.getcapacitor.annotation.ActivityCallback public *;
+}
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Cordova-Plugin-Bridge (wird von Capacitor mit-gebridged).
+-keep class org.apache.cordova.** { *; }
+
+# ------------------------------------------------------------------------------
+# JavaScript-Interface der WebView — von @JavascriptInterface annotierte
+# Methoden muessen public bleiben, sonst sind sie aus JS nicht erreichbar.
+# ------------------------------------------------------------------------------
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+}
+
+# ------------------------------------------------------------------------------
+# cordova-plugin-purchase (Google Play Billing).
+# Die Billing-Library nutzt Reflection auf Response-Klassen.
+# ------------------------------------------------------------------------------
+-keep class com.android.billingclient.** { *; }
+-keep class com.android.vending.billing.** { *; }
+-dontwarn com.android.billingclient.**
+
+# ------------------------------------------------------------------------------
+# @capacitor/local-notifications greift per Reflection auf Receiver zu.
+# ------------------------------------------------------------------------------
+-keep class com.capacitorjs.plugins.localnotifications.** { *; }
+
+# ------------------------------------------------------------------------------
+# Edge-to-Edge-Support (capawesome).
+# ------------------------------------------------------------------------------
+-keep class io.capawesome.capacitorjs.plugins.androidedgetoedge.** { *; }
+
+# ------------------------------------------------------------------------------
+# AndroidX / Support — generische Safety-Net-Regeln, damit Splashscreen,
+# AppCompat und CoordinatorLayout nicht ueber R8 strippen.
+# ------------------------------------------------------------------------------
+-keep class androidx.core.splashscreen.** { *; }
+-dontwarn androidx.core.splashscreen.**
+
+# ------------------------------------------------------------------------------
+# Enum-Werte nicht entfernen (werden oft via Reflection/JSON geprueft).
+# ------------------------------------------------------------------------------
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}

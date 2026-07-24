@@ -1,13 +1,14 @@
 import { storage } from '../sqlite.js';
 
 const KEY = 'vm_measurements';
+const SCHEMA_VERSION = 1;
 
 function load() {
-  return storage.get(KEY) || [];
+  return storage.getVersioned(KEY, SCHEMA_VERSION) || [];
 }
 
 function save(list) {
-  storage.set(KEY, list);
+  storage.setVersioned(KEY, list, SCHEMA_VERSION);
 }
 
 export const measurementRepo = {
@@ -54,5 +55,15 @@ export const measurementRepo = {
   /** Clear all data (for testing / reset) */
   clear() {
     storage.remove(KEY);
+  },
+
+  /** Rohdaten für Export (technische Grundlagen: Backup-Funktion, Juli 2026) */
+  getAll() {
+    return load();
+  },
+
+  /** Rohdaten aus einem Import 1:1 übernehmen (überschreibt bestehende Messwerte) */
+  replaceAll(list) {
+    save(Array.isArray(list) ? list : []);
   }
 };

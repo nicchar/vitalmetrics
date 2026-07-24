@@ -1,0 +1,101 @@
+import { fastingRepo } from '../../infra/db/repositories/fastingRepo.js';
+import { cravingsRepo } from '../../infra/db/repositories/cravingsRepo.js';
+import { glucoseDayRepo } from '../../infra/db/repositories/glucoseDayRepo.js';
+import { cycleRepo } from '../../infra/db/repositories/cycleRepo.js';
+import { entitlements } from '../../domain/entitlements.js';
+import { navigate } from '../../router.js';
+
+export function renderToolsHub(c) {
+  const fd = fastingRepo.get();
+  const streak = fd.streak || 0;
+  const cravings = cravingsRepo.getAll();
+  const today = new Date().toISOString().slice(0, 10);
+  const todayGlu = Object.keys(glucoseDayRepo.getDay(today)).length;
+
+  const cycleData = cycleRepo.get();
+  const cycleStarts = (cycleData.periodStarts || []).length;
+  const cycleAvg = cycleData.avgCycleLength
+    ? `Ø ${cycleData.avgCycleLength} Tage`
+    : (cycleStarts >= 2 ? 'wird berechnet' : 'noch keine Daten');
+
+  c.innerHTML = `<div class="tools-hub">
+    <div class="tools-hub-header">
+      <div class="tools-hub-title">⚡ Health Tools</div>
+      <div class="tools-hub-sub">Dein persönliches Stoffwechsel-Toolkit</div>
+    </div>
+    <div class="tools-hub-cards" style="padding:0 16px">
+      <div class="tools-hub-group-label">Tracking</div>
+      <div class="tool-card" id="tool-fasting">
+        <div class="tool-card-icon">⏱️</div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">Intervallfasten-Tracker</div>
+          <div class="tool-card-desc">16:8 · 14:10 · 12:12 — Timer, Autophagie-Phasen & Streak</div>
+          ${streak > 0 ? `<div class="tool-card-meta">🔥 ${streak} Tage Streak</div>` : `<div class="tool-card-meta">Noch kein Fasten gestartet</div>`}
+        </div>
+        <div class="tool-card-arrow">›</div>
+      </div>
+      <div class="tool-card" id="tool-glucose">
+        <div class="tool-card-icon">🩸</div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">Blutzucker Tagesgang</div>
+          <div class="tool-card-desc">Nüchtern · nach Mahlzeiten · abends — Insulinresistenz erkennen</div>
+          ${todayGlu > 0 ? `<div class="tool-card-meta">✅ Heute ${todayGlu} Wert${todayGlu > 1 ? 'e' : ''} eingetragen</div>` : `<div class="tool-card-meta">Noch keine Tageswerte heute</div>`}
+        </div>
+        <div class="tool-card-arrow">›</div>
+      </div>
+      <div class="tool-card" id="tool-cravings">
+        <div class="tool-card-icon">🍫</div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">Heißhunger-Journal</div>
+          <div class="tool-card-desc">Stimmung, Auslöser & Muster — verstehe deinen Hunger wirklich</div>
+          ${cravings.length > 0 ? `<div class="tool-card-meta">📓 ${cravings.length} Einträge gespeichert</div>` : `<div class="tool-card-meta">Noch keine Einträge</div>`}
+        </div>
+        <div class="tool-card-arrow">›</div>
+      </div>
+      <div class="tool-card" id="tool-cycle">
+        <div class="tool-card-icon">🌙</div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">Zyklustracker</div>
+          <div class="tool-card-desc">Monatliche Einträge · automatische Zyklusberechnung · Phasen</div>
+          <div class="tool-card-meta">${cycleStarts > 0 ? `📅 ${cycleStarts} Einträge · ${cycleAvg}` : 'Noch keine Einträge'}</div>
+        </div>
+        <div class="tool-card-arrow">›</div>
+      </div>
+      <div class="tools-hub-group-label">Auswertungen &amp; Pläne</div>
+      <div class="tool-card" id="tool-mealplan">
+        <div class="tool-card-icon">📅</div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">Wochenplan & Einkaufsliste</div>
+          <div class="tool-card-desc">7 Tage Frühstück/Mittag/Abend aus 258 Rezepten · automatische Einkaufsliste</div>
+          <div class="tool-card-meta">Vegetarisch · Fleisch/Fisch · Keto</div>
+        </div>
+        <div class="tool-card-arrow">›</div>
+      </div>
+      <div class="tool-card" id="tool-weekly-review">
+        <div class="tool-card-icon">🗓️</div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">Wochenrückblick</div>
+          <div class="tool-card-desc">Bewegung, Ernährung und Fasten der letzten 7 Tage auf einen Blick</div>
+        </div>
+        <div class="tool-card-arrow">›</div>
+      </div>
+      <div class="tool-card" id="tool-skin-vitality">
+        <div class="tool-card-icon">✨</div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">Hautgesundheit & Vitalität</div>
+          <div class="tool-card-desc">Vitamin C, Zink & Co., Blutzucker und Darm-Haut-Achse neu eingeordnet</div>
+          ${entitlements.isPremium() ? '' : '<div class="tool-card-meta">🔒 Premium</div>'}
+        </div>
+        <div class="tool-card-arrow">›</div>
+      </div>
+    </div>
+  </div>`;
+
+  c.querySelector('#tool-fasting').addEventListener('click', () => navigate('fasting'));
+  c.querySelector('#tool-glucose').addEventListener('click', () => navigate('glucose_day'));
+  c.querySelector('#tool-cravings').addEventListener('click', () => navigate('cravings'));
+  c.querySelector('#tool-cycle').addEventListener('click', () => navigate('cycle'));
+  c.querySelector('#tool-mealplan').addEventListener('click', () => navigate('mealplan'));
+  c.querySelector('#tool-weekly-review').addEventListener('click', () => navigate('weekly_review'));
+  c.querySelector('#tool-skin-vitality').addEventListener('click', () => navigate('skin_vitality'));
+}

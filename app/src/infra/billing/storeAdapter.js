@@ -16,7 +16,7 @@
 // ─── Produkt-IDs (müssen mit Google Play Console übereinstimmen) ──────────────
 export const PRODUCT_IDS = {
   YEARLY:  'vitalmetrics_premium_yearly',   // Jahres-Abo
-  ONETIME: 'vitalmetrics_premium_onetime',  // Einmalkauf (non-consumable)
+  MONTHLY: 'vitalmetrics_premium_monthly',  // Monats-Abo
 };
 
 // ─── Prüft ob das native Plugin geladen ist (nicht im Browser) ────────────────
@@ -55,8 +55,8 @@ export const storeAdapter = {
         platform: Platform.GOOGLE_PLAY,
       },
       {
-        type:     ProductType.NON_CONSUMABLE,
-        id:       PRODUCT_IDS.ONETIME,
+        type:     ProductType.PAID_SUBSCRIPTION,
+        id:       PRODUCT_IDS.MONTHLY,
         platform: Platform.GOOGLE_PLAY,
       },
     ]);
@@ -90,7 +90,7 @@ export const storeAdapter = {
 
   /**
    * Öffnet den nativen Kauf-Dialog für ein Produkt.
-   * @param {'yearly'|'onetime'} plan
+   * @param {'yearly'|'monthly'} plan
    */
   async purchase(plan) {
     if (!isPluginAvailable()) {
@@ -98,7 +98,7 @@ export const storeAdapter = {
     }
 
     const { store, Platform } = window.CdvPurchase;
-    const productId = plan === 'onetime' ? PRODUCT_IDS.ONETIME : PRODUCT_IDS.YEARLY;
+    const productId = plan === 'monthly' ? PRODUCT_IDS.MONTHLY : PRODUCT_IDS.YEARLY;
     const product   = store.get(productId, Platform.GOOGLE_PLAY);
 
     if (!product) {
@@ -130,14 +130,14 @@ export const storeAdapter = {
 
   /**
    * Liefert den lokalisierten Preistext direkt vom Store (korrekte Währung).
-   * @param {'yearly'|'onetime'} plan
-   * @returns {string|null}  z.B. "14,99 €" oder null wenn noch nicht geladen
+   * @param {'yearly'|'monthly'} plan
+   * @returns {string|null}  z.B. "19,50 €" oder null wenn noch nicht geladen
    */
   getPriceString(plan) {
     if (!isPluginAvailable()) return null;
 
     const { store, Platform } = window.CdvPurchase;
-    const productId = plan === 'onetime' ? PRODUCT_IDS.ONETIME : PRODUCT_IDS.YEARLY;
+    const productId = plan === 'monthly' ? PRODUCT_IDS.MONTHLY : PRODUCT_IDS.YEARLY;
     const product   = store.get(productId, Platform.GOOGLE_PLAY);
     return product?.getOffer()?.pricingPhases?.[0]?.price ?? null;
   },

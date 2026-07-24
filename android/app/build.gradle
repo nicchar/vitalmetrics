@@ -1,5 +1,18 @@
 apply plugin: 'com.android.application'
 
+// ----------------------------------------------------------------------------
+// Signing-Konfiguration
+// ----------------------------------------------------------------------------
+// Lokale Entwicklung: Passwoerter liegen in android/keystore.properties
+//   (NICHT ins Git committen — bereits in .gitignore).
+// CI/Server: Fallback auf Umgebungsvariablen KEYSTORE_PASSWORD / KEY_PASSWORD.
+// ----------------------------------------------------------------------------
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace = "com.vitalmetrics.app"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -7,8 +20,8 @@ android {
         applicationId "com.vitalmetrics.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "1.1.0"
+        versionCode 8
+        versionName "2.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,10 +29,34 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            storeFile file('../../vitalmetrics-release.jks')
+            storePassword keystoreProperties.getProperty('storePassword') ?: System.getenv("KEYSTORE_PASSWORD") ?: System.console()?.readPassword("Keystore password: ")?.toString()
+            keyAlias keystoreProperties.getProperty('keyAlias') ?: System.getenv("KEY_ALIAS") ?: "vitalmetrics"
+            keyPassword keystoreProperties.getProperty('keyPassword') ?: System.getenv("KEY_PASSWORD") ?: System.console()?.readPassword("Key password: ")?.toString()
+        }
+    }
     buildTypes {
         release {
+            // minifyEnabled bleibt vorerst false — erst stabil releasen,
+            // dann schrittweise auf true umstellen. ProGuard-Regeln liegen
+            // bereits in proguard-rules.pro bereit.
             minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            // Debug-Builds erkennbar machen: Paket-Suffix und Label-Suffix.
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-DEBUG"
+            debuggable true
+        }
+    }
+    packagingOptions {
+        resources {
+            excludes += ['META-INF/AL2.0', 'META-INF/LGPL2.1', 'META-INF/DEPENDENCIES']
         }
     }
 }

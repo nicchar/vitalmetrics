@@ -2,25 +2,31 @@ import { state } from '../../appState.js';
 import { measurementRepo } from '../../infra/db/repositories/measurementRepo.js';
 import { profileRepo } from '../../infra/db/repositories/profileRepo.js';
 import { validateMeasurement } from '../../domain/validation.js';
-import { entitlements } from '../../domain/entitlements.js';
 import { getRefRangeLabel } from '../../domain/ranges.js';
 import { navigate } from '../../router.js';
 import { showToast } from '../components/toast.js';
 import { feedbackService } from '../../infra/feedback/feedbackService.js';
+import { getAccessTierBadge, ACCESS_TIER_DESCRIPTIONS } from '../../domain/biomarkerAccess.js';
 
 export function renderEntry(container) {
   const catalog = state.get('catalog');
   const profile = profileRepo.get();
   const selectedId = state.get('currentBiomarkerId') || 'vitamin_d';
 
-  // Only show trackable biomarkers in selector
-  const trackable = catalog.biomarkers.filter(bm => entitlements.canTrack(bm.id));
+  // Seit Entscheidung 2 (20.07.2026) sind alle Marker frei eintragbar.
+  // Seit Entscheidung 7 (Zufuhr-Reframing) sind die 9 infoOnly-Nährstoffe
+  // (Jod, Selen, Kupfer, Mangan, Chrom, Molybdän, Pantothensäure, Biotin,
+  // Fluorid) davon ausgenommen - dafür fehlt uns eine seriöse Referenzbasis
+  // für einen manuellen "Messwert", sie sind nur noch Info-Karten.
+  const trackable = catalog.biomarkers.filter(bm => !bm.infoOnly);
   const options = trackable
     .map(bm => `<option value="${bm.id}" ${bm.id === selectedId ? 'selected' : ''}>${bm.name} (${bm.unit})</option>`)
     .join('');
 
   const today = new Date().toISOString().split('T')[0];
-  const selectedBm = catalog.biomarkers.find(bm => bm.id === selectedId) || trackable[0];
+  // Auf "trackable" beschränkt, damit die Vorauswahl nie auf einen infoOnly-
+  // Marker faellt, der im Selektor oben gar nicht als Option existiert.
+  const selectedBm = trackable.find(bm => bm.id === selectedId) || trackable[0];
 
   container.innerHTML = `
     <div class="screen entry-screen">
@@ -39,6 +45,7 @@ export function renderEntry(container) {
             <span class="unit-label" id="unit-label">${selectedBm?.unit ?? ''}</span>
           </div>
           <p class="form-hint" id="ref-hint">Referenzbereich (DGE): ${getRefRangeLabel(selectedBm, profile)}</p>
+          <p class="access-tier-hint" id="access-tier-hint">${selectedBm ? `<span class="access-badge access-${selectedBm.accessTier}">${getAccessTierBadge(selectedBm.accessTier) || ''}</span> ${ACCESS_TIER_DESCRIPTIONS[selectedBm.accessTier] || ''}` : ''}</p>
           <p class="self-test-hint" id="self-test-hint">${selectedBm?.selfTestNote ? `🧪 ${selectedBm.selfTestNote}` : ''}</p>
         </div>
         <div class="form-group">
@@ -59,6 +66,7 @@ export function renderEntry(container) {
   const select = container.querySelector('#bm-select');
   const unitLabel = container.querySelector('#unit-label');
   const refHintEl = container.querySelector('#ref-hint');
+  const accessTierEl = container.querySelector('#access-tier-hint');
   const selfTestEl = container.querySelector('#self-test-hint');
   const bmInfo = container.querySelector('#bm-info');
 
@@ -68,6 +76,7 @@ export function renderEntry(container) {
     state.set('currentBiomarkerId', bm.id);
     unitLabel.textContent = bm.unit;
     refHintEl.textContent = `Referenzbereich (DGE): ${getRefRangeLabel(bm, profile)}`;
+    accessTierEl.innerHTML = `<span class="access-badge access-${bm.accessTier}">${getAccessTierBadge(bm.accessTier) || ''}</span> ${ACCESS_TIER_DESCRIPTIONS[bm.accessTier] || ''}`;
     selfTestEl.textContent = bm.selfTestNote ? `🧪 ${bm.selfTestNote}` : '';
     bmInfo.innerHTML = renderBiomarkerInfo(bm, profile);
   });

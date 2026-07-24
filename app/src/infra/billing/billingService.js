@@ -48,7 +48,7 @@ export const billingService = {
 
   /**
    * Kaufdialog für ein Premium-Paket öffnen.
-   * @param {'yearly'|'onetime'} plan
+   * @param {'yearly'|'monthly'} plan
    * @returns {Promise<{ success: boolean, error?: string }>}
    */
   async purchasePremium(plan = 'yearly') {
@@ -78,13 +78,14 @@ export const billingService = {
   },
 
   /**
-   * Lokalisierten Preis direkt vom Store holen (z.B. "14,99 €").
-   * Gibt Fallback-Strings zurück, wenn der Store noch lädt.
+   * Lokalisierten Preis direkt vom Store holen (z.B. "19,50 €").
+   * Gibt Fallback-Strings zurück, wenn der Store noch lädt (bzw. solange die
+   * Produkte noch nicht in der Play Console angelegt sind).
    */
   getPrices() {
     return {
-      yearly:  storeAdapter.getPriceString('yearly')  ?? '14,99 €',
-      onetime: storeAdapter.getPriceString('onetime') ?? '24,99 €',
+      yearly:  storeAdapter.getPriceString('yearly')  ?? '19,50 €',
+      monthly: storeAdapter.getPriceString('monthly') ?? '1,89 €',
     };
   },
 };

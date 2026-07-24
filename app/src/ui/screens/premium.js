@@ -1,13 +1,16 @@
-import { entitlements }   from '../../domain/entitlements.js';
+import { entitlements } from '../../domain/entitlements.js';
 import { billingService }  from '../../infra/billing/billingService.js';
 import { navigate }        from '../../router.js';
 import { showToast }       from '../components/toast.js';
+import { state }           from '../../appState.js';
 
 export function renderPremium(container) {
-  const isPremium = entitlements.isPremium();
-  const prices    = billingService.getPrices();
+  const isPremium  = entitlements.isPremium();
+  const prices     = billingService.getPrices();
+  const catalog    = state.get('catalog');
+  const totalCount = catalog.biomarkers.length;
 
-  // Aktuell gewählter Plan ('yearly' oder 'onetime')
+  // Aktuell gewählter Plan ('yearly' oder 'monthly')
   let selectedPlan = 'yearly';
 
   container.innerHTML = `
@@ -15,12 +18,12 @@ export function renderPremium(container) {
       <div class="premium-hero">
         <div class="premium-icon">⭐</div>
         <h1 class="premium-title">VitalMetrics Premium</h1>
-        <p class="premium-sub">Alle 28 Biomarker. Keine Einschränkungen.</p>
+        <p class="premium-sub">Verlauf & Einordnung für alle ${totalCount} Biomarker.</p>
       </div>
 
       ${isPremium
         ? `<div class="premium-active-card">
-             <p>🎉 Du hast Premium aktiv. Alle Biomarker sind für dich freigeschaltet.</p>
+             <p>🎉 Du hast Premium aktiv. Verlauf & Einordnung sind für dich freigeschaltet.</p>
            </div>`
         : `<div class="price-card">
              <div class="price-option selected" id="opt-yearly" data-plan="yearly">
@@ -28,10 +31,10 @@ export function renderPremium(container) {
                <div class="price-amount">${prices.yearly}<span class="price-period"> / Jahr</span></div>
                <div class="price-sub">≈ ${_monthlyEstimate(prices.yearly)} pro Monat</div>
              </div>
-             <div class="price-option" id="opt-onetime" data-plan="onetime">
-               <div class="price-label">Einmalzahlung</div>
-               <div class="price-amount">${prices.onetime}</div>
-               <div class="price-sub">Einmalig – kein Abo</div>
+             <div class="price-option" id="opt-monthly" data-plan="monthly">
+               <div class="price-label">Monatsabo</div>
+               <div class="price-amount">${prices.monthly}<span class="price-period"> / Monat</span></div>
+               <div class="price-sub">Jederzeit kündbar</div>
              </div>
            </div>
 
@@ -47,11 +50,9 @@ export function renderPremium(container) {
       <div class="features-card">
         <h3>Was ist enthalten?</h3>
         <div class="feature-list">
-          <div class="feature-item"><span class="feature-check">✅</span><span>Alle 13 Vitamine (A, D, E, K, C, B1–B12)</span></div>
-          <div class="feature-item"><span class="feature-check">✅</span><span>Alle 10 Spurenelemente inkl. Magnesium</span></div>
-          <div class="feature-item"><span class="feature-check">✅</span><span>Laborwerte: Omega-3, Ferritin, Homocystein, TSH</span></div>
-          <div class="feature-item"><span class="feature-check">✅</span><span>Körperwerte: Gewicht, BMI, Taillenumfang</span></div>
-          <div class="feature-item"><span class="feature-check">✅</span><span>Geschlechtsspezifische DGE-Referenzwerte</span></div>
+          <div class="feature-item"><span class="feature-check">✅</span><span>Verlaufs-Charts über die Zeit für alle Biomarker</span></div>
+          <div class="feature-item"><span class="feature-check">✅</span><span>Farbliche Einordnung (optimal/niedrig/erhöht) gegen deinen Referenzbereich</span></div>
+          <div class="feature-item"><span class="feature-check">✅</span><span>Geschlechtsspezifische DGE-Referenzwerte in der Einordnung</span></div>
           <div class="feature-item"><span class="feature-check">✅</span><span>Passende Rezepte bei Mängeln</span></div>
           <div class="feature-item"><span class="feature-check">✅</span><span>Heimtest-Hinweise zu jedem Biomarker</span></div>
         </div>
@@ -60,17 +61,17 @@ export function renderPremium(container) {
       <div class="free-card">
         <h3>Gratis immer verfügbar</h3>
         <div class="feature-list">
-          <div class="feature-item"><span class="feature-check">🆓</span><span>Vitamin D</span></div>
-          <div class="feature-item"><span class="feature-check">🆓</span><span>Vitamin B12</span></div>
-          <div class="feature-item"><span class="feature-check">🆓</span><span>Eisen</span></div>
-          <div class="feature-item"><span class="feature-check">🆓</span><span>Gewicht</span></div>
+          <div class="feature-item"><span class="feature-check">🆓</span><span>Alle ${totalCount} Biomarker eintragen & aktuellen Wert einsehen</span></div>
+          <div class="feature-item"><span class="feature-check">🆓</span><span>Supplement-Empfehlungen zu jedem Marker</span></div>
+          <div class="feature-item"><span class="feature-check">🆓</span><span>Lebensmittelquellen & Tipps</span></div>
+          <div class="feature-item"><span class="feature-check">🆓</span><span>PDF-Bericht exportieren</span></div>
         </div>
       </div>
 
       <p class="legal-text">
         Zahlungen werden über Google Play abgewickelt.
-        Das Jahresabo verlängert sich automatisch, sofern es nicht mindestens
-        24 Stunden vor Ende der Laufzeit im Google-Konto gekündigt wird.
+        Jahres- und Monatsabo verlängern sich automatisch, sofern sie nicht
+        mindestens 24 Stunden vor Ende der Laufzeit im Google-Konto gekündigt werden.
       </p>
     </div>`;
 

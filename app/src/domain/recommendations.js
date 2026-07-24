@@ -1,12 +1,16 @@
-import recipesData from '../data/recipes.json' assert { type: 'json' };
-
 /**
  * Returns recipes that contain at least one tag matching the given biomarker ids.
+ * `recipesData` wird beim App-Start per fetch() geladen (siehe main.js,
+ * state.get('recipes')) - kein direkter JSON-Import hier, da die
+ * `assert`/`with { type: 'json' }`-Importsyntax je nach WebView-Version
+ * unzuverlässig ist und dieses Modul bundlerlos direkt im Browser läuft.
+ *
+ * @param {object[]} recipesData
  * @param {string[]} biomarkerIds
  * @param {number} limit
  */
-export function getRecipesForBiomarkers(biomarkerIds, limit = 3) {
-  if (!biomarkerIds?.length) return [];
+export function getRecipesForBiomarkers(recipesData, biomarkerIds, limit = 3) {
+  if (!biomarkerIds?.length || !recipesData?.length) return [];
   return recipesData
     .filter(r => r.tags.some(t => biomarkerIds.includes(t)))
     .slice(0, limit);

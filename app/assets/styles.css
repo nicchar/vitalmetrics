@@ -17,6 +17,14 @@
   --low:           #E53935;
   --high:          #FB8C00;
   --unknown:       #9E9E9E;
+  /* Referenzbereich-Einordnung (Biomarker-Status) - bewusst NICHT die
+     Ampelfarben oben, siehe domain/status.js. Getrennt gehalten, weil --low/
+     --high/--ok auch fuer echte Fehler-/Alarmzustaende (Formularfehler,
+     Blutzucker-Tagesgang-Warnung) genutzt werden, die weiterhin Dringlichkeit
+     signalisieren sollen duerfen. */
+  --ref-below:     #78909C;
+  --ref-within:    #1a7a6e;
+  --ref-above:     #8D6E63;
   --nav-height:    64px;
   --radius:        12px;
   --shadow:        0 2px 8px rgba(0,0,0,0.08);
@@ -68,9 +76,9 @@ ul { list-style: none; }
   text-align: center;
   box-shadow: var(--shadow);
 }
-.summary-item.ok .summary-count { color: var(--ok); }
-.summary-item.low .summary-count { color: var(--low); }
-.summary-item.high .summary-count { color: var(--high); }
+.summary-item.ok .summary-count { color: var(--ref-within); }
+.summary-item.low .summary-count { color: var(--ref-below); }
+.summary-item.high .summary-count { color: var(--ref-above); }
 .summary-count { display: block; font-size: 28px; font-weight: 700; }
 .summary-label { font-size: 11px; color: var(--text-secondary); }
 
@@ -381,7 +389,12 @@ ul { list-style: none; }
   margin-top: 8px;
   border-left: 4px solid #f0ad4e;
 }
-.disclaimer p { font-size: 12px; color: var(--text-secondary); }
+.disclaimer p { font-size: 13px; color: var(--text-secondary); }
+.disclaimer p strong { color: var(--text); }
+
+/* ── Referenzbereich-Einordnung (bewusst neutrale Farben statt Ampel,
+     siehe domain/status.js) ── */
+.escalation-hint { font-size: 12px; color: var(--text-secondary); margin-top: 6px; line-height: 1.5; }
 
 /* ── Toast ── */
 .toast {
@@ -483,8 +496,536 @@ ul { list-style: none; }
 /* ── Scrollbar ── */
 #screen-container::-webkit-scrollbar { width: 0; }
 
+/* ── Activity Screen ── */
+.activity-screen { padding-bottom: 32px; }
+.activity-hero { background: linear-gradient(135deg, var(--primary), #1a7a6e); color: #fff; border-radius: var(--radius); padding: 20px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+.activity-hero-left h2 { font-size: 14px; font-weight: 600; opacity: 0.85; margin-bottom: 4px; }
+.activity-hero-left .cal-big { font-size: 36px; font-weight: 800; }
+.activity-hero-left .cal-unit { font-size: 13px; opacity: 0.8; }
+.activity-hero-right { text-align: right; }
+.activity-hero-right .steps-num { font-size: 26px; font-weight: 800; }
+.activity-hero-right .steps-label { font-size: 12px; opacity: 0.8; }
+.activity-section { background: var(--surface); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow); }
+.activity-section h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+.steps-input-row { display: flex; gap: 10px; align-items: center; }
+.steps-input-row input { flex: 1; padding: 12px; border: 2px solid var(--border); border-radius: 10px; font-size: 18px; font-weight: 700; text-align: center; }
+.steps-input-row input:focus { border-color: var(--primary); outline: none; }
+.sport-picker-row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.sport-select { flex: 1; min-width: 140px; padding: 10px; border: 2px solid var(--border); border-radius: 10px; font-size: 14px; }
+.sport-select:focus { border-color: var(--primary); outline: none; }
+.minutes-input { width: 80px; padding: 10px; border: 2px solid var(--border); border-radius: 10px; font-size: 14px; text-align: center; }
+.minutes-input:focus { border-color: var(--primary); outline: none; }
+.activity-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.activity-item { display: flex; align-items: center; justify-content: space-between; background: var(--bg); border-radius: 10px; padding: 10px 14px; }
+.activity-item-left { display: flex; align-items: center; gap: 10px; }
+.activity-item-emoji { font-size: 22px; }
+.activity-item-name { font-size: 14px; font-weight: 600; }
+.activity-item-time { font-size: 12px; color: var(--text-secondary); }
+.activity-item-cal { font-size: 14px; font-weight: 700; color: var(--primary); }
+.activity-item-del { font-size: 16px; color: var(--text-hint); padding: 4px 8px; cursor: pointer; }
+.week-chart { display: flex; align-items: flex-end; gap: 6px; height: 80px; margin-top: 12px; }
+.week-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+.week-bar { width: 100%; background: var(--primary-light); border-radius: 6px 6px 0 0; transition: height 0.4s ease; min-height: 3px; }
+.week-bar.today { background: var(--primary); }
+.week-bar-label { font-size: 10px; color: var(--text-hint); font-weight: 600; }
+.week-bar-val { font-size: 9px; color: var(--text-secondary); font-weight: 700; text-align: center; min-height: 14px; }
+
+/* ── Cycle Screen ── */
+.cycle-screen { padding-bottom: 32px; }
+.cycle-phase-card { border-radius: var(--radius); padding: 20px; margin-bottom: 16px; color: #fff; }
+.cycle-phase-card.menstruation { background: linear-gradient(135deg, #c62828, #e53935); }
+.cycle-phase-card.follicular { background: linear-gradient(135deg, #f57f17, #fb8c00); }
+.cycle-phase-card.ovulation { background: linear-gradient(135deg, #2e7d32, #43a047); }
+.cycle-phase-card.luteal { background: linear-gradient(135deg, #4527a0, #7b1fa2); }
+.cycle-phase-card.unknown { background: linear-gradient(135deg, #455a64, #607d8b); }
+.cycle-phase-label { font-size: 12px; font-weight: 700; opacity: 0.85; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.cycle-phase-name { font-size: 24px; font-weight: 800; margin-bottom: 4px; }
+.cycle-phase-day { font-size: 13px; opacity: 0.85; margin-bottom: 12px; }
+.cycle-phase-tip { font-size: 13px; opacity: 0.9; line-height: 1.5; background: rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 12px; }
+.cycle-section { background: var(--surface); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow); }
+.cycle-section h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+.cycle-calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 8px; }
+.cycle-day { aspect-ratio: 1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; cursor: pointer; }
+.cycle-day.menstruation { background: #ffcdd2; color: #c62828; }
+.cycle-day.follicular { background: #fff3e0; color: #f57f17; }
+.cycle-day.ovulation { background: #e8f5e9; color: #2e7d32; }
+.cycle-day.luteal { background: #ede7f6; color: #4527a0; }
+.cycle-day.today { outline: 2px solid var(--primary); outline-offset: 1px; }
+.cycle-day.other-month { opacity: 0.3; }
+.cycle-cal-header { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px; }
+.cycle-cal-header span { text-align: center; font-size: 10px; font-weight: 700; color: var(--text-hint); }
+.cycle-stats-row { display: flex; gap: 10px; }
+.cycle-stat { flex: 1; background: var(--bg); border-radius: 10px; padding: 12px; text-align: center; }
+.cycle-stat-num { font-size: 22px; font-weight: 800; color: var(--primary); }
+.cycle-stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+.cycle-nutrient-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.cycle-nutrient-item { display: flex; align-items: center; gap: 10px; background: var(--bg); border-radius: 8px; padding: 10px 12px; }
+.cycle-nutrient-emoji { font-size: 20px; }
+.cycle-nutrient-name { font-size: 13px; font-weight: 700; }
+.cycle-nutrient-why { font-size: 12px; color: var(--text-secondary); }
+
 /* ── Responsive ── */
 @media (min-width: 600px) {
   .biomarker-grid { display: grid; grid-template-columns: 1fr 1fr; }
   .summary-bar { gap: 16px; }
 }
+
+/* ── Tools Hub ── */
+.tools-hub { padding-bottom: 24px; }
+.tools-hub-header { padding: 20px 16px 8px; }
+.tools-hub-title { font-size: 22px; font-weight: 800; color: var(--text); }
+.tools-hub-sub { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+.tools-hub-group-label {
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--text-hint); margin: 4px 2px 10px;
+}
+.tools-hub-group-label:not(:first-child) { margin-top: 22px; }
+.tool-card {
+  background: var(--surface); border-radius: var(--radius);
+  margin: 0 0 14px; padding: 18px 16px;
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer; border: 1.5px solid var(--border);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.tool-card:hover { border-color: var(--primary); box-shadow: 0 2px 12px rgba(67,160,71,0.1); }
+
+/* ── Fokus-Karte (Erstnutzer-Führung, UX-Review Juli 2026) ── */
+.focus-card {
+  background: var(--primary-light); border-radius: var(--radius);
+  margin: 0 16px 16px; padding: 16px;
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer; border: 1.5px solid var(--primary);
+}
+.focus-card-icon { font-size: 26px; flex-shrink: 0; }
+.focus-card-body { flex: 1; }
+.focus-card-title { font-size: 14px; font-weight: 700; color: var(--primary-dark); }
+.focus-card-desc { font-size: 12px; color: var(--text-secondary); margin-top: 3px; line-height: 1.5; }
+.tool-card-icon { font-size: 32px; flex-shrink: 0; }
+.tool-card-body { flex: 1; }
+.tool-card-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.tool-card-desc { font-size: 13px; color: var(--text-secondary); margin-top: 3px; line-height: 1.4; }
+.tool-card-meta { font-size: 12px; color: var(--primary); font-weight: 600; margin-top: 4px; }
+.tool-card-arrow { color: var(--text-hint); font-size: 18px; }
+
+/* ── Fasten Screen ── */
+.fasting-screen { padding-bottom: 32px; }
+.fasting-protocol-row { display: flex; gap: 8px; padding: 0 16px 16px; }
+.fasting-proto-btn {
+  flex: 1; padding: 10px 6px; border-radius: 12px;
+  border: 2px solid var(--border); font-size: 13px; font-weight: 700;
+  color: var(--text-secondary); background: var(--surface);
+  cursor: pointer; text-align: center; transition: all 0.15s;
+}
+.fasting-proto-btn.active { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+.fasting-proto-label { font-size: 11px; font-weight: 400; margin-top: 2px; color: var(--text-hint); }
+.fasting-timer-card {
+  margin: 0 16px 16px; background: linear-gradient(135deg, var(--primary) 0%, #2e7d32 100%);
+  border-radius: 20px; padding: 28px 20px; text-align: center; color: #fff;
+}
+.fasting-status-label { font-size: 13px; opacity: 0.85; margin-bottom: 8px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+.fasting-clock { font-size: 52px; font-weight: 800; letter-spacing: 2px; font-variant-numeric: tabular-nums; }
+.fasting-progress-wrap { margin: 12px 0; background: rgba(255,255,255,0.2); border-radius: 8px; height: 8px; overflow: hidden; }
+.fasting-progress-bar { height: 100%; background: #fff; border-radius: 8px; transition: width 1s linear; }
+.fasting-progress-text { font-size: 12px; opacity: 0.85; margin-top: 6px; }
+.fasting-stage { font-size: 13px; margin-top: 10px; background: rgba(255,255,255,0.15); border-radius: 10px; padding: 8px 14px; }
+.btn-fasting-toggle {
+  display: block; width: calc(100% - 32px); margin: 0 16px 16px;
+  padding: 15px; border-radius: 16px; font-size: 16px; font-weight: 700;
+  background: var(--primary); color: #fff; cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-fasting-toggle.active { background: #e53935; }
+.fasting-stages-list { margin: 0 16px 16px; }
+.fasting-stage-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 14px; border-radius: 12px; margin-bottom: 8px;
+  background: var(--surface); border: 1.5px solid var(--border);
+}
+.fasting-stage-item.reached { border-color: var(--primary); background: var(--primary-light); }
+.fasting-stage-h { font-size: 11px; font-weight: 700; color: var(--primary); min-width: 32px; }
+.fasting-stage-name { font-size: 13px; font-weight: 700; }
+.fasting-stage-desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.fasting-streak { margin: 0 16px 16px; background: var(--surface); border-radius: var(--radius); padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+.fasting-streak-num { font-size: 32px; font-weight: 800; color: var(--primary); }
+.fasting-streak-label { font-size: 13px; color: var(--text-secondary); }
+.fasting-history { margin: 0 16px; }
+.fasting-history-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.fasting-history-row:last-child { border-bottom: none; }
+
+/* ── Blutzucker Tagesgang ── */
+.glucose-day-screen { padding-bottom: 32px; }
+.glucose-date-nav { display: flex; align-items: center; justify-content: space-between; padding: 0 16px 12px; }
+.glucose-date-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 6px 14px; font-size: 14px; cursor: pointer; }
+.glucose-date-label { font-size: 15px; font-weight: 700; color: var(--text); }
+.glucose-slots { margin: 0 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+.glucose-slot {
+  background: var(--surface); border-radius: 14px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px; border: 1.5px solid var(--border);
+}
+.glucose-slot.has-value { border-color: var(--primary); }
+.glucose-slot-icon { font-size: 24px; flex-shrink: 0; }
+.glucose-slot-info { flex: 1; }
+.glucose-slot-label { font-size: 13px; font-weight: 700; }
+.glucose-slot-hint { font-size: 11px; color: var(--text-hint); margin-top: 2px; }
+.glucose-slot-input { width: 72px; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 15px; font-weight: 700; text-align: center; }
+.glucose-slot-unit { font-size: 11px; color: var(--text-hint); margin-left: 4px; }
+.glucose-chart-card { margin: 0 16px 16px; background: var(--surface); border-radius: var(--radius); padding: 16px; }
+.glucose-chart-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+.glucose-status-card {
+  margin: 0 16px 16px; border-radius: var(--radius); padding: 14px 16px;
+  border-left: 4px solid var(--border);
+}
+.glucose-status-card.normal { background: #f1f8f2; border-color: var(--ok); }
+.glucose-status-card.warning { background: #fff8e1; border-color: #ffc107; }
+.glucose-status-card.alert { background: #fff3f3; border-color: var(--low); }
+.glucose-status-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.glucose-status-text { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+.glucose-info-box { margin: 0 16px 16px; background: #f8fbff; border: 1px solid #d0e8ff; border-radius: var(--radius); padding: 14px 16px; font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+/* ── Heißhunger Journal ── */
+.cravings-screen { padding-bottom: 32px; }
+.cravings-header { padding: 20px 16px 8px; display: flex; align-items: center; justify-content: space-between; }
+.cravings-title { font-size: 20px; font-weight: 800; }
+.btn-add-craving { background: var(--primary); color: #fff; border-radius: 12px; padding: 8px 16px; font-size: 14px; font-weight: 700; cursor: pointer; }
+.craving-pattern-card { margin: 0 16px 16px; background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: var(--radius); padding: 16px; border: 1px solid #ffcc80; }
+.craving-pattern-title { font-size: 14px; font-weight: 700; color: #e65100; margin-bottom: 8px; }
+.craving-pattern-stat { font-size: 13px; color: #bf360c; margin-bottom: 4px; }
+.craving-form-card { margin: 0 16px 16px; background: var(--surface); border-radius: var(--radius); padding: 16px; border: 1.5px solid var(--primary); display: none; }
+.craving-form-card.open { display: block; }
+.craving-form-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; }
+.craving-form-row { margin-bottom: 14px; }
+.craving-form-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+.craving-what-input { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 15px; }
+.craving-hunger-row { display: flex; gap: 8px; }
+.craving-hunger-btn {
+  flex: 1; padding: 8px 4px; border-radius: 10px; border: 1.5px solid var(--border);
+  font-size: 18px; cursor: pointer; text-align: center; transition: all 0.15s;
+}
+.craving-hunger-btn.active { border-color: var(--primary); background: var(--primary-light); }
+.craving-mood-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.craving-mood-btn {
+  padding: 8px 12px; border-radius: 20px; border: 1.5px solid var(--border);
+  font-size: 13px; cursor: pointer; transition: all 0.15s; background: var(--surface);
+}
+.craving-mood-btn.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); font-weight: 700; }
+.craving-trigger-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.craving-trigger-btn {
+  padding: 8px 12px; border-radius: 20px; border: 1.5px solid var(--border);
+  font-size: 13px; cursor: pointer; transition: all 0.15s; background: var(--surface);
+}
+.craving-trigger-btn.active { border-color: #e65100; background: #fff3e0; color: #e65100; font-weight: 700; }
+.craving-note-input { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; resize: none; height: 70px; }
+.btn-save-craving { width: 100%; padding: 13px; background: var(--primary); color: #fff; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 6px; }
+.craving-list { margin: 0 16px; }
+.craving-list-header { font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+.craving-item {
+  background: var(--surface); border-radius: 14px; padding: 14px; margin-bottom: 10px;
+  border: 1px solid var(--border); position: relative;
+}
+.craving-item-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.craving-item-what { font-size: 15px; font-weight: 700; }
+.craving-item-time { font-size: 12px; color: var(--text-hint); }
+.craving-item-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.craving-tag { font-size: 11px; padding: 3px 8px; border-radius: 10px; background: var(--bg); color: var(--text-secondary); }
+.craving-tag.mood { background: #f3e5f5; color: #7b1fa2; }
+.craving-tag.trigger { background: #fff3e0; color: #e65100; }
+.craving-tag.hunger { background: #e8f5e9; color: #2e7d32; }
+.craving-empty { text-align: center; padding: 32px 16px; color: var(--text-hint); font-size: 14px; }
+.btn-delete-craving { position: absolute; top: 10px; right: 10px; background: none; color: var(--text-hint); font-size: 16px; cursor: pointer; }
+
+/* ── PDF-Export Button (Dashboard-Header) ── */
+.screen-header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.btn-pdf-export {
+  flex-shrink: 0;
+  background: var(--primary, #1a7a6e);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-pdf-export:disabled { opacity: 0.6; cursor: default; }
+
+/* ── Amazon Affiliate Box (Entscheidung 2, portiert aus Monolith) ── */
+.affiliate-box {
+  background: linear-gradient(135deg, #FFF8E1 0%, #FFF3CD 100%);
+  border: 1px solid #FFD54F; border-radius: var(--radius, 12px);
+  padding: 14px 16px; margin-top: 16px; display: flex;
+  align-items: center; gap: 14px; flex-wrap: wrap;
+}
+.affiliate-box-text { flex: 1; min-width: 160px; }
+.affiliate-box-text strong { display: block; font-size: 14px; color: #5D4037; margin-bottom: 2px; }
+.affiliate-box-text small { font-size: 11px; color: #8D6E63; line-height: 1.3; display: block; }
+.affiliate-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #FF9900; color: #fff; font-weight: 700;
+  font-size: 13px; border-radius: 8px; padding: 9px 16px;
+  text-decoration: none; white-space: nowrap; flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(255,153,0,0.35); transition: background 0.2s;
+}
+.affiliate-btn:hover { background: #e68900; }
+.affiliate-btn-group { display: flex; gap: 8px; flex-shrink: 0; flex-wrap: wrap; }
+.affiliate-btn-test { background: #1a7a6e; box-shadow: 0 2px 6px rgba(26,122,110,0.3); }
+.affiliate-btn-test:hover { background: #155f56; }
+.affiliate-disclaimer { font-size: 10px; color: var(--text-hint, #999); margin-top: 6px; width: 100%; }
+
+/* ── Ernährung zuerst Banner ── */
+.ernaehrung-banner {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
+  border: 1px solid #A5D6A7; border-radius: 12px;
+  padding: 12px 14px; margin-bottom: 10px;
+}
+.ernaehrung-banner-icon { font-size: 22px; flex-shrink: 0; }
+.ernaehrung-banner strong { display: block; font-size: 13px; font-weight: 700; color: #2E7D32; margin-bottom: 2px; }
+.ernaehrung-banner span { font-size: 12px; color: #388E3C; line-height: 1.4; }
+
+/* ── Premium-Upsell (Entscheidung 2: Verlauf + Status-Einordnung sind Premium) ── */
+.analysis-upsell-badge {
+  display: inline-block; font-size: 11px; font-weight: 600; color: #8D6E63;
+  background: #FFF3E0; border: 1px solid #FFCC80; border-radius: 6px;
+  padding: 3px 8px; margin: 4px 0;
+}
+.status-banner-locked {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  background: #f5f5f5; border-left: 4px solid #BDBDBD; border-radius: var(--radius, 12px);
+  padding: 12px 14px; margin-bottom: 16px;
+}
+.status-banner-locked .latest-value { font-size: 18px; font-weight: 700; color: var(--text-primary, #222); }
+.analysis-upsell-text { font-size: 12px; font-weight: 600; color: #8D6E63; }
+.history-table-plain .status-badge { display: none; }
+.analysis-upsell-card {
+  background: linear-gradient(135deg, #FFF8E1 0%, #FFF3CD 100%);
+  border: 1px solid #FFD54F; border-radius: var(--radius, 12px);
+  padding: 14px 16px; margin-top: 12px; text-align: center;
+}
+.analysis-upsell-card p { font-size: 13px; color: #5D4037; margin-bottom: 10px; }
+.btn-upgrade-inline {
+  background: var(--primary, #1a7a6e); color: #fff; border: none;
+  border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+
+/* Entscheidung 7 (Zufuhr-Reframing) */
+.card-intake {
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+.biomarker-card-info {
+  opacity: 0.92;
+}
+.card-info-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 6px 0 10px;
+  line-height: 1.4;
+}
+.intake-chart-container {
+  margin: 14px 0;
+}
+.intake-chart-hint {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+/* Block E: Rezept-Details (dynamische Rezeptsuche) */
+.recipe-meta {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin: 2px 0 6px;
+}
+.recipe-details summary {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-top: 6px;
+}
+.recipe-ingredients, .recipe-steps {
+  font-size: 12px;
+  margin: 8px 0;
+  padding-left: 18px;
+}
+.recipe-ingredients li, .recipe-steps li {
+  margin-bottom: 3px;
+}
+
+/* Block E: Wochenplan-Screen */
+.mealplan-days {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mealplan-day {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.mealplan-day-header {
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+.mealplan-date {
+  font-weight: 400;
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+.mealplan-meal {
+  padding: 3px 0;
+}
+.mealplan-meal-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+.mealplan-meal-label {
+  flex: 0 0 80px;
+  color: var(--text-secondary);
+}
+.mealplan-meal-title {
+  flex: 1;
+  color: var(--primary);
+  font-weight: 600;
+}
+.mealplan-meal .recipe-details {
+  margin: 2px 0 4px 86px;
+}
+.mealplan-meal .recipe-details summary {
+  font-size: 11px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.mealplan-day-tags {
+  font-size: 11px;
+  color: var(--primary);
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--border);
+}
+.mealplan-meal-empty {
+  flex: 1;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+.mealplan-meal-duration {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+.shopping-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 13px;
+}
+.shopping-list li {
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+.shopping-list label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+/* Block E: Naehrstoff-Wechselwirkungen */
+.interactions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.interaction-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.interaction-item:last-child { border-bottom: none; }
+.interaction-icon { flex: 0 0 auto; }
+.interaction-foerdert strong { color: #43A047; }
+.interaction-hemmt strong { color: #E53935; }
+
+/* Block E: Medikamenten-Wechselwirkungshinweis */
+.medication-warning-box {
+  background: #FFF3E0;
+  border-left: 4px solid #f59e0b;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+/* Block E: Wochenrueckblick-Screen */
+.review-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.review-stat {
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+}
+.review-stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+}
+.review-stat-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* Block E: Saisonaler Hinweis auf dem Dashboard */
+.seasonal-tip-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--primary-light, #e0f2f1);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 0 16px 12px;
+  font-size: 12px;
+}
+
+/* Beauty-Feature: "Hautgesundheit & Vitalität" (Premium) - Evidenz-Labels */
+.evidence-badge {
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 2px 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.evidence-strong {
+  background: var(--primary-light, #e0f2f1);
+  color: var(--primary);
+}
+.evidence-emerging {
+  background: #FFF3E0;
+  color: #E65100;
+}
+
+/* Zugänglichkeits-Badge (Juli 2026): "wie komme ich an diesen Wert" -
+   bewusst mit eigenen Farben, KEIN Bezug zu den neutralen Referenzbereich-
+   Farben (domain/status.js) - hier geht es nicht um eine Werteinterpretation,
+   sondern um eine reine Beschaffungs-Kategorie. */
+.access-badge {
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 2px 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.access-diary { background: var(--primary-light, #e0f2f1); color: var(--primary); }
+.access-selftest { background: #E3F2FD; color: #1565C0; }
+.access-lab_common { background: #F3E5F5; color: #6A1B9A; }
+.access-lab_specialist { background: #ECEFF1; color: #455A64; }

@@ -9,6 +9,16 @@ async function init() {
   const catalog = await resp.json();
   state.set('catalog', catalog);
 
+  // ── Lebensmitteldatenbank laden (echte BLS 4.0, 7.140 Einträge) ───────────
+  const foodResp = await fetch('./src/data/foodDatabase.json');
+  const foodDb = await foodResp.json();
+  state.set('foodDb', foodDb);
+
+  // ── Rezept-Datenbank laden (258 Rezepte: vegetarisch/Fleisch-Fisch/Keto) ──
+  const recipesResp = await fetch('./src/data/recipes.json');
+  const recipes = await recipesResp.json();
+  state.set('recipes', recipes);
+
   // ── Navigation verdrahten ─────────────────────────────────────────────────
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', () => navigate(item.dataset.screen));

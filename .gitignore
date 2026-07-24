@@ -12,6 +12,12 @@ android/capacitor-cordova-android-plugins/build/
 *.keystore
 *.jks
 
+# ── Release-Build-Ausgabe (wird per build:release erzeugt, kein Quellcode) ────
+dist-release/
+
+# ── Microsoft-Office-Sperrdateien (entstehen beim Öffnen von .docx/.xlsx) ─────
+~$*
+
 # ── Capacitor ────────────────────────────────────────────────────────────────
 # capacitor.config.json NICHT ignorieren – gehört ins Repo
 
@@ -20,8 +26,10 @@ android/capacitor-cordova-android-plugins/build/
 .env.*
 google-services.json
 keystore-base64.txt
+android/keystore.properties
 # Hinweis: google-services.json nur ins Repo wenn es KEINE API-Keys enthält.
 # Für VitalMetrics ohne Firebase kann die Datei ignoriert werden.
+# keystore.properties.example (OHNE echte Passwörter) darf ins Repo.
 
 # ── IDE und Betriebssystem ────────────────────────────────────────────────────
 .idea/
