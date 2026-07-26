@@ -1,6 +1,6 @@
 {
   "appId": "com.vitalmetrics.app",
-  "appName": "VitalMetrics",
+  "appName": "WellANNI",
   "webDir": "app",
   "plugins": {
     "EdgeToEdge": {

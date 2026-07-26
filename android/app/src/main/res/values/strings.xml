@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">VitalMetrics</string>
-    <string name="title_activity_main">VitalMetrics</string>
+    <string name="app_name">WellANNI</string>
+    <string name="title_activity_main">WellANNI</string>
     <string name="package_name">com.vitalmetrics.app</string>
     <string name="custom_url_scheme">com.vitalmetrics.app</string>
 </resources>

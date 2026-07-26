@@ -1,4 +1,4 @@
-# VitalMetrics
+# WellANNI
 
 **Persönliche Gesundheits-App zur Verfolgung von Vitaminen, Mineralstoffen und Körperwerten.**
 
@@ -6,9 +6,9 @@ Entwickelt von Nicole Doehring · Version 1.0.0
 
 ---
 
-## Was ist VitalMetrics?
+## Was ist WellANNI?
 
-VitalMetrics ist eine mobile App (iOS & Android), mit der Nutzer bis zu 30 Biomarker verfolgen können — darunter Vitamine, Mineralien, Hormone und Körperwerte. Die App gibt Referenzwerte nach DGE (D-A-CH 2021/2024), zeigt passende Lebensmittelquellen und Rezepte an, und empfiehlt bei Bedarf Supplements über Amazon-Affiliate-Links.
+WellANNI ist eine mobile App (iOS & Android), mit der Nutzer bis zu 30 Biomarker verfolgen können — darunter Vitamine, Mineralien, Hormone und Körperwerte. Die App gibt Referenzwerte nach DGE (D-A-CH 2021/2024), zeigt passende Lebensmittelquellen und Rezepte an, und empfiehlt bei Bedarf Supplements über Amazon-Affiliate-Links.
 
 ---
 

@@ -7,6 +7,7 @@ import {
   generatePlan, resolvePlan, buildShoppingList, scaleIngredients,
   getUnderCoveredTags, getDayTagCoverage, INTOLERANCE_LABELS,
 } from '../../domain/mealPlan.js';
+import { recipeLogButtonHtml, wireRecipeLogButtons } from '../components/recipeLogControl.js';
 
 const CATEGORY_LABEL = { vegetarisch: '🥬 Vegetarisch', fleisch_fisch: '🍗 Fleisch/Fisch', keto: '🥑 Keto', gemischt: '🍽️ Gemischt' };
 
@@ -130,6 +131,10 @@ function renderScreen(container, recipes, plan, isStale, thisMonday) {
     const el = container.querySelector('#shopping-list');
     if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
   });
+
+  // ── "Rezept gekocht" -> Ernährungstagebuch (Block F Phase 4b, seit
+  // 25.07.2026 als geteilte Komponente auch im Trend-Screen genutzt) ────────
+  wireRecipeLogButtons(container, recipes);
 }
 
 function mealRow(label, recipe, portions) {
@@ -153,6 +158,7 @@ function mealRow(label, recipe, portions) {
       <summary>Zutaten &amp; Zubereitung (für ${portions} Person${portions !== 1 ? 'en' : ''})</summary>
       <ul class="recipe-ingredients">${scaled.map(i => `<li>${i}</li>`).join('')}</ul>
       <ol class="recipe-steps">${(recipe.steps || []).map(s => `<li>${s}</li>`).join('')}</ol>
+      ${recipeLogButtonHtml(recipe)}
     </details>
   </div>`;
 }

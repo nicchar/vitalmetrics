@@ -1,5 +1,5 @@
 /* ============================================================
-   VitalMetrics – Mobile-first Stylesheet
+   WellANNI – Mobile-first Stylesheet
    Design: Clean Health App, Teal primary color
    ============================================================ */
 
@@ -545,7 +545,8 @@ ul { list-style: none; }
 .cycle-section { background: var(--surface); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; box-shadow: var(--shadow); }
 .cycle-section h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
 .cycle-calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 8px; }
-.cycle-day { aspect-ratio: 1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; cursor: pointer; }
+.cycle-day { position: relative; aspect-ratio: 1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; cursor: pointer; }
+.cycle-day-symptom-dot { position: absolute; bottom: 1px; left: 50%; transform: translateX(-50%); font-size: 9px; line-height: 1; color: var(--primary); }
 .cycle-day.menstruation { background: #ffcdd2; color: #c62828; }
 .cycle-day.follicular { background: #fff3e0; color: #f57f17; }
 .cycle-day.ovulation { background: #e8f5e9; color: #2e7d32; }
@@ -949,6 +950,46 @@ ul { list-style: none; }
 }
 .interaction-item:last-child { border-bottom: none; }
 .interaction-icon { flex: 0 0 auto; }
+
+/* Block F Phase 1: Koerper-Geist-Insights je Naehrstoff */
+.insights-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.insight-item {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.insight-item:last-child { border-bottom: none; }
+.insight-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.insight-text {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Block F Phase 2: Traditionelle Perspektiven - bewusst optisch abgesetzt vom
+   EFSA-geprueften Kernbereich (Vorgabe Regulatory-Affairs-Experte) */
+.traditional-section {
+  background: #FBF3E7;
+  border: 1px dashed #C9A876;
+}
+.traditional-disclaimer {
+  font-size: 11px;
+  font-weight: 600;
+  color: #8A6A2F;
+  background: #F3E4C8;
+  border-radius: 6px;
+  padding: 6px 8px;
+  margin-bottom: 8px;
+}
 .interaction-foerdert strong { color: #43A047; }
 .interaction-hemmt strong { color: #E53935; }
 
@@ -958,6 +999,19 @@ ul { list-style: none; }
   border-left: 4px solid #f59e0b;
   border-radius: 8px;
   padding: 10px 12px;
+}
+
+/* Block F Phase 1: Makro-Info-Spiegel im Wochenrueckblick */
+.macro-mirror {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.macro-mirror-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-bottom: 8px;
 }
 
 /* Block E: Wochenrueckblick-Screen */

@@ -22,7 +22,7 @@ function offEmoji(product) {
   return '🍽️';
 }
 
-function mapOFFFood(product) {
+export function mapOFFFood(product) {
   const n = product.nutriments || {};
   const rawName = (product.product_name || '').trim() || 'Unbekannt';
   const brand = product.brands ? product.brands.split(',')[0].trim() : '';
@@ -76,4 +76,31 @@ export async function searchOpenFoodFacts(query) {
   const data = await resp.json();
   const products = (data.products || []).filter(p => p.product_name && p.nutriments);
   return products.map(mapOFFFood);
+}
+
+/**
+ * Sucht ein einzelnes Produkt bei Open Food Facts anhand seines Barcodes
+ * (EAN-8/13, UPC-A/E). Wird ausschließlich nach einem expliziten Scan-Vorgang
+ * (Nutzer-Aktion, Kamera-Button) aufgerufen – kein automatischer Datenfluss.
+ * @param {string} barcode
+ * @returns {Promise<Object|null>} gemapptes Food-Objekt oder null, falls unbekannt
+ */
+export async function fetchProductByBarcode(barcode) {
+  const url = `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(barcode)}`
+    + `?fields=product_name,brands,nutriments,categories_tags,status`;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 10000);
+  let resp;
+  try {
+    resp = await fetch(url, { signal: ctrl.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+  if (!resp.ok) throw new Error('HTTP ' + resp.status);
+  const data = await resp.json();
+  // status === 0 bzw. fehlendes product: Barcode bei OFF nicht bekannt.
+  if (!data || data.status === 0 || !data.product || !data.product.product_name) {
+    return null;
+  }
+  return mapOFFFood(data.product);
 }

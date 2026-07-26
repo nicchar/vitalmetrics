@@ -30,7 +30,9 @@ export function renderToolsHub(c) {
         <div class="tool-card-body">
           <div class="tool-card-title">Intervallfasten-Tracker</div>
           <div class="tool-card-desc">16:8 · 14:10 · 12:12 — Timer, Autophagie-Phasen & Streak</div>
-          ${streak > 0 ? `<div class="tool-card-meta">🔥 ${streak} Tage Streak</div>` : `<div class="tool-card-meta">Noch kein Fasten gestartet</div>`}
+          ${entitlements.isPremium()
+            ? (streak > 0 ? `<div class="tool-card-meta">🔥 ${streak} Tage Streak</div>` : `<div class="tool-card-meta">Noch kein Fasten gestartet</div>`)
+            : '<div class="tool-card-meta">🔒 Premium</div>'}
         </div>
         <div class="tool-card-arrow">›</div>
       </div>
@@ -39,7 +41,9 @@ export function renderToolsHub(c) {
         <div class="tool-card-body">
           <div class="tool-card-title">Blutzucker Tagesgang</div>
           <div class="tool-card-desc">Nüchtern · nach Mahlzeiten · abends — Insulinresistenz erkennen</div>
-          ${todayGlu > 0 ? `<div class="tool-card-meta">✅ Heute ${todayGlu} Wert${todayGlu > 1 ? 'e' : ''} eingetragen</div>` : `<div class="tool-card-meta">Noch keine Tageswerte heute</div>`}
+          ${entitlements.isPremium()
+            ? (todayGlu > 0 ? `<div class="tool-card-meta">✅ Heute ${todayGlu} Wert${todayGlu > 1 ? 'e' : ''} eingetragen</div>` : `<div class="tool-card-meta">Noch keine Tageswerte heute</div>`)
+            : '<div class="tool-card-meta">🔒 Premium</div>'}
         </div>
         <div class="tool-card-arrow">›</div>
       </div>
@@ -66,7 +70,7 @@ export function renderToolsHub(c) {
         <div class="tool-card-icon">📅</div>
         <div class="tool-card-body">
           <div class="tool-card-title">Wochenplan & Einkaufsliste</div>
-          <div class="tool-card-desc">7 Tage Frühstück/Mittag/Abend aus 258 Rezepten · automatische Einkaufsliste</div>
+          <div class="tool-card-desc">7 Tage Frühstück/Mittag/Abend aus 272 Rezepten · automatische Einkaufsliste</div>
           <div class="tool-card-meta">Vegetarisch · Fleisch/Fisch · Keto</div>
         </div>
         <div class="tool-card-arrow">›</div>
@@ -76,6 +80,7 @@ export function renderToolsHub(c) {
         <div class="tool-card-body">
           <div class="tool-card-title">Wochenrückblick</div>
           <div class="tool-card-desc">Bewegung, Ernährung und Fasten der letzten 7 Tage auf einen Blick</div>
+          ${entitlements.isPremium() ? '' : '<div class="tool-card-meta">🔒 Premium</div>'}
         </div>
         <div class="tool-card-arrow">›</div>
       </div>
@@ -85,6 +90,14 @@ export function renderToolsHub(c) {
           <div class="tool-card-title">Hautgesundheit & Vitalität</div>
           <div class="tool-card-desc">Vitamin C, Zink & Co., Blutzucker und Darm-Haut-Achse neu eingeordnet</div>
           ${entitlements.isPremium() ? '' : '<div class="tool-card-meta">🔒 Premium</div>'}
+        </div>
+        <div class="tool-card-arrow">›</div>
+      </div>
+      <div class="tool-card" id="tool-cycle-wellness">
+        <div class="tool-card-icon">🌸</div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">PMS, Prämenopause & Menopause</div>
+          <div class="tool-card-desc">Mikronährstoffe je Lebensphase, traditionelle Perspektiven – reiner Lerninhalt</div>
         </div>
         <div class="tool-card-arrow">›</div>
       </div>
@@ -98,4 +111,5 @@ export function renderToolsHub(c) {
   c.querySelector('#tool-mealplan').addEventListener('click', () => navigate('mealplan'));
   c.querySelector('#tool-weekly-review').addEventListener('click', () => navigate('weekly_review'));
   c.querySelector('#tool-skin-vitality').addEventListener('click', () => navigate('skin_vitality'));
+  c.querySelector('#tool-cycle-wellness').addEventListener('click', () => navigate('cycle_wellness'));
 }

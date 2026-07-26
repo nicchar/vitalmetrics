@@ -63,13 +63,13 @@ export const feedbackService = {
    * Öffnet die Mail-App mit vorausgefüllter Betreffzeile und Vorlage.
    */
   openFeedbackMail() {
-    const subject  = encodeURIComponent('Feedback – VitalMetrics App');
+    const subject  = encodeURIComponent('Feedback – WellANNI App');
     const body     = encodeURIComponent(
       'Hallo,\n\n' +
-      'ich möchte folgendes Feedback zur VitalMetrics App teilen:\n\n' +
+      'ich möchte folgendes Feedback zur WellANNI App teilen:\n\n' +
       '[Dein Feedback hier]\n\n' +
       '---\n' +
-      `App-Version: 1.0.0\n` +
+      `App-Version: 2.0.0\n` +
       `Gerät: ${navigator.userAgent}\n`
     );
     window.open(`mailto:${FEEDBACK_MAIL}?subject=${subject}&body=${body}`, '_system');

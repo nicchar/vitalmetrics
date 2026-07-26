@@ -1,9 +1,30 @@
 import { fastingRepo } from '../../infra/db/repositories/fastingRepo.js';
-import { FASTING_STAGES, FASTING_PROTOCOLS } from '../../domain/fasting.js';
+import { FASTING_STAGES, FASTING_PROTOCOLS, HEALING_FAST_INFO } from '../../domain/fasting.js';
+import { entitlements } from '../../domain/entitlements.js';
 import { navigate } from '../../router.js';
 import { showToast } from '../components/toast.js';
 
 export function renderFasting(c) {
+  // Premium-Sperre (25.07.2026): Intervallfasten-Tracker ist komplett Premium,
+  // gleiches Muster wie skinVitality.js - kein Teil-Zugriff, nur Teaser.
+  if (!entitlements.isPremium()) {
+    c.innerHTML = `<div class="screen fasting-screen">
+      <div class="screen-header">
+        <h1 class="screen-title">⏱️ Intervallfasten</h1>
+      </div>
+      <p class="hint-text" style="padding:0 16px">
+        16:8 · 14:10 · 12:12 - Timer mit Autophagie-Phasen und Streak-Tracking,
+        damit du dranbleibst.
+      </p>
+      <div class="analysis-upsell-card" style="margin:16px">
+        <p>⏱️ Der Intervallfasten-Tracker ist Teil von Premium.</p>
+        <button class="btn-secondary btn-upgrade-inline" id="btn-upgrade-fasting">⭐ Premium ansehen</button>
+      </div>
+    </div>`;
+    c.querySelector('#btn-upgrade-fasting').addEventListener('click', () => navigate('premium'));
+    return;
+  }
+
   let fd = fastingRepo.get();
   let timerInterval = null;
 
@@ -76,6 +97,16 @@ export function renderFasting(c) {
           <span class="status-badge" style="background:${l.completed ? '#43a04720' : '#e5393520'};color:${l.completed ? '#43a047' : '#e53935'}">${l.completed ? '✓ Ziel' : 'Abgebrochen'}</span>
         </div>`).join('')}
       </div>` : ''}
+      <div class="info-section healing-fast-info" style="margin:16px">
+        <details>
+          <summary style="cursor:pointer;font-weight:700">📖 ${HEALING_FAST_INFO.title}</summary>
+          <p style="font-size:13px;margin-top:8px">${HEALING_FAST_INFO.intro}</p>
+          <ul class="interactions-list">
+            ${HEALING_FAST_INFO.points.map(pt => `<li class="interaction-item"><span class="interaction-icon">•</span><span>${pt}</span></li>`).join('')}
+          </ul>
+          <p style="font-size:11px;color:var(--text-hint);margin-top:6px">${HEALING_FAST_INFO.disclaimer}</p>
+        </details>
+      </div>
     </div>`;
   }
 

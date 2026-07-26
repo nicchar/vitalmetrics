@@ -78,7 +78,7 @@ export function applyAllData(data) {
 
 function buildFileName() {
   const iso = new Date().toISOString().slice(0, 10);
-  return `VitalMetrics-Backup-${iso}.json`;
+  return `WellANNI-Backup-${iso}.json`;
 }
 
 function utf8ToBase64(str) {
@@ -112,8 +112,8 @@ export const dataExportService = {
           uri = uriResult && uriResult.uri;
         }
         await Share.share({
-          title: 'VitalMetrics Backup',
-          text: 'Meine VitalMetrics-Daten (Backup)',
+          title: 'WellANNI Backup',
+          text: 'Meine WellANNI-Daten (Backup)',
           url: uri,
           dialogTitle: 'Backup teilen oder speichern',
         });

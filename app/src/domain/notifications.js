@@ -54,7 +54,7 @@ async function scheduleDailyReminder(hour, minute) {
   await plugin.schedule({
     notifications: [{
       id: REMINDER_ID,
-      title: 'VitalMetrics',
+      title: 'WellANNI',
       body: 'Kurzer Check-in gefällig? Trag deine heutigen Werte ein.',
       schedule: { on: { hour, minute }, repeats: true, allowWhileIdle: true },
     }],

@@ -17,7 +17,7 @@ export function renderPremium(container) {
     <div class="screen premium-screen">
       <div class="premium-hero">
         <div class="premium-icon">⭐</div>
-        <h1 class="premium-title">VitalMetrics Premium</h1>
+        <h1 class="premium-title">WellANNI Premium</h1>
         <p class="premium-sub">Verlauf & Einordnung für alle ${totalCount} Biomarker.</p>
       </div>
 
@@ -53,8 +53,11 @@ export function renderPremium(container) {
           <div class="feature-item"><span class="feature-check">✅</span><span>Verlaufs-Charts über die Zeit für alle Biomarker</span></div>
           <div class="feature-item"><span class="feature-check">✅</span><span>Farbliche Einordnung (optimal/niedrig/erhöht) gegen deinen Referenzbereich</span></div>
           <div class="feature-item"><span class="feature-check">✅</span><span>Geschlechtsspezifische DGE-Referenzwerte in der Einordnung</span></div>
-          <div class="feature-item"><span class="feature-check">✅</span><span>Passende Rezepte bei Mängeln</span></div>
-          <div class="feature-item"><span class="feature-check">✅</span><span>Heimtest-Hinweise zu jedem Biomarker</span></div>
+          <div class="feature-item"><span class="feature-check">✅</span><span>Hautgesundheit & Vitalität – eigener Auswertungs-Screen</span></div>
+          <div class="feature-item"><span class="feature-check">✅</span><span>Ernährungsverlauf über 12 Wochen für alle 15 Mikronährstoffe (Free: die 5 wichtigsten)</span></div>
+          <div class="feature-item"><span class="feature-check">✅</span><span>Intervallfasten-Tracker mit Autophagie-Phasen & Streak</span></div>
+          <div class="feature-item"><span class="feature-check">✅</span><span>Blutzucker-Tagesgang zur Insulinresistenz-Erkennung</span></div>
+          <div class="feature-item"><span class="feature-check">✅</span><span>Wochenrückblick – Bewegung, Ernährung & Fasten der letzten 7 Tage</span></div>
         </div>
       </div>
 
@@ -63,8 +66,11 @@ export function renderPremium(container) {
         <div class="feature-list">
           <div class="feature-item"><span class="feature-check">🆓</span><span>Alle ${totalCount} Biomarker eintragen & aktuellen Wert einsehen</span></div>
           <div class="feature-item"><span class="feature-check">🆓</span><span>Supplement-Empfehlungen zu jedem Marker</span></div>
-          <div class="feature-item"><span class="feature-check">🆓</span><span>Lebensmittelquellen & Tipps</span></div>
+          <div class="feature-item"><span class="feature-check">🆓</span><span>Lebensmittelquellen, Tipps & passende Rezepte bei Mängeln</span></div>
+          <div class="feature-item"><span class="feature-check">🆓</span><span>Heimtest-Hinweise zu jedem Biomarker</span></div>
           <div class="feature-item"><span class="feature-check">🆓</span><span>PDF-Bericht exportieren</span></div>
+          <div class="feature-item"><span class="feature-check">🆓</span><span>Heißhunger-Journal, Wochenplan & Einkaufsliste</span></div>
+          <div class="feature-item"><span class="feature-check">🆓</span><span>Zyklustracker sowie PMS, Prämenopause & Menopause</span></div>
         </div>
       </div>
 

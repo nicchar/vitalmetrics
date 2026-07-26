@@ -107,3 +107,45 @@ test('getFrequentFoods: respektiert das limit', () => {
   }
   assert.equal(nutritionRepo.getFrequentFoods(30, 3).length, 3);
 });
+
+// Mehrwochen-Ernaehrungsverlauf (Premium-Idee 25.07.2026)
+
+test('getWeeklyTotals: liefert die angeforderte Anzahl Wochen, aufsteigend (aelteste zuerst, aktuelle Woche zuletzt)', () => {
+  const weeks = nutritionRepo.getWeeklyTotals(12);
+  assert.equal(weeks.length, 12);
+  assert.equal(weeks[11].weekEnd, isoDaysAgo(0)); // letzter Block endet heute
+});
+
+test('getWeeklyTotals: Woche ganz ohne Eintraege hat loggedDays 0 und alle Werte 0 (kein Crash)', () => {
+  const weeks = nutritionRepo.getWeeklyTotals(3);
+  for (const w of weeks) {
+    assert.equal(w.loggedDays, 0);
+    assert.equal(w.avgKcal, 0);
+    assert.equal(w.vit_d, 0);
+  }
+});
+
+test('getWeeklyTotals: mittelt kcal/Mikronaehrstoffe nur ueber tatsaechlich geloggte Tage der jeweiligen Woche', () => {
+  // Heute + vor 1 Tag geloggt -> beide in der aktuellen Woche (Block 0..6 Tage zurueck)
+  const food = { kal: 200, protein: 10, fat: 5, carbs: 20, vit_d: 4 };
+  nutritionRepo.addEntry(isoDaysAgo(0), { food, grams: 100 }); // 200 kcal, 4 vit_d
+  nutritionRepo.addEntry(isoDaysAgo(1), { food, grams: 200 }); // 400 kcal, 8 vit_d
+
+  const weeks = nutritionRepo.getWeeklyTotals(2);
+  const current = weeks[1];
+  assert.equal(current.loggedDays, 2);
+  assert.equal(current.avgKcal, 300); // (200+400)/2
+  assert.equal(current.vit_d, 6); // (4+8)/2
+});
+
+test('getWeeklyTotals: ein Eintrag genau 8 Tage zurueck landet in der VORHERIGEN Woche, nicht der aktuellen', () => {
+  const food = { kal: 500, protein: 0, fat: 0, carbs: 0 };
+  nutritionRepo.addEntry(isoDaysAgo(8), { food, grams: 100 });
+
+  const weeks = nutritionRepo.getWeeklyTotals(3);
+  const current = weeks[2];
+  const previous = weeks[1];
+  assert.equal(current.loggedDays, 0);
+  assert.equal(previous.loggedDays, 1);
+  assert.equal(previous.avgKcal, 500);
+});

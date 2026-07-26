@@ -64,7 +64,11 @@ async function main() {
     await run('npx', ['cap', 'sync', 'android'], ROOT);
 
     console.log('\n=== Schritt 4/4: gradlew bundleRelease ===');
-    await run('./gradlew', ['bundleRelease'], path.join(ROOT, 'android'));
+    // Windows/PowerShell kennt "./gradlew" nicht (nur Mac/Linux-Shells lösen
+    // relative Skriptpfade so auf) - unter Windows muss gradlew.bat direkt
+    // aufgerufen werden. Nicoles Rechner ist Windows (Bugfix 26.07.2026).
+    const gradleCmd = process.platform === 'win32' ? 'gradlew.bat' : './gradlew';
+    await run(gradleCmd, ['bundleRelease'], path.join(ROOT, 'android'));
 
     console.log('\nRelease-Build fertig. AAB liegt unter android/app/build/outputs/bundle/release/.');
   } finally {

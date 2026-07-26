@@ -5,6 +5,7 @@
  * Vorhersage des nächsten Zyklus. Schlüssel 'vm_cycle'.
  */
 import { storage } from '../sqlite.js';
+import { getPhaseForDate } from '../../../domain/cycle.js';
 
 const KEY = 'vm_cycle';
 const SCHEMA_VERSION = 1;
@@ -34,20 +35,17 @@ export const cycleRepo = {
 
   getCurrentPhase() {
     const d = this.get();
-    const starts = [...d.periodStarts].sort();
-    if (!starts.length) return null;
-    const last = new Date(starts[starts.length - 1]);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const dayOfCycle = Math.floor((today - last) / 86400000) + 1;
+    if (!d.periodStarts.length) return null;
     const stats = this.calcStats();
-    const cl = stats.avgCycle || d.avgCycleLength || 28;
-    const pl = d.periodLength || 5;
-    const dayInCycle = ((dayOfCycle - 1) % cl) + 1;
-    if (dayInCycle <= pl) return { phase: 'menstruation', day: dayInCycle, cycleLen: cl };
-    if (dayInCycle <= Math.round(cl * 0.45)) return { phase: 'follicular', day: dayInCycle, cycleLen: cl };
-    if (dayInCycle <= Math.round(cl * 0.55)) return { phase: 'ovulation', day: dayInCycle, cycleLen: cl };
-    return { phase: 'luteal', day: dayInCycle, cycleLen: cl };
+    const today = new Date().toISOString().slice(0, 10);
+    return getPhaseForDate(d, today, stats.avgCycle);
+  },
+
+  /** Zyklusphase für ein beliebiges (auch vergangenes) Datum, siehe domain/cycle.js. */
+  getPhaseFor(dateStr) {
+    const d = this.get();
+    const stats = this.calcStats();
+    return getPhaseForDate(d, dateStr, stats.avgCycle);
   },
 
   predictNext() {

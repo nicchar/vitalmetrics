@@ -83,14 +83,14 @@ export function renderProfile(container) {
 
       <div class="profile-card feedback-card">
         <h3>Feedback & Bewertung</h3>
-        <p class="hint-text">Gefällt dir VitalMetrics? Eine Bewertung hilft anderen Nutzern, die App zu finden.</p>
+        <p class="hint-text">Gefällt dir WellANNI? Eine Bewertung hilft anderen Nutzern, die App zu finden.</p>
         <button class="btn-primary" id="btn-rate">⭐ App bewerten</button>
         <button class="btn-secondary" id="btn-feedback">✉️ Feedback senden</button>
       </div>
 
       <div class="profile-card about-card">
-        <h3>Über VitalMetrics</h3>
-        <p>VitalMetrics hilft dir, deine Vitamin- und Mineralstoffwerte im Blick zu behalten.</p>
+        <h3>Über WellANNI</h3>
+        <p>WellANNI hilft dir, deine Vitamin- und Mineralstoffwerte im Blick zu behalten.</p>
         <p class="disclaimer-text">⚠️ ${DISCLAIMER_FULL}</p>
         <p class="disclaimer-text">🥗 Lebensmitteldaten: Max Rubner-Institut (2025): Bundeslebensmittelschlüssel (BLS), Version 4.0 – Deutsche Nährstoffdatenbank. Karlsruhe. Lizenz: <a href="https://creativecommons.org/licenses/by/4.0/deed.de" target="_blank" rel="noopener">CC BY 4.0</a>. DOI: 10.25826/Data20251217-134202-0</p>
         <p style="margin-top:8px">
@@ -187,7 +187,7 @@ export function renderProfile(container) {
         showToast('✅ Backup eingespielt.');
         navigate('dashboard');
       } else {
-        showToast('Diese Datei konnte nicht gelesen werden – ist es ein VitalMetrics-Backup?');
+        showToast('Diese Datei konnte nicht gelesen werden – ist es ein WellANNI-Backup?');
       }
       importInput.value = '';
     };

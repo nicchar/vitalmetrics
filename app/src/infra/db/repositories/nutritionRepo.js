@@ -93,6 +93,45 @@ export const nutritionRepo = {
     });
   },
 
+  /**
+   * Liefert `numWeeks` rollierende 7-Tage-Bloecke (aufsteigend: aeltester
+   * Block zuerst, aktuelle Woche zuletzt) mit gemittelten Tages-Totals
+   * (kcal/Makros/alle 15 Mikronaehrstoffe) - Grundlage fuer den
+   * Mehrwochen-Ernaehrungsverlauf im Wochenrueckblick (Premium-Idee
+   * "wie hat sich meine Ernaehrungsweise veraendert", 25.07.2026).
+   * Mittelung nur ueber tatsaechlich geloggte Tage je Woche, analog zu
+   * avgKcal/avgMacro in domain/weeklyReview.js - eine Woche ganz ohne
+   * Eintraege hat loggedDays: 0 und alle Werte 0 (kein Crash, kein NaN).
+   *
+   * @returns {{weekStart: string, weekEnd: string, loggedDays: number,
+   *            avgKcal: number, avgProtein: number, avgFat: number,
+   *            avgCarbs: number, [microKey: string]: number}[]}
+   */
+  getWeeklyTotals(numWeeks = 12) {
+    const allDates = this._recentDates(numWeeks * 7);
+    const weeks = [];
+    for (let i = 0; i < numWeeks; i++) {
+      const weekDates = allDates.slice(i * 7, i * 7 + 7);
+      const dayTotals = weekDates.map(date => ({ date, ...this.getDayTotals(date) }));
+      const loggedDays = dayTotals.filter(d => d.kcal > 0);
+      const avg = key => loggedDays.length
+        ? Math.round((loggedDays.reduce((s, d) => s + (d[key] || 0), 0) / loggedDays.length) * 10) / 10
+        : 0;
+      const week = {
+        weekStart: weekDates[0],
+        weekEnd: weekDates[weekDates.length - 1],
+        loggedDays: loggedDays.length,
+        avgKcal: Math.round(avg('kcal')),
+        avgProtein: avg('protein'),
+        avgFat: avg('fat'),
+        avgCarbs: avg('carbs'),
+      };
+      for (const k of MICRO_KEYS) week[k] = avg(k);
+      weeks.push(week);
+    }
+    return weeks;
+  },
+
   /** Rohdaten für Export/Import (Backup-Funktion, Juli 2026) */
   getAll() {
     return this._load();

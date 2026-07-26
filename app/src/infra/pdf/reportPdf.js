@@ -1,7 +1,7 @@
 /**
  * reportPdf.js
  *
- * Baut den VitalMetrics-Biomarker-Bericht als echtes PDF (jsPDF-Core-API,
+ * Baut den WellANNI-Biomarker-Bericht als echtes PDF (jsPDF-Core-API,
  * ohne autoTable-Plugin -> Tabellen werden manuell spaltenweise positioniert).
  * Ersetzt den alten window.print()-Ansatz des Monolithen; das Ergebnis wird
  * über exportService.js nativ geteilt/gespeichert statt im Browser gedruckt.
@@ -88,7 +88,7 @@ export function buildReportPdf(data) {
   // ── Header ──────────────────────────────────────────────────────────────
   doc.setTextColor(...BRAND);
   doc.setFont('helvetica', 'bold'); doc.setFontSize(20);
-  doc.text('VitalMetrics', marginX, y);
+  doc.text('WellANNI', marginX, y);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(85, 85, 85);
   doc.text('Biomarker-Übersicht · Ernährungsberatung', marginX, y + 6);
 
@@ -255,7 +255,7 @@ export function buildReportPdf(data) {
     'Wichtiger Hinweis: Dieser Bericht dient ausschließlich Informationszwecken und ersetzt keine medizinische Diagnose oder Therapieempfehlung. Referenzwerte basieren auf DGE-Empfehlungen und allgemeinen Laborrichtwerten. Individuelle Gegebenheiten können abweichen. Für medizinische Entscheidungen wende dich an eine Ärztin oder einen Arzt.',
     'Datenquelle: Max Rubner-Institut (2025): Bundeslebensmittelschlüssel (BLS), Version 4.0 – Deutsche Nährstoffdatenbank, Karlsruhe (CC BY 4.0) · DGE-Referenzwerte · Eigene Messungen.',
     'Datenschutz: Deine Mess- und Gesundheitsdaten werden ausschließlich lokal auf diesem Gerät gespeichert. Nur wenn du in der Ernährungssuche aktiv die optionale Online-Suche nutzt, wird dein Suchbegriff an Open Food Facts übertragen – sonst findet keine Datenübertragung an Server statt.',
-    `Erstellt mit VitalMetrics · ${dateStr}`
+    `Erstellt mit WellANNI · ${dateStr}`
   ];
   footerParas.forEach((para, i) => {
     const lines = doc.splitTextToSize(para, pageW - marginX * 2);

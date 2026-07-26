@@ -12,10 +12,10 @@
  */
 
 export const DISCLAIMER_SHORT =
-  'VitalMetrics ist kein Medizinprodukt und ersetzt keine ärztliche Beratung.';
+  'WellANNI ist kein Medizinprodukt und ersetzt keine ärztliche Beratung.';
 
 export const DISCLAIMER_FULL =
-  'VitalMetrics ist eine Wellness- und Self-Tracking-App, kein Medizinprodukt. ' +
+  'WellANNI ist eine Wellness- und Self-Tracking-App, kein Medizinprodukt. ' +
   'Die App dient der Selbstbeobachtung von Ernährung und Lebensstil und ersetzt ' +
   'keine ärztliche Diagnose, Beratung oder Behandlung. Bei gesundheitlichen ' +
   'Beschwerden wende dich bitte an eine Ärztin, einen Arzt oder eine Apotheke.';

@@ -4,6 +4,7 @@ node_modules/
 # ── Android Build-Artefakte ──────────────────────────────────────────────────
 android/.gradle/
 android/app/build/
+android/app/release/
 android/build/
 android/local.properties
 android/capacitor-cordova-android-plugins/build/
@@ -28,7 +29,7 @@ google-services.json
 keystore-base64.txt
 android/keystore.properties
 # Hinweis: google-services.json nur ins Repo wenn es KEINE API-Keys enthält.
-# Für VitalMetrics ohne Firebase kann die Datei ignoriert werden.
+# Für WellANNI ohne Firebase kann die Datei ignoriert werden.
 # keystore.properties.example (OHNE echte Passwörter) darf ins Repo.
 
 # ── IDE und Betriebssystem ────────────────────────────────────────────────────

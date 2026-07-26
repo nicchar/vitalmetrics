@@ -2,7 +2,7 @@ import { state } from '../../appState.js';
 import { profileRepo } from '../../infra/db/repositories/profileRepo.js';
 import { nutritionRepo } from '../../infra/db/repositories/nutritionRepo.js';
 import { getDGERef } from '../../domain/nutrition.js';
-import { searchOpenFoodFacts } from '../../infra/external/openFoodFacts.js';
+import { searchOpenFoodFacts, fetchProductByBarcode } from '../../infra/external/openFoodFacts.js';
 import { showToast } from '../components/toast.js';
 
 // Modul-Status für die Ernährungssuche (übersteht Re-Renders innerhalb des Screens)
@@ -108,12 +108,16 @@ export function renderNutrition(c) {
           </button>`).join('')}
       </div>` : ''}
 
-      <div style="position:relative;margin-bottom:8px">
-        <input type="text" id="inp-food-search" class="sport-select"
-          style="width:100%;padding-right:36px"
-          placeholder="🔍 Lebensmittel suchen (${foodDb.length} Einträge, BLS 4.0)…">
-        <button id="btn-search-clear"
-          style="position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--text-secondary);font-size:18px;display:none;background:none;border:none;cursor:pointer">✕</button>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <div style="position:relative;flex:1">
+          <input type="text" id="inp-food-search" class="sport-select"
+            style="width:100%;padding-right:36px"
+            placeholder="🔍 Lebensmittel suchen (${foodDb.length} Einträge, BLS 4.0)…">
+          <button id="btn-search-clear"
+            style="position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--text-secondary);font-size:18px;display:none;background:none;border:none;cursor:pointer">✕</button>
+        </div>
+        <button id="btn-barcode-scan" type="button" title="Barcode scannen"
+          style="flex-shrink:0;padding:0 14px;border:1px solid var(--border);border-radius:8px;background:var(--surface);font-size:18px;cursor:pointer">📷</button>
       </div>
 
       <div id="nutr-results" style="margin-bottom:8px"></div>
@@ -175,6 +179,7 @@ export function renderNutrition(c) {
   const addBtn       = c.querySelector('#btn-add-food');
   const customToggle = c.querySelector('#btn-custom-toggle');
   const customForm   = c.querySelector('#nutr-custom-form');
+  const barcodeBtn   = c.querySelector('#btn-barcode-scan');
 
   function localSearch(query) {
     const q = query.toLowerCase();
@@ -198,6 +203,41 @@ export function renderNutrition(c) {
       resultsBox.innerHTML = `<div style="text-align:center;padding:12px;color:#ef4444;font-size:13px">
         ⚠️ Open Food Facts nicht erreichbar (${err.message || err}).<br>
         <span style="color:var(--text-secondary)">Lokale Suche oder manuelle Eingabe nutzen.</span></div>`;
+    }
+  }
+
+  // ── Barcode-Scan (Block F Phase 4) ───────────────────────────────────────────
+  // Nutzt @capacitor-mlkit/barcode-scanning nur nach explizitem Button-Klick.
+  // Auf nicht-nativen Plattformen (Browser-Vorschau) oder ohne Kamera-Support
+  // wird ein Hinweis gezeigt statt eines Absturzes.
+  async function scanBarcode() {
+    const Plugins = window.Capacitor && window.Capacitor.Plugins;
+    const Scanner = Plugins && Plugins.BarcodeScanner;
+    if (!Scanner) {
+      showToast('Barcode-Scan ist nur in der App verfügbar, nicht in der Browser-Vorschau');
+      return;
+    }
+    try {
+      const { supported } = await Scanner.isSupported();
+      if (!supported) {
+        showToast('Barcode-Scan wird auf diesem Gerät nicht unterstützt');
+        return;
+      }
+      const { barcodes } = await Scanner.scan({ formats: ['EAN_13', 'EAN_8', 'UPC_A', 'UPC_E'] });
+      if (!barcodes || !barcodes.length) return; // Nutzer hat Scan abgebrochen
+      const code = barcodes[0].rawValue || barcodes[0].displayValue;
+      if (!code) return;
+      resultsBox.innerHTML = `<div style="text-align:center;padding:12px;color:var(--text-secondary);font-size:13px">🔍 Produkt wird gesucht…</div>`;
+      const food = await fetchProductByBarcode(code);
+      if (!food) {
+        resultsBox.innerHTML = `<div style="text-align:center;padding:12px;color:var(--text-secondary);font-size:13px">
+          Barcode ${code} bei Open Food Facts nicht gefunden. Manuell eingeben?</div>`;
+        return;
+      }
+      showResults([food], false);
+    } catch (err) {
+      console.error('[Barcode] Fehler:', err);
+      showToast('Barcode-Scan fehlgeschlagen: ' + (err.message || err));
     }
   }
 
@@ -269,6 +309,8 @@ export function renderNutrition(c) {
     if (q.length < 2) { resultsBox.innerHTML = ''; return; }
     localSearch(q);
   });
+
+  barcodeBtn.addEventListener('click', scanBarcode);
 
   searchClear.addEventListener('click', () => {
     searchInput.value = '';

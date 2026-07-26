@@ -14,10 +14,15 @@ async function init() {
   const foodDb = await foodResp.json();
   state.set('foodDb', foodDb);
 
-  // ── Rezept-Datenbank laden (258 Rezepte: vegetarisch/Fleisch-Fisch/Keto) ──
+  // ── Rezept-Datenbank laden (272 Rezepte: vegetarisch/Fleisch-Fisch/Keto) ──
   const recipesResp = await fetch('./src/data/recipes.json');
   const recipes = await recipesResp.json();
   state.set('recipes', recipes);
+
+  // ── Körper-Geist-Insights je Nährstoff laden (Block F, Experten-Review 4) ─
+  const insightsResp = await fetch('./src/data/insightsByNutrient.json');
+  const insightsByNutrient = await insightsResp.json();
+  state.set('insightsByNutrient', insightsByNutrient);
 
   // ── Navigation verdrahten ─────────────────────────────────────────────────
   document.querySelectorAll('.nav-item').forEach(item => {

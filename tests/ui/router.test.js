@@ -59,7 +59,7 @@ globalThis.HTMLElement = dom.window.HTMLElement;
 // ein `typeof Chart` im Screen-Code nicht crasht, falls doch mal referenziert.
 globalThis.Chart = function Chart() { return { destroy() {} }; };
 
-let navigate, SCREEN_NAMES, TOOLS_SUBSCREEN_NAMES, DASHBOARD_SUBSCREEN_NAMES, profileRepo, state;
+let navigate, SCREEN_NAMES, TOOLS_SUBSCREEN_NAMES, DASHBOARD_SUBSCREEN_NAMES, profileRepo, state, entitlements;
 
 before(async () => {
   const router = await import('../../app/src/router.js');
@@ -69,6 +69,7 @@ before(async () => {
   DASHBOARD_SUBSCREEN_NAMES = router.DASHBOARD_SUBSCREEN_NAMES;
   ({ profileRepo } = await import('../../app/src/infra/db/repositories/profileRepo.js'));
   ({ state } = await import('../../app/src/appState.js'));
+  ({ entitlements } = await import('../../app/src/domain/entitlements.js'));
 
   // Echten Biomarker-Katalog laden (entry.js/dashboard.js greifen ohne
   // Fallback auf catalog.biomarkers zu - ohne das crasht das Rendern).
@@ -152,4 +153,41 @@ test('navigate: onboarding blendet die Bottom-Nav aus', () => {
   assert.equal(nav.style.display, 'none');
   navigate('dashboard');
   assert.equal(nav.style.display, 'flex');
+});
+
+test('navigate: Fasten/Blutzucker/Wochenrückblick sind ohne Premium komplett gesperrt (nur Teaser + Upgrade-Button)', () => {
+  profileRepo.save({ onboardingDone: true, sex: 'f' });
+  entitlements.setPremium(false);
+  for (const screen of ['fasting', 'glucose_day', 'weekly_review']) {
+    navigate(screen);
+    const container = document.getElementById('screen-container');
+    assert.ok(/Premium/.test(container.innerHTML), `Screen "${screen}" sollte ohne Premium einen Premium-Hinweis zeigen`);
+    assert.ok(container.querySelector('.btn-upgrade-inline'), `Screen "${screen}" sollte einen Upgrade-Button zeigen`);
+    // Kein echter Tracker-Inhalt sichtbar (Stichprobe je Screen):
+    assert.equal(container.querySelector('#btn-fasting-toggle'), null);
+    assert.equal(container.querySelector('#btn-glu-prev'), null);
+    assert.equal(container.querySelector('.review-stat-grid'), null);
+  }
+});
+
+test('navigate: Fasten/Blutzucker/Wochenrückblick zeigen mit Premium den vollen Inhalt', () => {
+  profileRepo.save({ onboardingDone: true, sex: 'f' });
+  entitlements.setPremium(true);
+  navigate('fasting');
+  assert.ok(document.getElementById('screen-container').querySelector('#btn-fasting-toggle'));
+  navigate('glucose_day');
+  assert.ok(document.getElementById('screen-container').querySelector('#btn-glu-prev'));
+  navigate('weekly_review');
+  assert.ok(document.getElementById('screen-container').querySelector('.review-stat-grid'));
+  entitlements.setPremium(false);
+});
+
+test('navigate: Zyklustracker, Heißhunger, Wochenplan und PMS/Menopause bleiben ohne Premium voll nutzbar', () => {
+  profileRepo.save({ onboardingDone: true, sex: 'f' });
+  entitlements.setPremium(false);
+  for (const screen of ['cycle', 'cravings', 'mealplan']) {
+    navigate(screen);
+    const container = document.getElementById('screen-container');
+    assert.ok(!/ist Teil von Premium/.test(container.innerHTML), `Screen "${screen}" sollte ohne Premium NICHT gesperrt sein`);
+  }
 });

@@ -6,7 +6,7 @@ export function renderOnboarding(container) {
   container.innerHTML = `
     <div class="onboarding-screen">
       <div class="onboarding-logo">💊</div>
-      <h1 class="onboarding-title">Willkommen bei<br><span class="brand">VitalMetrics</span></h1>
+      <h1 class="onboarding-title">Willkommen bei<br><span class="brand">WellANNI</span></h1>
       <p class="onboarding-sub">Damit wir dir die richtigen Referenzwerte zeigen können, brauchen wir zwei kurze Angaben.</p>
 
       <div class="onboarding-card">

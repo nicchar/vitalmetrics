@@ -9,8 +9,12 @@ import { entitlements } from '../../domain/entitlements.js';
 import { getAffiliateLink, getTestLink, AFFILIATE_LINKS_ENABLED } from '../../domain/affiliateLinks.js';
 import { getRecipesForBiomarkers } from '../../domain/recommendations.js';
 import { getInteractionsFor } from '../../domain/nutrientInteractions.js';
+import { getInsightsFor, EVIDENCE } from '../../domain/nutrientInsights.js';
+import { getTimingHintFor } from '../../domain/nutrientTiming.js';
+import { getTraditionalPerspectiveFor, TRADITIONAL_GENERAL_NOTE, TRADITIONAL_DISCLAIMER } from '../../domain/traditionalPerspectives.js';
 import { getMedicationWarnings, MEDICATION_CATEGORIES, MEDICATION_SOURCE_NOTE } from '../../domain/medicationInteractions.js';
 import { getAccessTierBadge, ACCESS_TIER_DESCRIPTIONS } from '../../domain/biomarkerAccess.js';
+import { recipeLogButtonHtml, wireRecipeLogButtons } from '../components/recipeLogControl.js';
 import { navigate } from '../../router.js';
 
 export function renderTrend(container) {
@@ -128,6 +132,9 @@ export function renderTrend(container) {
       ${renderMedicationWarnings(bm, profile)}
       ${bm.category !== 'body' ? renderFoodsSection(bm, status) : ''}
       ${bm.category !== 'body' ? renderInteractionsSection(bm) : ''}
+      ${bm.category !== 'body' ? renderInsightsSection(bm) : ''}
+      ${bm.category !== 'body' ? renderTimingSection(bm) : ''}
+      ${bm.category !== 'body' ? renderTraditionalSection(bm) : ''}
       <button class="btn-primary btn-add-entry" id="btn-add-entry">+ Neuen Wert eintragen</button>
     </div>`;
 
@@ -147,6 +154,7 @@ export function renderTrend(container) {
     const el = container.querySelector('#recipes-list');
     if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
   });
+  wireRecipeLogButtons(container, state.get('recipes') || []);
 }
 
 const LIFESTYLE_LABELS = { alkohol: 'Alkohol', koffein: 'Kaffee/Tee (Koffein)', rauchen: 'Rauchen', fett: 'Nahrungsfett' };
@@ -175,21 +183,73 @@ function renderMedicationWarnings(bm, profile) {
 
 function renderInteractionsSection(bm) {
   const interactions = getInteractionsFor(bm.id);
-  if (!interactions.length) return '';
+  // Block F Phase 1: statt den Abschnitt bei 0 Treffern stillschweigend
+  // auszublenden (kann wie "hat keine Wechselwirkungen" wirken, obwohl es nur
+  // noch nicht dokumentiert ist), ehrlichen Platzhaltertext zeigen.
+  const listHtml = interactions.length
+    ? `<ul class="interactions-list">
+        ${interactions.map(i => `<li class="interaction-item interaction-${i.effect}">
+          <span class="interaction-icon">${i.effect === 'foerdert' ? '⬆️' : '⬇️'}</span>
+          <span><strong>${partnerLabel(i.partner)}</strong> ${i.effect === 'foerdert' ? 'fördert' : 'hemmt'} ${partnerLabel(bm.id)}: ${i.text}</span>
+        </li>`).join('')}
+      </ul>`
+    : `<p style="font-size:13px;color:var(--text-hint)">Für ${partnerLabel(bm.id)} sind aktuell noch keine Wechselwirkungen hinterlegt.</p>`;
   return `<div class="info-section">
     <h3>🔄 Wechselwirkungen</h3>
     <p style="font-size:11px;color:var(--text-secondary);margin-bottom:8px">Allgemein bekannte Effekte – kein Ersatz für individuelle Ernährungsberatung.</p>
-    <ul class="interactions-list">
-      ${interactions.map(i => `<li class="interaction-item interaction-${i.effect}">
-        <span class="interaction-icon">${i.effect === 'foerdert' ? '⬆️' : '⬇️'}</span>
-        <span><strong>${partnerLabel(i.partner)}</strong> ${i.effect === 'foerdert' ? 'fördert' : 'hemmt'} ${partnerLabel(bm.id)}: ${i.text}</span>
+    ${listHtml}
+  </div>`;
+}
+
+function renderInsightsSection(bm) {
+  const insightsData = state.get('insightsByNutrient');
+  const insights = getInsightsFor(insightsData, bm.id);
+  if (!insights.length) return '';
+  const evidenceBadge = ev => ev === EVIDENCE.STRONG
+    ? '<span class="evidence-badge evidence-strong">gut belegt</span>'
+    : '<span class="evidence-badge evidence-emerging">vielversprechend, Forschung läuft</span>';
+  return `<div class="info-section">
+    <h3>🧠 Körper &amp; Geist</h3>
+    <p style="font-size:11px;color:var(--text-secondary);margin-bottom:8px">Was ${partnerLabel(bm.id)} über die reine Zufuhr-Zahl hinaus im Körper bewirkt – mit Kennzeichnung, wie gesichert die jeweilige Aussage ist.</p>
+    <ul class="insights-list">
+      ${insights.map(i => `<li class="insight-item">
+        <div class="insight-header"><strong>${i.cluster}</strong> ${evidenceBadge(i.evidence)}</div>
+        <p class="insight-text">${i.text}</p>
       </li>`).join('')}
     </ul>
   </div>`;
 }
 
+function renderTimingSection(bm) {
+  const hint = getTimingHintFor(bm.id);
+  if (!hint) return '';
+  const evidenceBadge = hint.evidence === EVIDENCE.STRONG
+    ? '<span class="evidence-badge evidence-strong">gut belegt</span>'
+    : '<span class="evidence-badge evidence-emerging">vielversprechend, Forschung läuft</span>';
+  return `<div class="info-section">
+    <h3>🕐 Wann am Tag?</h3>
+    <div class="insight-header" style="margin-bottom:6px">${evidenceBadge}</div>
+    <p class="insight-text">${hint.text}</p>
+    <p style="font-size:11px;color:var(--text-hint);margin-top:6px">Allgemeiner Ernährungshinweis, keine individuelle Einnahme-/Dosierungsempfehlung.</p>
+  </div>`;
+}
+
+function renderTraditionalSection(bm) {
+  const perspective = getTraditionalPerspectiveFor(bm.id);
+  if (!perspective) return '';
+  // Bewusst eine eigene CSS-Klasse (traditional-section) statt der normalen
+  // .info-section - muss sich optisch klar vom EFSA-geprueften Kernbereich
+  // abheben (Vorgabe Regulatory-Affairs-Experte, siehe Review 4 Abschnitt 6).
+  return `<div class="info-section traditional-section">
+    <h3>🌿 Traditionelle Perspektiven</h3>
+    <p class="traditional-disclaimer">⚠️ ${TRADITIONAL_DISCLAIMER}</p>
+    <p class="insight-text">${perspective}</p>
+    <p class="insight-text" style="margin-top:6px">${TRADITIONAL_GENERAL_NOTE}</p>
+  </div>`;
+}
+
 function renderFoodsSection(bm, status) {
-  // Dynamische Rezeptsuche über recipes.json (258 Rezepte: vegetarisch,
+  // Dynamische Rezeptsuche über recipes.json (272 Rezepte: vegetarisch,
   // Fleisch/Fisch, Keto) statt der frueheren hardcoded 8-Rezept-Map.
   const allRecipes = state.get('recipes') || [];
   const matches = getRecipesForBiomarkers(allRecipes, [bm.id], 6);
@@ -208,6 +268,7 @@ function renderFoodsSection(bm, status) {
             <summary>Zutaten &amp; Zubereitung</summary>
             <ul class="recipe-ingredients">${(r.ingredients || []).map(i => `<li>${i}</li>`).join('')}</ul>
             <ol class="recipe-steps">${(r.steps || []).map(s => `<li>${s}</li>`).join('')}</ol>
+            ${recipeLogButtonHtml(r)}
           </details>
         </div>`).join('')
     : '<p style="color:#9e9e9e;font-size:13px">Keine Rezepte verfügbar.</p>';
@@ -348,7 +409,7 @@ function renderInfoOnlyTrend(container, catalog, bm, profile) {
         <p class="bm-description">${bm.description || ''}</p>
         <p class="bm-function"><strong>Funktion:</strong> ${bm.function || ''}</p>
         <p style="font-size:12px;color:var(--text-secondary);margin-top:8px">
-          ℹ️ Für diesen Nährstoff gibt es aktuell keinen Mess- oder Zufuhr-Tracking in VitalMetrics –
+          ℹ️ Für diesen Nährstoff gibt es aktuell keinen Mess- oder Zufuhr-Tracking in WellANNI –
           unsere Lebensmitteldatenbank hat dafür noch keine verlässlichen Werte hinterlegt.
           ${ACCESS_TIER_DESCRIPTIONS[bm.accessTier] ? ` ${ACCESS_TIER_DESCRIPTIONS[bm.accessTier]}` : ''}
         </p>
@@ -357,9 +418,13 @@ function renderInfoOnlyTrend(container, catalog, bm, profile) {
       ${renderMedicationWarnings(bm, profile)}
       ${renderFoodsSection(bm, 'unknown')}
       ${renderInteractionsSection(bm)}
+      ${renderInsightsSection(bm)}
+      ${renderTimingSection(bm)}
+      ${renderTraditionalSection(bm)}
     </div>`;
 
   container.querySelector('#trend-bm-select').addEventListener('change', e => navigate('trend', e.target.value));
+  wireRecipeLogButtons(container, state.get('recipes') || []);
 }
 
 function formatDate(isoDate) {

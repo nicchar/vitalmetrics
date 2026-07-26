@@ -1,5 +1,5 @@
 # ==============================================================================
-# VitalMetrics – ProGuard/R8 Regeln
+# WellANNI – ProGuard/R8 Regeln
 # ==============================================================================
 # Kommentar-Konvention: Warum die Regel da ist, nicht nur was sie macht.
 

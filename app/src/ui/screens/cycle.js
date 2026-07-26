@@ -1,6 +1,14 @@
 import { cycleRepo } from '../../infra/db/repositories/cycleRepo.js';
-import { CYCLE_NUTRIENTS, CYCLE_PHASE_INFO } from '../../domain/cycle.js';
+import { cycleSymptomsRepo } from '../../infra/db/repositories/cycleSymptomsRepo.js';
+import { CYCLE_NUTRIENTS, CYCLE_PHASE_INFO, getPhaseForDate } from '../../domain/cycle.js';
+import { SYMPTOM_TAGS, SYMPTOM_LABELS } from '../../domain/cycleSymptoms.js';
 import { showToast } from '../components/toast.js';
+
+// Modul-Status für den Symptom-Quick-Picker (übersteht Re-Renders innerhalb
+// des Screens, analog _nutrState in nutrition.js). Rein UI-Zustand, nicht
+// persistiert - die eigentlichen Einträge liegen in cycleSymptomsRepo.
+let _pickerDate = null;
+let _pickerTags = [];
 
 export function renderCycle(c) {
   const data = cycleRepo.get();
@@ -34,25 +42,47 @@ export function renderCycle(c) {
   const y = now.getFullYear(), m = now.getMonth();
   const daysInMonth = new Date(y, m + 1, 0).getDate();
   const offset = (new Date(y, m, 1).getDay() + 6) % 7;
+  const symptomEntries = cycleSymptomsRepo.getAll();
+  const symptomDatesSet = new Set(symptomEntries.map(e => e.date));
   let calHTML = '';
   for (let i = 0; i < offset; i++) calHTML += '<div class="cycle-day other-month"></div>';
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
     const isToday = dateStr === today;
-    let dayPhase = '';
-    if (starts.length) {
-      const last = new Date(starts[starts.length - 1]);
-      const diff = Math.floor((new Date(dateStr) - last) / 86400000);
-      const cl = avgCycle;
-      const pl = data.periodLength || 5;
-      const dic = ((diff % cl) + cl) % cl + 1;
-      if (dic <= pl) dayPhase = 'menstruation';
-      else if (dic <= Math.round(cl * 0.45)) dayPhase = 'follicular';
-      else if (dic <= Math.round(cl * 0.55)) dayPhase = 'ovulation';
-      else dayPhase = 'luteal';
-    }
-    calHTML += `<div class="cycle-day ${dayPhase}${isToday ? ' today' : ''}">${d}</div>`;
+    const dayPhase = starts.length ? getPhaseForDate(data, dateStr, avgCycle).phase : '';
+    const hasSymptoms = symptomDatesSet.has(dateStr);
+    calHTML += `<div class="cycle-day ${dayPhase}${isToday ? ' today' : ''}" data-symptom-date="${dateStr}">${d}${hasSymptoms ? '<span class="cycle-day-symptom-dot">•</span>' : ''}</div>`;
   }
+
+  // ── Symptom-Quick-Picker (reines Tracking, keine Bewertung) ───────────────
+  const pickerHTML = _pickerDate ? `
+    <div class="cycle-section cycle-symptom-picker">
+      <h3>📝 Symptome – ${new Date(_pickerDate).toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' })}</h3>
+      <p style="font-size:11px;color:var(--text-secondary);margin-bottom:8px">Reines Tagebuch – wird nicht bewertet oder ausgewertet.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
+        ${SYMPTOM_TAGS.map(t => `<button type="button" class="cycle-symptom-chip" data-tag="${t.key}"
+          style="padding:6px 12px;border:1px solid var(--border);border-radius:16px;font-size:12px;cursor:pointer;
+                 background:${_pickerTags.includes(t.key) ? 'var(--primary)' : 'var(--surface)'};
+                 color:${_pickerTags.includes(t.key) ? '#fff' : 'inherit'}">${t.label}</button>`).join('')}
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-primary" id="btn-save-symptoms" style="flex:2">Speichern</button>
+        <button class="btn-secondary" id="btn-cancel-symptoms" style="flex:1">Abbrechen</button>
+      </div>
+    </div>` : '';
+
+  // ── Symptom-Eintragsliste (unbewertet, chronologisch) ─────────────────────
+  const symptomList = symptomEntries.length ? [...symptomEntries].sort((a, b) => b.date.localeCompare(a.date)).map(e => `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border)">
+      <div>
+        <div style="font-weight:600;font-size:13px">${new Date(e.date).toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' })}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">
+          ${e.tags.map(tag => `<span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:10px">${SYMPTOM_LABELS[tag] || tag}</span>`).join('')}
+        </div>
+        ${e.note ? `<div style="font-size:11px;color:var(--text-secondary);margin-top:4px">${e.note}</div>` : ''}
+      </div>
+      <button class="activity-item-del" data-symptom-id="${e.id}" style="font-size:18px;color:var(--text-secondary);background:none;border:none;cursor:pointer">✕</button>
+    </div>`).join('') : '';
 
   const nutrientHTML = nutrients.map(n => `
     <div class="cycle-nutrient-item">
@@ -124,11 +154,20 @@ export function renderCycle(c) {
         <span style="font-size:11px">🟢 Eisprung</span>
         <span style="font-size:11px">🟣 Lutealphase</span>
       </div>
+      <p style="font-size:11px;color:var(--text-secondary);margin-top:8px">Tag antippen, um Symptome einzutragen (● = bereits eingetragen).</p>
     </div>
+
+    ${pickerHTML}
 
     ${nutrients.length ? `<div class="cycle-section">
       <h3>💊 Nährstoffe für diese Phase</h3>
       <div class="cycle-nutrient-list">${nutrientHTML}</div>
+    </div>` : ''}
+
+    <!-- Symptom-Tagebuch -->
+    ${symptomEntries.length ? `<div class="cycle-section">
+      <h3>📝 Symptom-Tagebuch (${symptomEntries.length})</h3>
+      ${symptomList}
     </div>` : ''}
 
     <!-- Eintragshistorie -->
@@ -161,6 +200,51 @@ export function renderCycle(c) {
       const computed = cycleRepo.calcStats();
       if (computed.avgCycle) d.avgCycleLength = computed.avgCycle;
       cycleRepo.save(d);
+      renderCycle(c);
+    });
+  });
+
+  // ── Symptom-Tagebuch: Tag antippen öffnet den Quick-Picker ────────────────
+  c.querySelectorAll('.cycle-day[data-symptom-date]').forEach(dayEl => {
+    dayEl.addEventListener('click', () => {
+      const dateStr = dayEl.dataset.symptomDate;
+      const existing = cycleSymptomsRepo.getForDate(dateStr)[0];
+      _pickerDate = dateStr;
+      _pickerTags = existing ? [...existing.tags] : [];
+      renderCycle(c);
+    });
+  });
+
+  c.querySelectorAll('.cycle-symptom-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const tag = chip.dataset.tag;
+      _pickerTags = _pickerTags.includes(tag) ? _pickerTags.filter(t => t !== tag) : [..._pickerTags, tag];
+      renderCycle(c);
+    });
+  });
+
+  c.querySelector('#btn-cancel-symptoms')?.addEventListener('click', () => {
+    _pickerDate = null;
+    _pickerTags = [];
+    renderCycle(c);
+  });
+
+  c.querySelector('#btn-save-symptoms')?.addEventListener('click', () => {
+    const dateStr = _pickerDate;
+    const remaining = cycleSymptomsRepo.getAll().filter(e => e.date !== dateStr);
+    cycleSymptomsRepo.saveAll(remaining);
+    if (_pickerTags.length) {
+      cycleSymptomsRepo.addEntry({ date: dateStr, tags: _pickerTags, note: '' });
+    }
+    showToast(_pickerTags.length ? '📝 Symptome gespeichert' : 'Eintrag entfernt (keine Symptome ausgewählt)');
+    _pickerDate = null;
+    _pickerTags = [];
+    renderCycle(c);
+  });
+
+  c.querySelectorAll('[data-symptom-id]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      cycleSymptomsRepo.removeEntry(parseInt(btn.dataset.symptomId));
       renderCycle(c);
     });
   });

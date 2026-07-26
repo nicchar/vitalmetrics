@@ -30,7 +30,7 @@ function dataUriToBase64(dataUri) {
 
 function buildFileName() {
   const iso = new Date().toISOString().slice(0, 10);
-  return `VitalMetrics-Bericht-${iso}.pdf`;
+  return `WellANNI-Bericht-${iso}.pdf`;
 }
 
 export const exportService = {
@@ -84,8 +84,8 @@ export const exportService = {
         }
 
         await Share.share({
-          title: 'VitalMetrics Bericht',
-          text: 'Mein VitalMetrics Biomarker-Bericht',
+          title: 'WellANNI Bericht',
+          text: 'Mein WellANNI Biomarker-Bericht',
           url: uri,
           dialogTitle: 'Bericht teilen oder speichern'
         });

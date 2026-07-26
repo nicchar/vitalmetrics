@@ -5,10 +5,30 @@ import { showToast } from '../components/toast.js';
 
 const MOOD_MAP = Object.fromEntries(CRAVING_MOODS.map(m => [m.key, m.label]));
 
+/**
+ * Escaped Text fuer die Wiedereinfuegung in ein value="..."-Attribut bzw.
+ * einen Textarea-Inhalt. Noetig seit selWhat/selNote wieder ins Markup
+ * zurueckgeschrieben werden (Bugfix 25.07.2026) - ohne das wuerde z.B. ein
+ * Anfuehrungszeichen im Snack-Namen das value-Attribut aufbrechen.
+ */
+function escapeAttr(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 export function renderCravings(c) {
   let cravings = cravingsRepo.getAll();
   let formOpen = false;
   let selHunger = null, selMood = null, selTrigger = null;
+  // Bugfix (25.07.2026): Klick auf Hunger-Level/Stimmung/Auslöser baut das
+  // Formular per innerHTML komplett neu auf. Ohne eigenen State gingen dabei
+  // bereits eingetippter Snack-Name und Notiz verloren (Nicole: "Snack löscht
+  // sich automatisch wieder raus"), weil nur die Button-Auswahl, nicht aber
+  // der Inhalt der Textfelder ausserhalb des DOM gehalten wurde.
+  let selWhat = '', selNote = '';
 
   function buildPattern() {
     const a = analyzeCravings(cravings);
@@ -29,7 +49,7 @@ export function renderCravings(c) {
       <div class="craving-form-title">➕ Heißhunger eintragen</div>
       <div class="craving-form-row">
         <div class="craving-form-label">Was hast du gegessen / wolltest du essen?</div>
-        <input type="text" class="craving-what-input" id="craving-what" placeholder="z. B. Schokolade, Chips, Süßes...">
+        <input type="text" class="craving-what-input" id="craving-what" placeholder="z. B. Schokolade, Chips, Süßes..." value="${escapeAttr(selWhat)}">
       </div>
       <div class="craving-form-row">
         <div class="craving-form-label">Hunger-Level (1 = schwach, 5 = extrem)</div>
@@ -51,7 +71,7 @@ export function renderCravings(c) {
       </div>
       <div class="craving-form-row">
         <div class="craving-form-label">Notiz (optional)</div>
-        <textarea class="craving-note-input" id="craving-note" placeholder="Was ist gerade los?"></textarea>
+        <textarea class="craving-note-input" id="craving-note" placeholder="Was ist gerade los?">${escapeAttr(selNote)}</textarea>
       </div>
       <button class="btn-save-craving" id="btn-save-craving">💾 Eintrag speichern</button>
     </div>`;
@@ -99,10 +119,15 @@ export function renderCravings(c) {
   function attachEvents() {
     c.querySelector('#btn-back-cravings').addEventListener('click', () => navigate('tools'));
     c.querySelector('#btn-toggle-form').addEventListener('click', () => {
-      formOpen = !formOpen; selHunger = null; selMood = null; selTrigger = null;
+      formOpen = !formOpen; selHunger = null; selMood = null; selTrigger = null; selWhat = ''; selNote = '';
       c.innerHTML = build(); attachEvents();
     });
     if (formOpen) {
+      // Snack-Name/Notiz laufend in den State spiegeln, damit ein Rebuild
+      // durch Hunger-/Stimmungs-/Auslöser-Klicks sie nicht mehr loescht.
+      c.querySelector('#craving-what').addEventListener('input', e => { selWhat = e.target.value; });
+      c.querySelector('#craving-note').addEventListener('input', e => { selNote = e.target.value; });
+
       c.querySelectorAll('.craving-hunger-btn').forEach(btn => btn.addEventListener('click', () => {
         selHunger = parseInt(btn.dataset.hunger); c.innerHTML = build(); attachEvents();
       }));
@@ -118,7 +143,7 @@ export function renderCravings(c) {
         const note = c.querySelector('#craving-note').value.trim();
         cravings.push({ id: Date.now(), timestamp: new Date().toISOString(), what, hungerLevel: selHunger, mood: selMood, trigger: selTrigger, note });
         cravingsRepo.saveAll(cravings);
-        formOpen = false; selHunger = null; selMood = null; selTrigger = null;
+        formOpen = false; selHunger = null; selMood = null; selTrigger = null; selWhat = ''; selNote = '';
         showToast('✅ Eintrag gespeichert!');
         c.innerHTML = build(); attachEvents();
       });

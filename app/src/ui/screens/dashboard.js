@@ -44,7 +44,7 @@ export function renderDashboard(container) {
     <div class="screen-header">
       <div class="screen-header-row">
         <div>
-          <h1 class="app-title">VitalMetrics</h1>
+          <h1 class="app-title">WellANNI</h1>
           <p class="app-subtitle">${profile.name ? `Hallo ${profile.name} · ` : ''}Deine Übersicht</p>
         </div>
         <button class="btn-pdf-export" id="btn-pdf-export" title="Bericht als PDF exportieren">📄 PDF</button>

@@ -1,4 +1,4 @@
-# VitalMetrics — Play Store Setup Guide
+# WellANNI — Play Store Setup Guide
 
 Dieser Guide führt dich Schritt für Schritt von der HTML-Datei zum veröffentlichten
 Android-App im Google Play Store. Das Capacitor-Projekt ist bereits eingerichtet.
@@ -49,7 +49,7 @@ Wichtig: Echter Name und echte Adresse erforderlich (wird öffentlich angezeigt)
 
 ### 2.2 Neue App anlegen
 - Play Console → „App erstellen"
-- App-Name: VitalMetrics
+- App-Name: WellANNI
 - Standardsprache: Deutsch
 - App-Typ: App
 - Kostenlos/Bezahlt: Kostenlos (Premium läuft über In-App-Käufe)
@@ -62,14 +62,14 @@ beiden folgenden Abos. Der Code (storeAdapter.js) erwartet exakt diese IDs:
 
 **Produkt 1 — Jahresabo:**
 - Produkt-ID: `vitalmetrics_premium_yearly`  ← muss exakt so heißen
-- Name: VitalMetrics Premium – Jahresabo
+- Name: WellANNI Premium – Jahresabo
 - Beschreibung: Verlauf & Einordnung für alle Biomarker, Rezeptempfehlungen
 - Abrechnungszeitraum: Jährlich
 - Preis: 19,50 EUR
 
 **Produkt 2 — Monatsabo:**
 - Produkt-ID: `vitalmetrics_premium_monthly`  ← muss exakt so heißen
-- Name: VitalMetrics Premium – Monatsabo
+- Name: WellANNI Premium – Monatsabo
 - Beschreibung: Verlauf & Einordnung für alle Biomarker, monatlich kündbar
 - Abrechnungszeitraum: Monatlich
 - Preis: 1,89 EUR
@@ -78,7 +78,7 @@ beiden folgenden Abos. Der Code (storeAdapter.js) erwartet exakt diese IDs:
 
 Play Console → App-Inhalte (App content) → Richtlinien → „Health Apps" → Start.
 Diese Erklärung ist seit August 2024 für **jede** App auf Google Play Pflicht,
-unabhängig vom Thema. Für VitalMetrics empfehle ich folgende Auswahl (bitte vor
+unabhängig vom Thema. Für WellANNI empfehle ich folgende Auswahl (bitte vor
 dem Absenden selbst im Formular gegenprüfen, da Google die genauen Formulierungen
 gelegentlich anpasst):
 
@@ -99,7 +99,7 @@ Kategorie angekreuzt werden, nur Sleep Management kommt durch den neuen Schlaf-T
   (feste Kategorie-Auswahl, keine Diagnose, kein Rezept-Feature) könnten hierunter fallen.
   Empfehlung: ankreuzen, aber NICHT unter "Disease and Condition Management" einordnen,
   da die App keine Diagnosen stellt oder Krankheiten verwaltet.
-- ❌ **Medical Device Apps NICHT ankreuzen.** VitalMetrics ist laut eurer eigenen
+- ❌ **Medical Device Apps NICHT ankreuzen.** WellANNI ist laut eurer eigenen
   Positionierung (Wellness, kein Medizinprodukt, kein MDR-Zulassungsverfahren)
   ausdrücklich kein Medizinprodukt. Ein Ankreuzen hier würde einen Nachweis
   einer Zulassung/CE-Kennzeichnung verlangen, den es nicht gibt.
@@ -171,33 +171,36 @@ Play Console → Deine App → Store-Präsenz → Haupt-Store-Eintrag
 **Kurzbeschreibung (80 Zeichen):**
 Vitalstoffe tracken, Ernährung planen, Wellness-Alltag im Blick behalten.
 
-**Vollständige Beschreibung (4000 Zeichen max) – aktualisiert auf den Stand nach Block E, 47 Biomarker:**
+**Vollständige Beschreibung (4000 Zeichen max) – aktualisiert auf Version 2.0.0 (Juli 2026):**
 ```
-VitalMetrics hilft dir, deine Vitamin- und Mineralstoffzufuhr im Blick zu behalten – für mehr Energie im Alltag.
+WellANNI hilft dir, deine Vitamin- und Mineralstoffzufuhr im Blick zu behalten – für mehr Energie im Alltag.
 
 📊 47 VITALSTOFFE IM ÜBERBLICK
 Vitamine, Mineralstoffe und weitere Werte – inkl. Zufuhr-Tracking gegen DGE-Referenzwerte für 15 Nährstoffe direkt aus deinem Ernährungstagebuch.
 
+🎯 WIE KOMME ICH AN MEINE WERTE?
+Neu: Jeder Vitalstoff zeigt dir, wie du realistisch an einen Wert kommst – automatisch aus dem Ernährungstagebuch, per Heimtest ohne Arzttermin, beim Hausarzt oder nur über Speziallabore. Keine Ratespiele mehr, was ein Bluttest überhaupt abdeckt.
+
 🥗 ERNÄHRUNG ZUERST
-Über 250 Rezepte (vegetarisch, mit Fleisch/Fisch, Keto) passend zu deinen Werten, plus Wochenplan mit automatischer Einkaufsliste. Basierend auf dem BLS 4.0 (Bundeslebensmittelschlüssel) und DGE-Referenzwerten.
+Über 270 Rezepte (vegetarisch, mit Fleisch/Fisch, Keto), Wochenplan mit automatischer Einkaufsliste und Unverträglichkeiten-Filter (Laktose/Gluten/Nüsse). Echte Lebensmitteldaten aus dem BLS 4.0 (Bundeslebensmittelschlüssel) plus Online-Suche über Open Food Facts.
 
 ⏱️ HEALTH TOOLS
-Intervallfasten-Tracker, Blutzucker-Tagesgang, Heißhunger-Journal, Zyklustracker und Wochenrückblick – alles an einem Ort.
+Intervallfasten-Tracker, Blutzucker-Tagesgang, Heißhunger-Journal, Zyklustracker, Bewegungs-, Hydration- und Schlaf-Tracking sowie Wochenrückblick – alles an einem Ort.
 
 ✨ HAUTGESUNDHEIT & VITALITÄT (Premium)
 Vitamin C, Zink, Biotin & Co. neu eingeordnet: welche bereits getrackten Werte eine belegte Rolle für Haut, Haare und Nägel spielen – inklusive Blutzucker, Lifestyle-Faktoren und Darm-Haut-Achse.
 
-📄 PDF-EXPORT
-Erstelle Berichte, die du z. B. für ein Ernährungsberatungsgespräch mitnehmen kannst.
+📄 PDF-EXPORT & BACKUP
+Erstelle Berichte, die du z. B. für ein Ernährungsberatungsgespräch mitnehmen kannst. Eigene Daten jederzeit als Datei sichern oder auf ein neues Gerät übertragen.
 
 🔒 100% LOKAL – KEIN SERVER
 Alle Daten bleiben ausschließlich auf deinem Gerät. Keine Registrierung, keine Cloud, keine Datenweitergabe.
 
 ⚕️ WICHTIGER HINWEIS
-VitalMetrics ist kein Medizinprodukt und ersetzt keine ärztliche Beratung, Diagnose oder Behandlung. Die App dient ausschließlich der persönlichen Gesundheitsbeobachtung im Wellness-Bereich.
+WellANNI ist kein Medizinprodukt und ersetzt keine ärztliche Beratung, Diagnose oder Behandlung. Die App dient ausschließlich der persönlichen Gesundheitsbeobachtung im Wellness-Bereich.
 ```
 
-**Wichtig (Health Content Policy, Stand Januar 2026):** Der Satz "VitalMetrics ist
+**Wichtig (Health Content Policy, Stand Januar 2026):** Der Satz "WellANNI ist
 kein Medizinprodukt..." muss wörtlich so oder sinngemäß in der Store-Beschreibung
 stehen – Google verlangt diesen Hinweis inzwischen ausdrücklich für alle Health- und
 Medical-Apps, die nicht als reguliertes Medizinprodukt deklariert sind.
@@ -258,18 +261,18 @@ Play Console → Testing → Interner Test → „Neue Version erstellen"
 
 ### 5.2 Inhaltsrating ausfüllen
 Play Console → Richtlinien → App-Inhaltsrating → Fragebogen ausfüllen
-Für VitalMetrics: Gesundheits-App, keine Gewalt, keine sensiblen Inhalte → Einstufung PEGI 3 (alle Altersgruppen)
+Für WellANNI: Gesundheits-App, keine Gewalt, keine sensiblen Inhalte → Einstufung PEGI 3 (alle Altersgruppen)
 
 ### 5.3 Datenschutz-Abschnitt (Data Safety) ausfüllen
 Play Console → Richtlinien → Datensicherheit
 
-Da VitalMetrics alle Daten ausschließlich lokal auf dem Gerät verarbeitet und
+Da WellANNI alle Daten ausschließlich lokal auf dem Gerät verarbeitet und
 nichts an einen Server überträgt, kannst du im Formular grundsätzlich angeben,
 dass keine Daten "gesammelt" (im Google-Sinne von "off-device übertragen")
 werden. Trotzdem fragt das Formular inzwischen granularer nach verarbeiteten
 Datentypen als früher — bitte beim Ausfüllen direkt in der Play Console prüfen,
 welche Kategorien aktuell angeboten werden, da Google das Formular öfter
-anpasst. Für VitalMetrics grob relevant:
+anpasst. Für WellANNI grob relevant:
 - Health & Fitness-Daten (Zufuhr-/Messwerte, Zyklus, Blutzucker) → als "auf dem
   Gerät verarbeitet, nicht gesammelt/übertragen" kennzeichnen, sofern das
   Formular diese Unterscheidung anbietet.
@@ -328,4 +331,4 @@ App-ID:     com.vitalmetrics.app
 
 ---
 
-*Zuletzt aktualisiert für VitalMetrics v1.1.3 · App-ID: com.vitalmetrics.app · Stand: Juli 2026 (Block C)*
+*Zuletzt aktualisiert für WellANNI v2.0.0 · App-ID: com.vitalmetrics.app · Stand: Juli 2026*

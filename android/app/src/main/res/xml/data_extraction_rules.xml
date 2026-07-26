@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Android 12+ (API 31) Datenschutz-Regeln.
-  VitalMetrics speichert sensible Gesundheitsdaten nur lokal.
+  WellANNI speichert sensible Gesundheitsdaten nur lokal.
   Kein Cloud-Backup, kein Device-Transfer — nichts verlaesst das Geraet.
 -->
 <data-extraction-rules>

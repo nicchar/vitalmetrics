@@ -1,9 +1,30 @@
 import { glucoseDayRepo } from '../../infra/db/repositories/glucoseDayRepo.js';
 import { GLUCOSE_SLOTS, assessGlucosePattern } from '../../domain/glucose.js';
+import { entitlements } from '../../domain/entitlements.js';
 import { navigate } from '../../router.js';
 import { showToast } from '../components/toast.js';
 
 export function renderGlucoseDay(c) {
+  // Premium-Sperre (25.07.2026): Blutzucker-Tagesgang ist komplett Premium,
+  // gleiches Muster wie skinVitality.js - kein Teil-Zugriff, nur Teaser.
+  if (!entitlements.isPremium()) {
+    c.innerHTML = `<div class="screen glucose-day-screen">
+      <div class="screen-header">
+        <h1 class="screen-title">🩸 Blutzucker Tagesgang</h1>
+      </div>
+      <p class="hint-text" style="padding:0 16px">
+        Nüchtern · nach Mahlzeiten · abends - so erkennst du Muster, die auf
+        Insulinresistenz hindeuten könnten.
+      </p>
+      <div class="analysis-upsell-card" style="margin:16px">
+        <p>🩸 Der Blutzucker-Tagesgang ist Teil von Premium.</p>
+        <button class="btn-secondary btn-upgrade-inline" id="btn-upgrade-glucose">⭐ Premium ansehen</button>
+      </div>
+    </div>`;
+    c.querySelector('#btn-upgrade-glucose').addEventListener('click', () => navigate('premium'));
+    return;
+  }
+
   let currentDate = new Date().toISOString().slice(0, 10);
 
   function fmtDisplayDate(iso) {

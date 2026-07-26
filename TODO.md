@@ -1,4 +1,4 @@
-# VitalMetrics — Nächste Schritte
+# WellANNI — Nächste Schritte
 
 Zuletzt aktualisiert: Februar 2026
 
@@ -35,7 +35,7 @@ Zuletzt aktualisiert: Februar 2026
 - [ ] **Capacitor einrichten:**
   ```
   npm install @capacitor/core @capacitor/cli
-  npx cap init VitalMetrics com.vitalmetrics.app
+  npx cap init WellANNI com.vitalmetrics.app
   npx cap add android
   npx cap sync
   ```

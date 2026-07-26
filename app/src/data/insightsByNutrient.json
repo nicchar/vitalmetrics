@@ -1,0 +1,49 @@
+{
+  "vitamin_b6": [
+    { "cluster": "Nervensystem & Stimmung", "evidence": "gut belegt", "text": "Vitamin B6 ist an der Bildung von Botenstoffen wie Serotonin und Dopamin beteiligt und trägt zu einer normalen psychischen Funktion bei." },
+    { "cluster": "Energie & Konzentration", "evidence": "gut belegt", "text": "Vitamin B6 trägt zu einem normalen Energiestoffwechsel bei." }
+  ],
+  "vitamin_b9": [
+    { "cluster": "Nervensystem & Stimmung", "evidence": "gut belegt", "text": "Folat (Vitamin B9) trägt zu einer normalen psychischen Funktion bei." }
+  ],
+  "vitamin_b12": [
+    { "cluster": "Nervensystem & Stimmung", "evidence": "gut belegt", "text": "Vitamin B12 trägt zu einer normalen psychischen Funktion und einem normal funktionierenden Nervensystem bei." },
+    { "cluster": "Energie & Konzentration", "evidence": "gut belegt", "text": "Vitamin B12 trägt zu einem normalen Energiestoffwechsel bei." }
+  ],
+  "magnesium": [
+    { "cluster": "Nervensystem & Stimmung", "evidence": "vielversprechend, Forschung läuft", "text": "Magnesium ist an Prozessen der körpereigenen Stressregulation beteiligt; ein Zusammenhang mit Schlaf und Anspannung wird diskutiert, ist bei gesunden Personen ohne Mangel aber nicht durchgängig klinisch belegt." },
+    { "cluster": "Energie & Konzentration", "evidence": "gut belegt", "text": "Magnesium trägt zu einer normalen psychischen Funktion und zur Verringerung von Müdigkeit und Ermüdung bei." }
+  ],
+  "eisen": [
+    { "cluster": "Nervensystem & Stimmung", "evidence": "gut belegt", "text": "Eisen trägt zu einer normalen kognitiven Funktion bei – Eisenmangel ist gut mit Konzentrationsschwäche und Erschöpfung assoziiert, da Eisen für den Sauerstofftransport zum Gehirn wichtig ist." },
+    { "cluster": "Energie & Konzentration", "evidence": "gut belegt", "text": "Eisen trägt zur normalen Bildung von roten Blutkörperchen und Hämoglobin sowie zur Verringerung von Müdigkeit und Ermüdung bei." }
+  ],
+  "vitamin_d": [
+    { "cluster": "Nervensystem & Stimmung", "evidence": "vielversprechend, Forschung läuft", "text": "Vitamin-D-Rezeptoren finden sich auch im Gehirn; ein Zusammenhang mit Stimmung wird diskutiert, die Kausalität ist aber nicht eindeutig geklärt." },
+    { "cluster": "Immunsystem", "evidence": "gut belegt", "text": "Vitamin D trägt zu einer normalen Funktion des Immunsystems bei." }
+  ],
+  "omega3": [
+    { "cluster": "Nervensystem & Stimmung", "evidence": "vielversprechend, Forschung läuft", "text": "Omega-3-Fettsäuren (v. a. DHA) sind struktureller Bestandteil von Nervenzellmembranen im Gehirn; ein zusätzlicher Stimmungseffekt wird erforscht, ist aber noch nicht eindeutig belegt." }
+  ],
+  "vitamin_b1": [
+    { "cluster": "Energie & Konzentration", "evidence": "gut belegt", "text": "Vitamin B1 (Thiamin) trägt zu einem normalen Energiestoffwechsel und einer normalen Funktion des Nervensystems bei." }
+  ],
+  "vitamin_b2": [
+    { "cluster": "Energie & Konzentration", "evidence": "gut belegt", "text": "Vitamin B2 (Riboflavin) trägt zu einem normalen Energiestoffwechsel und zur Verringerung von Müdigkeit und Ermüdung bei." }
+  ],
+  "vitamin_b3": [
+    { "cluster": "Energie & Konzentration", "evidence": "gut belegt", "text": "Vitamin B3 (Niacin) trägt zu einem normalen Energiestoffwechsel und einer normalen psychischen Funktion bei." }
+  ],
+  "vitamin_b5": [
+    { "cluster": "Energie & Konzentration", "evidence": "gut belegt", "text": "Pantothensäure trägt zu einem normalen Energiestoffwechsel und zur Verringerung von Müdigkeit und Ermüdung bei." }
+  ],
+  "vitamin_c": [
+    { "cluster": "Immunsystem", "evidence": "gut belegt", "text": "Vitamin C trägt zu einer normalen Funktion des Immunsystems bei." }
+  ],
+  "zink": [
+    { "cluster": "Immunsystem", "evidence": "gut belegt", "text": "Zink trägt zu einer normalen Funktion des Immunsystems bei." }
+  ],
+  "selen": [
+    { "cluster": "Immunsystem", "evidence": "gut belegt", "text": "Selen trägt zu einer normalen Funktion des Immunsystems bei." }
+  ]
+}

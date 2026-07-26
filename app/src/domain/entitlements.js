@@ -11,7 +11,7 @@ const KEY = 'vm_premium';
 /**
  * Paywall-Modell seit Entscheidung 2 (20.07.2026):
  * Werte eintragen und den aktuellen Wert sehen ist für ALLE Biomarker kostenlos.
- * Das war Voraussetzung dafür, dass VitalMetrics bei Amazon PartnerNet als
+ * Das war Voraussetzung dafür, dass WellANNI bei Amazon PartnerNet als
  * "Zugelassene Mobile Anwendung" durchgehen kann (verlangt freien Zugriff auf
  * alle Amazon-Links für alle Nutzer, siehe affiliateLinks.js).
  * Premium schaltet stattdessen die Analyse-Tiefe frei: Verlaufs-Chart und die
