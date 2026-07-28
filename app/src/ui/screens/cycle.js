@@ -3,6 +3,7 @@ import { cycleSymptomsRepo } from '../../infra/db/repositories/cycleSymptomsRepo
 import { CYCLE_NUTRIENTS, CYCLE_PHASE_INFO, getPhaseForDate } from '../../domain/cycle.js';
 import { SYMPTOM_TAGS, SYMPTOM_LABELS } from '../../domain/cycleSymptoms.js';
 import { showToast } from '../components/toast.js';
+import { navigate } from '../../router.js';
 
 // Modul-Status für den Symptom-Quick-Picker (übersteht Re-Renders innerhalb
 // des Screens, analog _nutrState in nutrition.js). Rein UI-Zustand, nicht
@@ -101,6 +102,18 @@ export function renderCycle(c) {
                : '<div class="cycle-phase-tip">Trage deinen ersten Periodenstart ein. Ab zwei Einträgen wird dein Zyklus automatisch berechnet.</div>'}
     </div>
 
+    <!-- PMS/Praemenopause/Menopause: bewusst frei, sollte von hier aus
+         gut sichtbar sein statt nur im Tools-Hub (Experten-Review 7,
+         26.07.2026 - vorher zwei Klicks tief versteckt). -->
+    <div class="tool-card" id="link-cycle-wellness" style="margin:0 16px 16px">
+      <div class="tool-card-icon">🌸</div>
+      <div class="tool-card-body">
+        <div class="tool-card-title">PMS, Prämenopause & Menopause</div>
+        <div class="tool-card-desc">Mikronährstoffe je Lebensphase, traditionelle Perspektiven – reiner Lerninhalt, kostenlos</div>
+      </div>
+      <div class="tool-card-arrow">›</div>
+    </div>
+
     <!-- Statistik -->
     <div class="cycle-section">
       <div class="cycle-stats-row">
@@ -176,6 +189,8 @@ export function renderCycle(c) {
       ${startsList}
     </div>` : ''}
   </div>`;
+
+  c.querySelector('#link-cycle-wellness').addEventListener('click', () => navigate('cycle_wellness'));
 
   c.querySelector('#btn-log-period').addEventListener('click', () => {
     const dateStr = c.querySelector('#inp-period-start').value;

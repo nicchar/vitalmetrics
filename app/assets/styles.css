@@ -590,6 +590,13 @@ ul { list-style: none; }
 }
 .tool-card:hover { border-color: var(--primary); box-shadow: 0 2px 12px rgba(67,160,71,0.1); }
 
+/* Einheitliche Kennzeichnung aller Premium-Karten im Tools-Hub (UX-Review
+   "Experten-Review 7", 26.07.2026) - vorher nur Text "🔒 Premium", ohne
+   erkennbares gemeinsames visuelles Muster. Nur sichtbar, solange kein
+   Premium aktiv ist - fuer Premium-Nutzer sind alle Karten gleich zugaenglich
+   und eine Sonderkennzeichnung waere irrefuehrend. */
+.tool-card-premium { border-left: 4px solid var(--primary); background: var(--primary-light); }
+
 /* ── Fokus-Karte (Erstnutzer-Führung, UX-Review Juli 2026) ── */
 .focus-card {
   background: var(--primary-light); border-radius: var(--radius);

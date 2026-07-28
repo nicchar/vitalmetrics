@@ -45,6 +45,15 @@
         </provider>
     </application>
 
+    <!-- Kamera ist nur fuer den optionalen Barcode-Scan noetig (Lebensmittel
+         lassen sich auch manuell suchen) - ohne dieses Tag wuerde Android aus
+         der CAMERA-Berechtigung automatisch eine PFLICHT-Hardwareanforderung
+         ableiten und alle Geraete ohne Kamera (z.B. manche Tablets) komplett
+         aus dem Play Store filtern. Fund aus Play-Console-Detailansicht,
+         26.07.2026. -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
