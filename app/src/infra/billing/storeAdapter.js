@@ -97,7 +97,7 @@ export const storeAdapter = {
       throw new Error('Store nicht verfügbar (Browser-Modus).');
     }
 
-    const { store, Platform } = window.CdvPurchase;
+    const { store, Platform, ErrorCode } = window.CdvPurchase;
     const productId = plan === 'monthly' ? PRODUCT_IDS.MONTHLY : PRODUCT_IDS.YEARLY;
     const product   = store.get(productId, Platform.GOOGLE_PLAY);
 
@@ -113,7 +113,19 @@ export const storeAdapter = {
       throw new Error(`Kein aktives Angebot für: ${productId}`);
     }
 
-    await store.order(offer);
+    // WICHTIG: store.order() wirft bei Abbruch/Fehler NICHT, sondern löst mit
+    // einem IError-Objekt auf (isError: true, code: ErrorCode.*). Wird dieser
+    // Rückgabewert ignoriert, sieht jeder Abbruch (z.B. Zahl-Dialog ohne Auswahl
+    // verlassen) wie ein erfolgreicher Kauf aus – das war der eigentliche Bug.
+    const result = await store.order(offer);
+    if (result) {
+      if (result.code === ErrorCode.PAYMENT_CANCELLED) {
+        const err = new Error('Kauf abgebrochen.');
+        err.cancelled = true;
+        throw err;
+      }
+      throw new Error(result.message || 'Kauf fehlgeschlagen.');
+    }
   },
 
   /**

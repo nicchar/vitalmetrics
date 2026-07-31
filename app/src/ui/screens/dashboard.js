@@ -49,6 +49,11 @@ export function renderDashboard(container) {
         </div>
         <button class="btn-pdf-export" id="btn-pdf-export" title="Bericht als PDF exportieren">📄 PDF</button>
       </div>
+    </div>
+    <div style="margin-bottom:4px">
+      <input type="text" id="dash-search" class="sport-select"
+        style="width:100%"
+        placeholder="🔍 Wert suchen (z. B. Vitamin D, Eisen) …">
     </div>`;
 
   // Saisonaler Hinweis (Block E) - rein informativ, keine individuelle Bewertung.
@@ -140,9 +145,12 @@ export function renderDashboard(container) {
       html += `<div class="biomarker-card" data-id="${bm.id}" style="border-left: 4px solid ${color}">
         <div class="card-header">
           <span class="card-name">${bm.name}</span>
+          ${bm.description ? `<button class="btn-card-info-toggle" data-id="${bm.id}" type="button" title="Mehr erfahren"
+            style="border:none;background:none;color:var(--text-secondary);font-size:13px;cursor:pointer;padding:0 2px">ℹ️</button>` : ''}
           <span class="access-badge access-${bm.accessTier}">${getAccessTierBadge(bm.accessTier) || ''}</span>
           ${isPremium ? `<span class="status-dot" style="background:${color}"></span>` : ''}
         </div>
+        ${bm.description ? `<div class="card-info-desc" id="card-desc-${bm.id}" style="display:none;font-size:11px;color:var(--text-secondary);margin:2px 0 6px">${bm.description}</div>` : ''}
         <div class="card-value">${valueLabel}</div>
         <div class="card-ref">Ref: ${refLabel}</div>
         ${intakeHtml}
@@ -160,6 +168,23 @@ export function renderDashboard(container) {
 
   container.innerHTML = html;
 
+  // Suche (Review 9, Persona-Fund: 47 Biomarker-Karten ohne Filter waren
+  // schwer zu durchsuchen) - rein clientseitig, filtert nach Kartenname.
+  const dashSearch = container.querySelector('#dash-search');
+  dashSearch?.addEventListener('input', () => {
+    const q = dashSearch.value.trim().toLowerCase();
+    container.querySelectorAll('.category-section').forEach(section => {
+      let sectionHasMatch = false;
+      section.querySelectorAll('.biomarker-card').forEach(card => {
+        const name = card.querySelector('.card-name')?.textContent.toLowerCase() || '';
+        const match = !q || name.includes(q);
+        card.style.display = match ? '' : 'none';
+        if (match) sectionHasMatch = true;
+      });
+      section.style.display = sectionHasMatch ? '' : 'none';
+    });
+  });
+
   // Events
   container.querySelectorAll('.btn-entry').forEach(btn => {
     btn.addEventListener('click', e => { e.stopPropagation(); navigate('entry', btn.dataset.id); });
@@ -169,6 +194,13 @@ export function renderDashboard(container) {
   });
   container.querySelectorAll('.btn-info').forEach(btn => {
     btn.addEventListener('click', e => { e.stopPropagation(); navigate('trend', btn.dataset.id); });
+  });
+  container.querySelectorAll('.btn-card-info-toggle').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const desc = container.querySelector(`#card-desc-${btn.dataset.id}`);
+      if (desc) desc.style.display = desc.style.display === 'none' ? 'block' : 'none';
+    });
   });
   container.querySelectorAll('.biomarker-card').forEach(card => {
     card.addEventListener('click', () => navigate('trend', card.dataset.id));

@@ -97,9 +97,17 @@ export function renderNutrition(c) {
     </div>
 
     <div class="activity-section">
+      <h3>📋 Deine Einträge heute</h3>
+      ${entryList
+        ? `<div class="activity-list">${entryList}</div>`
+        : '<p style="font-size:13px;color:var(--text-secondary)">Noch keine Einträge heute – unten hinzufügen.</p>'}
+    </div>
+
+    <div class="activity-section">
       <h3>➕ Lebensmittel hinzufügen</h3>
 
       ${frequentFoods.length ? `
+      <div style="font-size:11px;color:var(--text-secondary);margin-bottom:6px">🔁 Häufig verwendet (baut sich automatisch aus deinen letzten 30 Tagen auf)</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
         ${frequentFoods.map((f, i) => `
           <button class="quick-add-chip" data-idx="${i}" type="button"
@@ -117,7 +125,7 @@ export function renderNutrition(c) {
             style="position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--text-secondary);font-size:18px;display:none;background:none;border:none;cursor:pointer">✕</button>
         </div>
         <button id="btn-barcode-scan" type="button" title="Barcode scannen"
-          style="flex-shrink:0;padding:0 14px;border:1px solid var(--border);border-radius:8px;background:var(--surface);font-size:18px;cursor:pointer">📷</button>
+          style="flex-shrink:0;display:flex;align-items:center;gap:4px;padding:0 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);font-size:13px;font-weight:600;color:var(--text-secondary);cursor:pointer;white-space:nowrap">📷 Scan</button>
       </div>
 
       <div id="nutr-results" style="margin-bottom:8px"></div>
@@ -153,8 +161,6 @@ export function renderNutrition(c) {
           <button class="btn-primary" id="btn-add-custom" style="flex:2">Hinzufügen</button>
         </div>
       </div>
-
-      ${entryList ? `<div class="activity-list" style="margin-top:14px">${entryList}</div>` : ''}
     </div>
 
     <div class="activity-section">
@@ -223,6 +229,20 @@ export function renderNutrition(c) {
         showToast('Barcode-Scan wird auf diesem Gerät nicht unterstützt');
         return;
       }
+
+      // Laut @capacitor-mlkit/barcode-scanning-Doku laedt Google Play Services
+      // das Scan-Modul auf Android teils erst bei Bedarf nach - vor scan()
+      // pruefen, sonst kann der allererste Scan auf manchen Geraeten ins
+      // Leere laufen. Nur auf Android verfuegbar, daher Feature-Check.
+      if (typeof Scanner.isGoogleBarcodeScannerModuleAvailable === 'function') {
+        const { available } = await Scanner.isGoogleBarcodeScannerModuleAvailable();
+        if (!available) {
+          showToast('Barcode-Scanner wird einmalig vorbereitet – gleich nochmal versuchen …');
+          await Scanner.installGoogleBarcodeScannerModule();
+          return; // Installation laeuft im Hintergrund; Nutzer scannt danach erneut.
+        }
+      }
+
       const { barcodes } = await Scanner.scan({ formats: ['EAN_13', 'EAN_8', 'UPC_A', 'UPC_E'] });
       if (!barcodes || !barcodes.length) return; // Nutzer hat Scan abgebrochen
       const code = barcodes[0].rawValue || barcodes[0].displayValue;

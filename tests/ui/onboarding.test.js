@@ -22,3 +22,49 @@ test('onboarding.js bietet alle 5 Altersgruppen an (inkl. 51-70/70+, QA-Fund Jul
     assert.ok(src.includes(`data-age="${age}"`), `Altersgruppe "${age}" fehlt im Onboarding-Markup`);
   }
 });
+
+/**
+ * Tester-Fund Review 8 (30.07.2026), Befund 3: Erstnutzer:innen fanden die
+ * App ohne jede Einführung schwer verständlich. Fix: neue erste Karte
+ * "Was ist WellANNI?" vor der Datenschutz-Karte.
+ */
+test('onboarding.js: Einführungs-Karte "Was ist WellANNI?" steht vor der Datenschutz-Karte (QA-Fund Review 8)', () => {
+  const src = readFileSync(path.resolve(__dirname, '../../app/src/ui/screens/onboarding.js'), 'utf-8');
+  const idxIntro   = src.indexOf('Was ist WellANNI?');
+  const idxConsent = src.indexOf('Bevor es losgeht');
+  assert.notEqual(idxIntro, -1, 'Einführungs-Karte fehlt');
+  assert.notEqual(idxConsent, -1, 'Datenschutz-Karte fehlt');
+  assert.ok(idxIntro < idxConsent, 'Einführungs-Karte sollte vor der Datenschutz-Karte stehen');
+});
+
+test('onboarding.js: Einführungs-Karte hat keine eigenen Pflichtfelder (darf den "Los geht\'s"-Button nicht blockieren)', () => {
+  const src = readFileSync(path.resolve(__dirname, '../../app/src/ui/screens/onboarding.js'), 'utf-8');
+  // updateDoneButton() darf weiterhin nur von consent-check/sex/age abhängen.
+  const fnMatch = src.match(/function updateDoneButton\(\)[\s\S]*?\n  \}/);
+  assert.ok(fnMatch, 'updateDoneButton() nicht gefunden');
+  assert.ok(/consentChecked|selectedSex|selectedAge/.test(fnMatch[0]));
+  assert.ok(!/intro/i.test(fnMatch[0]), 'Einführungs-Karte sollte den Button-Status nicht beeinflussen');
+});
+
+/**
+ * Review 9 (30.07.2026), Priorisierungsvorschlag Punkt 6: Fortschrittsanzeige
+ * für die 3 Datenerfassungs-Schritte (Einführungskarte zählt laut
+ * Expertenrunde nicht mit, da kein Pflichtfeld).
+ */
+test('onboarding.js: Fortschrittsanzeige "Schritt X von 3" für alle 3 Datenerfassungs-Schritte vorhanden', () => {
+  const src = readFileSync(path.resolve(__dirname, '../../app/src/ui/screens/onboarding.js'), 'utf-8');
+  for (const step of ['SCHRITT 1 VON 3', 'SCHRITT 2 VON 3', 'SCHRITT 3 VON 3']) {
+    assert.ok(src.includes(step), `Fortschrittsanzeige "${step}" fehlt`);
+  }
+  // Reihenfolge: Datenschutz -> Geschlecht -> Alter, jeweils direkt vor der passenden Karte.
+  const idx1 = src.indexOf('SCHRITT 1 VON 3');
+  const idx2 = src.indexOf('SCHRITT 2 VON 3');
+  const idx3 = src.indexOf('SCHRITT 3 VON 3');
+  const idxConsent = src.indexOf('Bevor es losgeht');
+  const idxSex     = src.indexOf('Dein Geschlecht');
+  const idxAge      = src.indexOf('Deine Altersgruppe');
+  assert.ok(idx1 < idxConsent && idx1 > src.indexOf('Was ist WellANNI?'));
+  assert.ok(idx2 < idxSex);
+  assert.ok(idx3 < idxAge);
+  assert.ok(idx1 < idx2 && idx2 < idx3, 'Schritte sollten in aufsteigender Reihenfolge stehen');
+});

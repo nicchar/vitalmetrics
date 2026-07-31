@@ -54,11 +54,13 @@ export const billingService = {
   async purchasePremium(plan = 'yearly') {
     try {
       await storeAdapter.purchase(plan);
-      // Ergebnis kommt asynchron über onPremiumGranted – hier kein return true nötig.
+      // Die finale Freischaltung kommt weiterhin asynchron über onPremiumGranted,
+      // aber storeAdapter.purchase() wirft jetzt zuverlässig, wenn der Kauf
+      // abgebrochen wurde oder fehlgeschlagen ist (siehe storeAdapter.js).
       return { success: true };
     } catch (err) {
       console.error('[Billing] Kauf fehlgeschlagen:', err.message);
-      return { success: false, error: err.message };
+      return { success: false, error: err.message, cancelled: err.cancelled === true };
     }
   },
 

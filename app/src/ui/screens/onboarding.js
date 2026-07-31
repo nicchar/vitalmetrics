@@ -10,6 +10,18 @@ export function renderOnboarding(container) {
       <p class="onboarding-sub">Damit wir dir die richtigen Referenzwerte zeigen können, brauchen wir zwei kurze Angaben.</p>
 
       <div class="onboarding-card">
+        <h2 class="step-label">Was ist WellANNI?</h2>
+        <p class="step-hint">Kurz erklärt, bevor es losgeht:</p>
+        <ul style="margin:8px 0 0;padding-left:20px;font-size:14px;color:var(--text-secondary);line-height:1.6">
+          <li>📝 Trage deine Werte ein – Ernährung, Bewegung, Zyklus und mehr</li>
+          <li>🔍 Sieh deine Einordnung – im Vergleich zu DGE-Referenzwerten (kein Diagnosewert)</li>
+          <li>💡 Bekomme Alltagstipps – z. B. bei niedriger Zufuhr</li>
+          <li>🔒 Alles bleibt auf deinem Gerät – keine Cloud, kein Account nötig</li>
+        </ul>
+      </div>
+
+      <div class="onboarding-card">
+        <div style="font-size:11px;font-weight:700;color:var(--text-secondary);letter-spacing:.03em;margin-bottom:2px">SCHRITT 1 VON 3</div>
         <h2 class="step-label">Bevor es losgeht</h2>
         <p class="step-hint">Alle deine Werte bleiben ausschließlich auf deinem Gerät – es gibt keinen Server und keine Cloud. Wenn du später die optionale tägliche Erinnerung aktivierst, wird diese ebenfalls rein lokal über dein Gerät geplant.</p>
         <label style="display:flex;align-items:flex-start;gap:10px;font-size:14px;margin-top:8px">
@@ -19,6 +31,7 @@ export function renderOnboarding(container) {
       </div>
 
       <div class="onboarding-card">
+        <div style="font-size:11px;font-weight:700;color:var(--text-secondary);letter-spacing:.03em;margin-bottom:2px">SCHRITT 2 VON 3</div>
         <h2 class="step-label">Dein Geschlecht</h2>
         <p class="step-hint">Die DGE-Referenzwerte unterscheiden sich zwischen Männern und Frauen – vor allem bei Eisen und Zink.</p>
         <div class="sex-buttons">
@@ -29,6 +42,7 @@ export function renderOnboarding(container) {
       </div>
 
       <div class="onboarding-card">
+        <div style="font-size:11px;font-weight:700;color:var(--text-secondary);letter-spacing:.03em;margin-bottom:2px">SCHRITT 3 VON 3</div>
         <h2 class="step-label">Deine Altersgruppe</h2>
         <p class="step-hint">Die DGE-Referenzwerte unterscheiden sich auch nach Alter – ab 51 z. B. bei Vitamin D und einigen B-Vitaminen.</p>
         <div class="age-buttons">

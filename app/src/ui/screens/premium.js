@@ -44,6 +44,7 @@ export function renderPremium(container) {
 
            <p class="restore-text">
              <button class="btn-link" id="btn-restore">Kauf wiederherstellen</button>
+             <br><span style="font-size:11px;color:var(--text-secondary)">Schon auf einem anderen Gerät gekauft? Hier ohne erneute Zahlung freischalten.</span>
            </p>`
       }
 
@@ -101,8 +102,12 @@ export function renderPremium(container) {
     const result = await billingService.purchasePremium(selectedPlan);
 
     if (!result.success) {
-      // Fehler anzeigen und Button zurücksetzen
-      showToast(`Fehler: ${result.error ?? 'Kauf konnte nicht abgeschlossen werden.'}`);
+      // Abbruch (Zahl-Dialog verlassen) neutral melden, echten Fehler als Fehler.
+      showToast(
+        result.cancelled
+          ? 'Kauf abgebrochen.'
+          : `Fehler: ${result.error ?? 'Kauf konnte nicht abgeschlossen werden.'}`
+      );
       btnPurchase.disabled = false;
       btnPurchase.textContent = 'Premium freischalten';
       return;
