@@ -68,3 +68,22 @@ test('onboarding.js: Fortschrittsanzeige "Schritt X von 3" für alle 3 Datenerfa
   assert.ok(idx3 < idxAge);
   assert.ok(idx1 < idx2 && idx2 < idx3, 'Schritte sollten in aufsteigender Reihenfolge stehen');
 });
+
+/**
+ * Tester-Feedback (31.07.2026): Die Einführungskarte war zu oberflächlich
+ * ("Trage deine Werte ein" - welche Werte?). Fix: konkrete Beispiel-Nährstoffe
+ * nennen und in einfacher Sprache erklären, damit auch Einsteiger:innen ohne
+ * Tracking-Vorerfahrung (z. B. Teenager oder Erstnutzer:innen 70+) sofort
+ * verstehen, worum es in der App geht.
+ */
+test('onboarding.js: Einführungs-Karte nennt konkrete Beispiel-Nährstoffe statt nur "deine Werte"', () => {
+  const src = readFileSync(path.resolve(__dirname, '../../app/src/ui/screens/onboarding.js'), 'utf-8');
+  const idxIntro = src.indexOf('Was ist WellANNI?');
+  const idxConsentCard = src.indexOf('Bevor es losgeht');
+  const introBlock = src.slice(idxIntro, idxConsentCard);
+  for (const example of ['Eisen', 'Vitamin D', 'Magnesium']) {
+    assert.ok(introBlock.includes(example), `Beispiel-Nährstoff "${example}" fehlt in der Einführungskarte`);
+  }
+  assert.ok(introBlock.includes('DGE'), 'Bezug zu den DGE-Empfehlungen sollte weiterhin erklärt werden');
+  assert.ok(!/Diagnose(?!wert)/.test(introBlock), 'Wellness-Sprache: keine Diagnose-Formulierungen (siehe healthClaims.js)');
+});
