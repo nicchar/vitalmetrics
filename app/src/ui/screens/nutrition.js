@@ -3,6 +3,7 @@ import { profileRepo } from '../../infra/db/repositories/profileRepo.js';
 import { nutritionRepo } from '../../infra/db/repositories/nutritionRepo.js';
 import { getDGERef } from '../../domain/nutrition.js';
 import { searchOpenFoodFacts, fetchProductByBarcode } from '../../infra/external/openFoodFacts.js';
+import { rankFoodMatches } from '../../domain/foodSearch.js';
 import { showToast } from '../components/toast.js';
 
 // Modul-Status für die Ernährungssuche (übersteht Re-Renders innerhalb des Screens)
@@ -188,10 +189,10 @@ export function renderNutrition(c) {
   const barcodeBtn   = c.querySelector('#btn-barcode-scan');
 
   function localSearch(query) {
-    const q = query.toLowerCase();
-    const results = foodDb.filter(f =>
-      f.name.toLowerCase().includes(q) || f.id.includes(q)
-    ).slice(0, 12).map(f => ({ ...f, source: f.source || 'local' }));
+    // Relevanz-Ranking statt reiner Datenbank-Reihenfolge - siehe domain/foodSearch.js
+    // (Tester-Fund 31.07.2026: "Milch" fand nur "Ananasringe im Milchbackteig" & Co.).
+    const results = rankFoodMatches(query, foodDb, 12)
+      .map(f => ({ ...f, source: f.source || 'local' }));
     showResults(results, true);
   }
 
