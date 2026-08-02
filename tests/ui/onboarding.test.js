@@ -87,3 +87,20 @@ test('onboarding.js: Einführungs-Karte nennt konkrete Beispiel-Nährstoffe stat
   assert.ok(introBlock.includes('DGE'), 'Bezug zu den DGE-Empfehlungen sollte weiterhin erklärt werden');
   assert.ok(!/Diagnose(?!wert)/.test(introBlock), 'Wellness-Sprache: keine Diagnose-Formulierungen (siehe healthClaims.js)');
 });
+
+/**
+ * Nutzer-Korrektur (31.07.2026): Kernidee der App war in Marketing-/Onboarding-
+ * Texten unklar - es geht nicht ums Eintragen von Vitaminwerten, sondern ums
+ * Tracken der Ernährung, woraus die App die Nährstoffzufuhr berechnet. Ziel:
+ * verstehen, ob man genug bekommt, ob Supplements sinnvoll wären, und was die
+ * Nährstoffe im Körper bewirken.
+ */
+test('onboarding.js: Einführungs-Karte stellt Ernährungs-Tracking (nicht Werte-Eingabe) als Mechanismus dar und erwähnt Supplements', () => {
+  const src = readFileSync(path.resolve(__dirname, '../../app/src/ui/screens/onboarding.js'), 'utf-8');
+  const idxIntro = src.indexOf('Was ist WellANNI?');
+  const idxConsentCard = src.indexOf('Bevor es losgeht');
+  const introBlock = src.slice(idxIntro, idxConsentCard);
+  assert.ok(/trackt nicht die Nährstoffe direkt, sondern\s*\n?\s*deine Ernährung/.test(introBlock),
+    'Sollte klarstellen, dass Ernährung (nicht Nährstoffwerte direkt) getrackt wird');
+  assert.ok(/Supplement/i.test(introBlock), 'Sollte Supplements als möglichen Alltagstipp erwähnen');
+});

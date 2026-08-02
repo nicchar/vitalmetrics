@@ -14,14 +14,16 @@ export function renderOnboarding(container) {
         <p class="step-hint">Kurz erklärt, bevor es losgeht:</p>
         <p style="font-size:14px;color:var(--text-secondary);line-height:1.6;margin:0 0 10px">
           Dein Körper braucht täglich bestimmte Vitamine und Mineralstoffe, zum Beispiel Eisen, Vitamin D, Magnesium
-          oder Calcium – man nennt sie auch Nährstoffe. Bekommst du davon zu wenig, kann das z. B. zu Müdigkeit oder
-          schlechter Konzentration beitragen. WellANNI hilft dir herauszufinden, ob du gut versorgt bist – ganz ohne
-          Vorwissen, wie ein einfaches Tagebuch fürs Essen.
+          oder Calcium – man nennt sie auch Nährstoffe. Sie stecken hinter vielen Dingen, die du im Alltag spürst:
+          Energie, Konzentration, ein starkes Immunsystem. WellANNI trackt nicht die Nährstoffe direkt, sondern
+          deine Ernährung – und rechnet daraus aus, wie gut das deinen Bedarf deckt. So bekommst du ein Gefühl
+          dafür, ob du genug bekommst oder ob ein Supplement sinnvoll sein könnte. Ganz ohne Vorwissen, wie ein
+          einfaches Tagebuch fürs Essen.
         </p>
         <ul style="margin:8px 0 0;padding-left:20px;font-size:14px;color:var(--text-secondary);line-height:1.6">
           <li>📝 Trage kurz ein, was du isst, wie du dich bewegst oder – falls relevant – deinen Zyklus. Dauert nur wenige Sekunden.</li>
-          <li>🔍 Die App vergleicht das mit den offiziellen Empfehlungen der Deutschen Gesellschaft für Ernährung (DGE) und zeigt dir, wo du gut versorgt bist und wo vielleicht noch etwas fehlt (kein Diagnosewert, nur zur Orientierung).</li>
-          <li>💡 Bei niedrigen Werten bekommst du einfache Alltagstipps, z. B. welche Lebensmittel helfen können.</li>
+          <li>🔍 Die App vergleicht deine Zufuhr mit den offiziellen Empfehlungen der Deutschen Gesellschaft für Ernährung (DGE) und zeigt dir, wo du gut versorgt bist und wo vielleicht noch etwas fehlt (kein Diagnosewert, nur zur Orientierung).</li>
+          <li>💡 Bei niedriger Zufuhr bekommst du Alltagstipps – z. B. welche Lebensmittel helfen oder ob ein Supplement eine Option wäre.</li>
           <li>🔒 Alles bleibt auf deinem Gerät – keine Cloud, kein Account, niemand sieht deine Daten außer dir.</li>
         </ul>
       </div>
