@@ -94,6 +94,23 @@ export function filterByIntolerances(recipes, activeIntolerances = []) {
 }
 
 /**
+ * Liefert den geeigneten Rezept-Pool je Mahlzeit (Kategorie- und
+ * Unverträglichkeits-gefiltert) - dieselbe Filterlogik wie in generatePlan(),
+ * aber ohne zu würfeln. Von generatePlan() selbst UND von der UI genutzt
+ * (Rezept-Tausch-Auswahl, siehe mealPlan.js "🔄 Tauschen"), damit beide
+ * garantiert denselben Pool sehen und kein zweites Mal gepflegt werden muss.
+ */
+export function getEligiblePool(recipes, category, activeIntolerances = []) {
+  const withoutIntolerances = filterByIntolerances(recipes, activeIntolerances);
+  const pool = category === 'gemischt' ? withoutIntolerances : withoutIntolerances.filter(r => r.category === category);
+  return {
+    breakfast: pool.filter(r => r.mealType === 'breakfast'),
+    lunch: pool.filter(r => r.mealType === 'lunch'),
+    dinner: pool.filter(r => r.mealType === 'lunch'), // Abendessen nutzt denselben Pool wie Mittag
+  };
+}
+
+/**
  * Erzeugt einen neuen 7-Tage-Plan. `category` ist 'vegetarisch' | 'fleisch_fisch'
  * | 'keto' | 'gemischt'. Bei 'gemischt' wird über alle Kategorien gestreut.
  *
@@ -104,15 +121,18 @@ export function filterByIntolerances(recipes, activeIntolerances = []) {
  *
  * `activeIntolerances` (optional): siehe filterByIntolerances() - wird VOR
  * der Kategorie-/Mahlzeit-Filterung angewendet.
+ *
+ * `pins` (optional, Feature-Wunsch 03.08.2026: "zum Frühstück immer das
+ * Porridge"): { breakfast?: recipeId, lunch?: recipeId, dinner?: recipeId }.
+ * Ist für eine Mahlzeit ein Pin gesetzt UND das Rezept existiert noch in
+ * `recipes`, wird an ALLEN 7 Tagen dieses Rezept eingeplant statt gewürfelt -
+ * überlebt also auch "Neu generieren". Existiert das gepinnte Rezept nicht
+ * mehr (z.B. nach einer Rezept-Datenbank-Änderung), fällt die Mahlzeit
+ * defensiv auf normales Würfeln zurück statt eine Lücke zu erzeugen.
  */
-export function generatePlan(recipes, category, weekStartIso, underCoveredTags = [], activeIntolerances = []) {
-  const withoutIntolerances = filterByIntolerances(recipes, activeIntolerances);
-  const pool = category === 'gemischt' ? withoutIntolerances : withoutIntolerances.filter(r => r.category === category);
-  const byMeal = {
-    breakfast: pool.filter(r => r.mealType === 'breakfast'),
-    lunch: pool.filter(r => r.mealType === 'lunch'),
-    dinner: pool.filter(r => r.mealType === 'lunch'), // Abendessen nutzt denselben Pool wie Mittag
-  };
+export function generatePlan(recipes, category, weekStartIso, underCoveredTags = [], activeIntolerances = [], pins = {}) {
+  const byMeal = getEligiblePool(recipes, category, activeIntolerances);
+  const recipesById = Object.fromEntries(recipes.map(r => [r.id, r]));
 
   const usedRecently = { breakfast: [], lunch: [], dinner: [] };
 
@@ -134,6 +154,12 @@ export function generatePlan(recipes, category, weekStartIso, underCoveredTags =
     return choice.id;
   }
 
+  function pinnedOrPicked(mealType) {
+    const pinnedId = pins[mealType];
+    if (pinnedId && recipesById[pinnedId]) return pinnedId;
+    return pick(mealType);
+  }
+
   const start = new Date(weekStartIso);
   const days = [];
   for (let i = 0; i < 7; i++) {
@@ -142,12 +168,48 @@ export function generatePlan(recipes, category, weekStartIso, underCoveredTags =
     days.push({
       date: d.toISOString().slice(0, 10),
       weekday: WEEKDAYS[i],
-      breakfast: pick('breakfast'),
-      lunch: pick('lunch'),
-      dinner: pick('dinner'),
+      breakfast: pinnedOrPicked('breakfast'),
+      lunch: pinnedOrPicked('lunch'),
+      dinner: pinnedOrPicked('dinner'),
     });
   }
-  return { weekStart: weekStartIso, category, days };
+  return { weekStart: weekStartIso, category, pins: { ...pins }, days };
+}
+
+/**
+ * Tauscht die Mahlzeit EINES einzelnen Tages gegen ein anderes Rezept aus
+ * (Feature-Wunsch 03.08.2026: "keine Forelle mag und sich dann ein anderes
+ * Rezept aussucht") - reine, unveraenderliche Funktion, betrifft nur diesen
+ * einen Tag/diese eine Mahlzeit, kein Einfluss auf Pins oder andere Tage.
+ */
+export function setDaySlot(plan, dateIso, mealType, recipeId) {
+  return {
+    ...plan,
+    days: plan.days.map(day => (day.date === dateIso ? { ...day, [mealType]: recipeId } : day)),
+  };
+}
+
+/**
+ * Pinnt (oder loest einen Pin) fuer eine Mahlzeit-Kategorie ueber die GANZE
+ * Woche (Feature-Wunsch 03.08.2026: "zum Fruehstueck immer das Porridge").
+ * Beim Pinnen wird das gewaehlte Rezept sofort in ALLE 7 Tage des aktuell
+ * angezeigten Plans eingetragen (nicht erst beim naechsten "Neu generieren")
+ * und bleibt dank generatePlan()'s pins-Parameter auch danach bestehen.
+ * Beim Loesen (recipeId = null) wird nur der Pin selbst entfernt - die
+ * aktuell eingetragenen Tage bleiben unveraendert, erst eine kuenftige
+ * Neugenerierung wuerfelt diese Mahlzeit wieder frei.
+ */
+export function setPin(plan, mealType, recipeId) {
+  const pins = { ...(plan.pins || {}) };
+  if (recipeId) {
+    pins[mealType] = recipeId;
+  } else {
+    delete pins[mealType];
+  }
+  const days = recipeId
+    ? plan.days.map(day => ({ ...day, [mealType]: recipeId }))
+    : plan.days;
+  return { ...plan, pins, days };
 }
 
 /**

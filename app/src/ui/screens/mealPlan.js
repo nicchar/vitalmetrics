@@ -6,10 +6,13 @@ import { getDGERef } from '../../domain/nutrition.js';
 import {
   generatePlan, resolvePlan, buildShoppingList, scaleIngredients,
   getUnderCoveredTags, getDayTagCoverage, INTOLERANCE_LABELS,
+  getEligiblePool, setDaySlot, setPin,
 } from '../../domain/mealPlan.js';
 import { recipeLogButtonHtml, wireRecipeLogButtons } from '../components/recipeLogControl.js';
+import { showToast } from '../components/toast.js';
 
 const CATEGORY_LABEL = { vegetarisch: '🥬 Vegetarisch', fleisch_fisch: '🍗 Fleisch/Fisch', keto: '🥑 Keto', gemischt: '🍽️ Gemischt' };
+const MEAL_LABEL = { breakfast: 'Frühstück', lunch: 'Mittag', dinner: 'Abend' };
 
 function mondayOf(date) {
   const d = new Date(date);
@@ -52,14 +55,22 @@ function renderScreen(container, recipes, plan, isStale, thisMonday) {
   const dgeRef = getDGERef(profile.ageGroup, profile.sex);
   const underCoveredTags = getUnderCoveredTags(nutritionRepo.getLast7DaysTotals(), dgeRef);
 
+  // Tausch/Pin-Feature (03.08.2026): derselbe gefilterte Pool wie beim
+  // Generieren, damit die "Anderes Rezept"-Auswahl garantiert zu Kategorie
+  // und Unverträglichkeiten passt. Nutzt bewusst NUR die 302 App-Rezepte,
+  // keine eigenen Rezepte (Punkt 2, Nicole: "erstmal nur persönliche
+  // Sammlung, nicht meal-plan-integriert").
+  const activeIntolerances = profile.intolerances || [];
+  const pool = plan ? getEligiblePool(recipes, plan.category, activeIntolerances) : null;
+
   const daysHtml = resolved ? resolved.days.map(day => {
     const dayTags = getDayTagCoverage(day);
     return `
     <div class="mealplan-day">
       <div class="mealplan-day-header">${day.weekday} <span class="mealplan-date">${formatDate(day.date)}</span></div>
-      ${mealRow('🌅 Frühstück', day.breakfastRecipe, portions)}
-      ${mealRow('🍲 Mittag', day.lunchRecipe, portions)}
-      ${mealRow('🌙 Abend', day.dinnerRecipe, portions)}
+      ${mealRow('🌅 Frühstück', 'breakfast', day.date, day.breakfastRecipe, portions, resolved, pool)}
+      ${mealRow('🍲 Mittag', 'lunch', day.date, day.lunchRecipe, portions, resolved, pool)}
+      ${mealRow('🌙 Abend', 'dinner', day.date, day.dinnerRecipe, portions, resolved, pool)}
       ${dayTags.length ? `<p class="mealplan-day-tags">🏷️ Diese Mahlzeiten decken laut Rezept-Tags: ${dayTags.map(bmName).join(', ')}</p>` : ''}
     </div>`;
   }).join('') : '';
@@ -115,8 +126,12 @@ function renderScreen(container, recipes, plan, isStale, thisMonday) {
 
   container.querySelector('#btn-generate-plan').addEventListener('click', () => {
     const category = container.querySelector('#mealplan-category').value;
-    const activeIntolerances = [...container.querySelectorAll('.mealplan-intolerance:checked')].map(el => el.value);
-    const newPlan = { ...generatePlan(recipes, category, thisMonday, underCoveredTags, activeIntolerances), portions };
+    const activeIntolerancesNow = [...container.querySelectorAll('.mealplan-intolerance:checked')].map(el => el.value);
+    // Bestehende Pins ("immer das Porridge") ueberleben bewusst ein
+    // "Neu generieren" - generatePlan() prueft defensiv, ob das gepinnte
+    // Rezept ueberhaupt noch existiert (siehe domain/mealPlan.js).
+    const existingPins = plan?.pins || {};
+    const newPlan = { ...generatePlan(recipes, category, thisMonday, underCoveredTags, activeIntolerancesNow, existingPins), portions };
     mealPlanRepo.save(newPlan);
     renderScreen(container, recipes, newPlan, false, thisMonday);
   });
@@ -132,12 +147,37 @@ function renderScreen(container, recipes, plan, isStale, thisMonday) {
     if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
   });
 
+  // ── Rezept tauschen (nur dieser eine Tag) ────────────────────────────────
+  container.querySelectorAll('.mealplan-swap-select').forEach(sel => {
+    sel.addEventListener('change', () => {
+      const newRecipeId = sel.value;
+      if (!newRecipeId) return; // Platzhalter-Option gewählt
+      const newPlan = setDaySlot(plan, sel.dataset.date, sel.dataset.mealtype, newRecipeId);
+      mealPlanRepo.save(newPlan);
+      renderScreen(container, recipes, newPlan, isStale, thisMonday);
+    });
+  });
+
+  // ── Mahlzeit fest einplanen/lösen (gilt für die ganze Woche) ─────────────
+  container.querySelectorAll('.mealplan-pin-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mealType = btn.dataset.mealtype;
+      const alreadyPinned = plan.pins?.[mealType] === btn.dataset.recipeId;
+      const newPlan = setPin(plan, mealType, alreadyPinned ? null : btn.dataset.recipeId);
+      mealPlanRepo.save(newPlan);
+      showToast(alreadyPinned
+        ? 'Mahlzeit wird beim nächsten "Neu generieren" wieder frei gewählt'
+        : `📌 Ab jetzt immer diese Mahlzeit für ${MEAL_LABEL[mealType]}`);
+      renderScreen(container, recipes, newPlan, isStale, thisMonday);
+    });
+  });
+
   // ── "Rezept gekocht" -> Ernährungstagebuch (Block F Phase 4b, seit
   // 25.07.2026 als geteilte Komponente auch im Trend-Screen genutzt) ────────
   wireRecipeLogButtons(container, recipes);
 }
 
-function mealRow(label, recipe, portions) {
+function mealRow(label, mealType, dateIso, recipe, portions, plan, pool) {
   if (!recipe) return `<div class="mealplan-meal"><span class="mealplan-meal-label">${label}</span><span class="mealplan-meal-empty">– keine Rezepte in dieser Kategorie –</span></div>`;
   // Bugfix: vorher navigierte ein Klick auf den Titel faelschlich zum
   // Trend-Screen eines Biomarkers (data-tag war eine Biomarker-ID, keine
@@ -148,6 +188,13 @@ function mealRow(label, recipe, portions) {
   // gewaehlte Personenzahl skaliert (nur die Einkaufsliste war es) - jetzt
   // zeigt die Detailansicht dieselben skalierten Mengen wie die Einkaufsliste.
   const scaled = scaleIngredients(recipe.ingredients, recipe.servings, portions);
+
+  // Tausch/Pin (Feature-Wunsch 03.08.2026): "keine Forelle mag" -> Tauschen,
+  // "immer das Porridge" -> Pin ueber die ganze Woche (siehe setDaySlot()/
+  // setPin() in domain/mealPlan.js).
+  const isPinned = plan.pins?.[mealType] === recipe.id;
+  const alternatives = (pool?.[mealType] || []).filter(r => r.id !== recipe.id);
+
   return `<div class="mealplan-meal">
     <div class="mealplan-meal-row">
       <span class="mealplan-meal-label">${label}</span>
@@ -158,6 +205,18 @@ function mealRow(label, recipe, portions) {
       <summary>Zutaten &amp; Zubereitung (für ${portions} Person${portions !== 1 ? 'en' : ''})</summary>
       <ul class="recipe-ingredients">${scaled.map(i => `<li>${i}</li>`).join('')}</ul>
       <ol class="recipe-steps">${(recipe.steps || []).map(s => `<li>${s}</li>`).join('')}</ol>
+      <div style="display:flex;gap:6px;align-items:center;margin-top:10px;flex-wrap:wrap">
+        <select class="mealplan-swap-select" data-date="${dateIso}" data-mealtype="${mealType}" style="flex:1;min-width:140px;padding:6px;border:1px solid var(--border);border-radius:6px;font-size:12px">
+          <option value="">🔄 Anderes Rezept wählen…</option>
+          ${alternatives.map(r => `<option value="${r.id}">${r.title}</option>`).join('')}
+        </select>
+        <button type="button" class="mealplan-pin-btn${isPinned ? ' active' : ''}" data-mealtype="${mealType}" data-recipe-id="${recipe.id}"
+          style="padding:7px 10px;border:1px solid var(--border);border-radius:6px;
+                 background:${isPinned ? 'var(--primary)' : 'var(--surface)'};
+                 color:${isPinned ? '#fff' : 'inherit'};font-size:12px;cursor:pointer;white-space:nowrap">
+          ${isPinned ? '📌 Fest eingeplant' : '📌 Immer diese Mahlzeit'}
+        </button>
+      </div>
       ${recipeLogButtonHtml(recipe)}
     </details>
   </div>`;

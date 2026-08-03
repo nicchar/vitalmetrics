@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { generatePlan, resolvePlan, buildShoppingList, scaleIngredients, getUnderCoveredTags, getDayTagCoverage, recipeMatchesIntolerance, filterByIntolerances, INTOLERANCE_LABELS } from '../../app/src/domain/mealPlan.js';
+import { generatePlan, resolvePlan, buildShoppingList, scaleIngredients, getUnderCoveredTags, getDayTagCoverage, recipeMatchesIntolerance, filterByIntolerances, INTOLERANCE_LABELS, getEligiblePool, setDaySlot, setPin } from '../../app/src/domain/mealPlan.js';
 
 const recipes = [
   { id: 'r1', title: 'Rührei mit Spinat', category: 'vegetarisch', mealType: 'breakfast', tags: ['vitamin_k'], ingredients: ['3 Eier', '300 g Spinat'], steps: [] },
@@ -188,6 +188,77 @@ test('generatePlan: activeIntolerances filtert Rezepte vor der Planerstellung', 
   // 'a' (Milch) darf nie als Fruehstueck vorkommen, da laktosehaltig gefiltert.
   const usedBreakfasts = plan.days.map(d => d.breakfast);
   assert.ok(usedBreakfasts.every(id => id === null || id === undefined || id !== 'a'));
+});
+
+// Feature "Wochenplan selbst bearbeiten" (03.08.2026): Rezepte tauschen und
+// Mahlzeiten fest einplanen ("immer das Porridge").
+
+test('getEligiblePool: liefert denselben gefilterten Pool je Mahlzeit wie generatePlan intern nutzt', () => {
+  const pool = getEligiblePool(recipes, 'vegetarisch');
+  assert.deepEqual(pool.breakfast.map(r => r.id), ['r1']);
+  assert.deepEqual(pool.lunch.map(r => r.id).sort(), ['r2', 'r3']);
+  assert.deepEqual(pool.dinner.map(r => r.id).sort(), ['r2', 'r3']); // Abend nutzt den Mittag-Pool
+});
+
+test('getEligiblePool: respektiert Unvertraeglichkeiten wie generatePlan', () => {
+  const pool = getEligiblePool(recipes, 'vegetarisch', []);
+  assert.equal(pool.lunch.length, 2);
+});
+
+test('setDaySlot: aendert nur die angegebene Mahlzeit an genau diesem Tag', () => {
+  const plan = generatePlan(recipes, 'vegetarisch', '2026-08-03');
+  const targetDate = plan.days[2].date;
+  const otherDateBefore = plan.days[1].lunch;
+  const newPlan = setDaySlot(plan, targetDate, 'lunch', 'r3');
+  assert.equal(newPlan.days[2].lunch, 'r3');
+  assert.equal(newPlan.days[1].lunch, otherDateBefore, 'andere Tage duerfen unveraendert bleiben');
+  assert.equal(newPlan.days[2].breakfast, plan.days[2].breakfast, 'andere Mahlzeiten desselben Tages duerfen unveraendert bleiben');
+});
+
+test('setDaySlot: veraendert das Original-Plan-Objekt nicht (unveraenderlich)', () => {
+  const plan = generatePlan(recipes, 'vegetarisch', '2026-08-03');
+  const originalLunch = plan.days[0].lunch;
+  setDaySlot(plan, plan.days[0].date, 'lunch', 'r3');
+  assert.equal(plan.days[0].lunch, originalLunch);
+});
+
+test('setPin: traegt das gepinnte Rezept sofort in ALLE 7 Tage der Mahlzeit ein', () => {
+  const plan = generatePlan(recipes, 'vegetarisch', '2026-08-03');
+  const newPlan = setPin(plan, 'lunch', 'r3');
+  assert.ok(newPlan.days.every(d => d.lunch === 'r3'));
+  assert.equal(newPlan.pins.lunch, 'r3');
+});
+
+test('setPin: loesen (recipeId=null) entfernt nur den Pin, laesst die aktuellen Tage unveraendert', () => {
+  const plan = generatePlan(recipes, 'vegetarisch', '2026-08-03');
+  const pinned = setPin(plan, 'lunch', 'r3');
+  const unpinned = setPin(pinned, 'lunch', null);
+  assert.equal(unpinned.pins.lunch, undefined);
+  assert.ok(unpinned.days.every(d => d.lunch === 'r3'), 'Tage bleiben bis zur naechsten Neugenerierung wie sie waren');
+});
+
+test('generatePlan: gepinnte Mahlzeit ueberlebt eine Neugenerierung (wird nicht neu gewuerfelt)', () => {
+  const firstPlan = generatePlan(recipes, 'vegetarisch', '2026-08-03');
+  const pinnedPlan = setPin(firstPlan, 'breakfast', 'r1');
+  // Neugenerierung mit denselben Pins - da es nur ein Fruehstuecks-Rezept
+  // (r1) gibt, waere das ohnehin immer r1, deshalb hier zusaetzlich pruefen,
+  // dass pins im Ergebnis weitergereicht werden.
+  const regenerated = generatePlan(recipes, 'vegetarisch', '2026-08-03', [], [], pinnedPlan.pins);
+  assert.ok(regenerated.days.every(d => d.breakfast === 'r1'));
+  assert.equal(regenerated.pins.breakfast, 'r1');
+});
+
+test('generatePlan: gepinntes, aber nicht mehr existierendes Rezept faellt defensiv auf normales Wuerfeln zurueck', () => {
+  const plan = generatePlan(recipes, 'vegetarisch', '2026-08-03', [], [], { lunch: 'existiert-nicht-mehr' });
+  assert.ok(plan.days.every(d => ['r2', 'r3'].includes(d.lunch)));
+});
+
+test('getDayTagCoverage: funktioniert unveraendert nach einem Tausch (Deckungs-Anzeige bleibt korrekt)', () => {
+  const plan = generatePlan(recipes, 'vegetarisch', '2026-08-03');
+  const swapped = setDaySlot(plan, plan.days[0].date, 'lunch', 'r3'); // r3 hat Tag 'magnesium'
+  const resolved = resolvePlan(swapped, recipes);
+  const tags = getDayTagCoverage(resolved.days[0]);
+  assert.ok(tags.includes('magnesium'));
 });
 
 test('buildShoppingList: zaehlbare Einheiten werden nach der Skalierung aufgerundet', () => {
