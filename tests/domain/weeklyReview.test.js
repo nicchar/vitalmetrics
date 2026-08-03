@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildWeeklyReview, FREE_INTAKE_KEYS } from '../../app/src/domain/weeklyReview.js';
+import { buildWeeklyReview, buildWeeklyRecommendations, FREE_INTAKE_KEYS } from '../../app/src/domain/weeklyReview.js';
 
 function day(date, steps, activities = []) {
   return { date, day: 'Mo', steps, totalCalories: activities.reduce((s,a)=>s+(a.calories||0),0), activities, isToday: false };
@@ -121,4 +121,58 @@ test('buildWeeklyReview: hasPreviousData ist false wenn die Vorwoche 0 geloggte 
   const review = buildWeeklyReview(activityDays, nutritionDays, { streak: 0, log: [] }, weeklyTotals);
   assert.equal(review.nutritionTrend.hasPreviousData, false);
   assert.equal(review.nutritionTrend.deltaKcalPct, null);
+});
+
+// Automatischer Wochenrückblick mit Empfehlungen (Feature-Wunsch 03.08.2026)
+
+const dgeRef = { vit_a: { label: 'Vitamin A', unit: 'µg', ref: 800 }, eisen: { label: 'Eisen', unit: 'mg', ref: 14 } };
+const biomarkers = [
+  { intakeKey: 'vit_a', foods: ['Karotten', 'Süßkartoffeln', 'Spinat', 'Kürbis'] },
+  { intakeKey: 'eisen', foods: ['Linsen', 'Spinat'] },
+];
+
+function weekDay(date, kcal, values = {}) {
+  return { date, kcal, ...values };
+}
+
+test('buildWeeklyRecommendations: keine geloggten Tage -> loggedDays 0, keine Empfehlungen (kein Rauschen)', () => {
+  const weekTotals = Array.from({ length: 7 }, (_, i) => weekDay(`2026-08-0${i + 1}`, 0));
+  const result = buildWeeklyRecommendations(weekTotals, dgeRef, biomarkers);
+  assert.equal(result.loggedDays, 0);
+  assert.deepEqual(result.recommendations, []);
+});
+
+test('buildWeeklyRecommendations: Naehrstoff unter 70% Referenz erzeugt eine Empfehlung mit Lebensmittel-Beispielen', () => {
+  const weekTotals = [
+    weekDay('2026-08-03', 1800, { vit_a: 100, eisen: 14 }), // vit_a stark unter Referenz, eisen genau 100%
+    weekDay('2026-08-04', 1800, { vit_a: 100, eisen: 14 }),
+  ];
+  const result = buildWeeklyRecommendations(weekTotals, dgeRef, biomarkers);
+  assert.equal(result.loggedDays, 2);
+  assert.equal(result.recommendations.length, 1);
+  assert.equal(result.recommendations[0].intakeKey, 'vit_a');
+  assert.equal(result.recommendations[0].label, 'Vitamin A');
+  assert.deepEqual(result.recommendations[0].foods, ['Karotten', 'Süßkartoffeln', 'Spinat']); // max. 3
+});
+
+test('buildWeeklyRecommendations: keine Empfehlung, wenn alle Werte ausreichend gedeckt sind', () => {
+  const weekTotals = [weekDay('2026-08-03', 1800, { vit_a: 800, eisen: 14 })];
+  const result = buildWeeklyRecommendations(weekTotals, dgeRef, biomarkers);
+  assert.deepEqual(result.recommendations, []);
+});
+
+test('buildWeeklyRecommendations: mittelt nur ueber tatsaechlich geloggte Tage (kcal>0), nicht ueber die ganze Woche', () => {
+  const weekTotals = [
+    weekDay('2026-08-03', 1800, { vit_a: 800, eisen: 14 }), // beide gut gedeckt
+    weekDay('2026-08-04', 0, { vit_a: 0, eisen: 0 }),        // nicht geloggt, darf den Schnitt nicht verfaelschen
+  ];
+  const result = buildWeeklyRecommendations(weekTotals, dgeRef, biomarkers);
+  assert.equal(result.loggedDays, 1);
+  assert.deepEqual(result.recommendations, []); // 800/800 & 14/14 = 100%, nicht durch den 0-Tag verwaessert
+});
+
+test('buildWeeklyRecommendations: fehlender Lebensmittel-Katalog-Eintrag liefert leere foods-Liste statt Fehler', () => {
+  const weekTotals = [weekDay('2026-08-03', 1800, { vit_a: 100 })];
+  const result = buildWeeklyRecommendations(weekTotals, dgeRef, []); // kein Katalog
+  assert.equal(result.recommendations[0].foods.length, 0);
 });

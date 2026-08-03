@@ -10,6 +10,8 @@ import { getSeasonalTip } from '../../domain/seasonalTips.js';
 import { getUnderCoveredTags } from '../../domain/mealPlan.js';
 import { getAccessTierBadge } from '../../domain/biomarkerAccess.js';
 import { DISCLAIMER_SHORT, REFERENCE_VALUES_NOTE } from '../../domain/healthClaims.js';
+import { mondayOf, previousMonday } from '../../domain/dateUtils.js';
+import { buildWeeklyRecommendations } from '../../domain/weeklyReview.js';
 import { navigate } from '../../router.js';
 import { exportService } from '../../infra/pdf/exportService.js';
 import { showToast } from '../components/toast.js';
@@ -67,6 +69,33 @@ export function renderDashboard(container) {
     html += `<div class="premium-banner" id="premium-banner">
       <span>⭐ Alle Werte gratis eintragen · <strong>Verlauf & Einordnung mit Premium</strong></span>
       <button class="btn-upgrade-sm" id="btn-upgrade-banner">Upgrade</button>
+    </div>`;
+  }
+
+  // Automatischer Wochenrückblick (Feature-Wunsch 03.08.2026): sobald eine
+  // neue Kalenderwoche begonnen hat, taucht - bewusst als dezenter Banner,
+  // kein Interstitial (siehe Review 10: "Popup-Müdigkeit bewusst vermeiden")
+  // - ein Hinweis auf die abgelaufene Woche auf, inkl. der ersten konkreten
+  // Lebensmittel-Empfehlung. Bleibt sichtbar, bis der Banner angeklickt wird
+  // (dann als "gesehen" markiert) - Teil des Premium-Wochenrückblicks.
+  const thisMonday = mondayOf(new Date());
+  let weeklyRecap = null;
+  if (isPremium && profile.lastWeeklyRecapShown !== thisMonday) {
+    const weekTotals = nutritionRepo.getTotalsForWeek(previousMonday(thisMonday));
+    const recap = buildWeeklyRecommendations(weekTotals, dgeRef, catalog.biomarkers);
+    if (recap.loggedDays > 0) weeklyRecap = recap;
+  }
+  if (weeklyRecap) {
+    const top = weeklyRecap.recommendations.slice(0, 2);
+    html += `<div class="focus-card" id="weekly-recap-banner">
+      <div class="focus-card-icon">🗓️</div>
+      <div class="focus-card-body">
+        <div class="focus-card-title">Dein Wochenrückblick ist da</div>
+        <div class="focus-card-desc">${top.length
+          ? `Niedrigere Zufuhr letzte Woche bei: <strong>${top.map(r => r.label).join(', ')}</strong>${top[0].foods.length ? ` – z. B. ${top[0].foods.join(', ')}` : ''}.`
+          : 'Deine Zufuhr lag letzte Woche bei allen getrackten Nährstoffen im grünen Bereich.'}</div>
+      </div>
+      <div class="tool-card-arrow">›</div>
     </div>`;
   }
 
@@ -209,6 +238,10 @@ export function renderDashboard(container) {
     btn.addEventListener('click', e => { e.stopPropagation(); navigate('premium'); });
   });
   container.querySelector('#focus-card')?.addEventListener('click', () => navigate('mealplan'));
+  container.querySelector('#weekly-recap-banner')?.addEventListener('click', () => {
+    profileRepo.save({ lastWeeklyRecapShown: thisMonday });
+    navigate('weekly_review');
+  });
 
   const pdfBtn = container.querySelector('#btn-pdf-export');
   if (pdfBtn) {

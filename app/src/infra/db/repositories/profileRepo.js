@@ -20,7 +20,12 @@ const defaults = {
   // Alltagsreibung-Review Juli 2026: Unverträglichkeiten für den Wochenplan-
   // Filter (siehe domain/mealPlan.js, filterByIntolerances). Feste Auswahlliste,
   // kein Freitext - gleiches Muster wie medications.
-  intolerances: []
+  intolerances: [],
+  // Feature "Automatischer Wochenrückblick" (03.08.2026): Montag der zuletzt
+  // im Dashboard-Banner angezeigten/angeklickten Kalenderwoche (siehe
+  // domain/dateUtils.js mondayOf()) - verhindert, dass derselbe Rückblick
+  // mehrfach in derselben Woche als "neu" auftaucht. null = noch nie gezeigt.
+  lastWeeklyRecapShown: null,
 };
 
 export const profileRepo = {

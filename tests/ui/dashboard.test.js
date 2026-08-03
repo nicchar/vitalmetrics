@@ -35,3 +35,31 @@ test('dashboard.js: normale Biomarker-Karten zeigen bm.description über einen �
   assert.ok(wiringMatch[0].includes('stopPropagation'),
     'Klick auf ℹ️ darf nicht gleichzeitig zur Trend-Navigation der Karte führen (stopPropagation fehlt)');
 });
+
+/**
+ * Feature "Automatischer Wochenrückblick" (03.08.2026): dezenter Banner statt
+ * Interstitial, sobald eine neue Kalenderwoche begonnen hat. Nur Premium
+ * (Wochenrückblick selbst ist komplett Premium) und nur wenn in der letzten
+ * Woche tatsächlich etwas geloggt wurde (kein Rauschen).
+ */
+test('dashboard.js: Wochenrückblick-Banner erscheint nur für Premium UND wenn letzte Woche etwas geloggt wurde', () => {
+  const idx = src.indexOf('let weeklyRecap = null');
+  const block = src.slice(idx, idx + 400);
+  assert.ok(/if\s*\(\s*isPremium\s*&&\s*profile\.lastWeeklyRecapShown\s*!==\s*thisMonday\s*\)/.test(block));
+  assert.ok(block.includes('recap.loggedDays > 0'), 'Banner sollte nur bei tatsächlich geloggten Tagen erscheinen');
+});
+
+test('dashboard.js: Banner nutzt getTotalsForWeek() für die VORHERIGE Kalenderwoche, nicht das rollierende 7-Tage-Fenster', () => {
+  assert.ok(src.includes('nutritionRepo.getTotalsForWeek(previousMonday(thisMonday))'));
+});
+
+test('dashboard.js: Klick auf den Banner markiert die Woche als gesehen und navigiert zum vollen Wochenrückblick', () => {
+  const idx = src.indexOf("querySelector('#weekly-recap-banner')");
+  const block = src.slice(idx, idx + 250);
+  assert.ok(block.includes('profileRepo.save({ lastWeeklyRecapShown: thisMonday })'));
+  assert.ok(block.includes("navigate('weekly_review')"));
+});
+
+test('dashboard.js: Banner zeigt bei fehlenden Defiziten eine positive Bestätigung statt zu verschwinden', () => {
+  assert.ok(src.includes('im grünen Bereich'));
+});

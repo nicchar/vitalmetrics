@@ -138,6 +138,26 @@ test('getWeeklyTotals: mittelt kcal/Mikronaehrstoffe nur ueber tatsaechlich gelo
   assert.equal(current.vit_d, 6); // (4+8)/2
 });
 
+// Automatischer Wochenrückblick (03.08.2026): feste Kalenderwoche statt
+// rollierendem Fenster relativ zu "heute".
+
+test('getTotalsForWeek: liefert genau 7 Tage ab dem angegebenen Montag, aufsteigend', () => {
+  const week = nutritionRepo.getTotalsForWeek('2026-08-03');
+  assert.equal(week.length, 7);
+  assert.equal(week[0].date, '2026-08-03');
+  assert.equal(week[6].date, '2026-08-09');
+});
+
+test('getTotalsForWeek: ist unabhaengig vom heutigen Datum (im Gegensatz zu getLast7DaysTotals)', () => {
+  // Eintrag WEIT in der Vergangenheit, ausserhalb der rollierenden "letzten 7
+  // Tage ab heute" - getTotalsForWeek() muss ihn trotzdem finden, weil es
+  // sich auf die angegebene Kalenderwoche bezieht, nicht auf "heute".
+  nutritionRepo.addEntry('2026-01-06', { food: { name: 'Alt', kal: 300 }, grams: 100, mealType: 'lunch' });
+  const week = nutritionRepo.getTotalsForWeek('2026-01-05'); // Montag jener Woche
+  const tuesday = week.find(d => d.date === '2026-01-06');
+  assert.equal(tuesday.kcal, 300);
+});
+
 // Mahlzeiten-Kategorisierung (03.08.2026)
 
 test('addEntry: uebernimmt das mitgegebene mealType unveraendert', () => {

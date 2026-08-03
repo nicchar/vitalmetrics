@@ -1,10 +1,12 @@
+import { state } from '../../appState.js';
 import { activityRepo } from '../../infra/db/repositories/activityRepo.js';
 import { nutritionRepo } from '../../infra/db/repositories/nutritionRepo.js';
 import { fastingRepo } from '../../infra/db/repositories/fastingRepo.js';
 import { profileRepo } from '../../infra/db/repositories/profileRepo.js';
-import { buildWeeklyReview, FREE_INTAKE_KEYS } from '../../domain/weeklyReview.js';
+import { buildWeeklyReview, buildWeeklyRecommendations, FREE_INTAKE_KEYS } from '../../domain/weeklyReview.js';
 import { getDGERef } from '../../domain/nutrition.js';
 import { entitlements } from '../../domain/entitlements.js';
+import { mondayOf, previousMonday } from '../../domain/dateUtils.js';
 import { navigate } from '../../router.js';
 
 const NUM_WEEKS = 12;
@@ -48,6 +50,16 @@ export function renderWeeklyReview(container) {
   const profile = profileRepo.get();
   const dgeRef = getDGERef(profile.ageGroup, profile.sex);
   const isPremium = entitlements.isPremium();
+
+  // Automatischer Wochenrückblick (Feature-Wunsch 03.08.2026): konkrete
+  // Empfehlungen für die zuletzt ABGESCHLOSSENE Kalenderwoche (Montag-Sonntag),
+  // unabhängig davon, ob der Screen über den Dashboard-Banner oder manuell
+  // über Tools erreicht wurde - derselbe Rückblick ist so immer aktuell.
+  const lastWeekMonday = previousMonday(mondayOf(new Date()));
+  const catalog = state.get('catalog') || { biomarkers: [] };
+  const weeklyRecap = buildWeeklyRecommendations(
+    nutritionRepo.getTotalsForWeek(lastWeekMonday), dgeRef, catalog.biomarkers
+  );
   const availableKeys = isPremium ? Object.keys(dgeRef) : FREE_INTAKE_KEYS;
   if (!_selectedIntakeKey || !availableKeys.includes(_selectedIntakeKey)) {
     _selectedIntakeKey = availableKeys[0];
@@ -56,6 +68,8 @@ export function renderWeeklyReview(container) {
   container.innerHTML = `<div class="screen weeklyreview-screen">
     <div class="screen-header"><h1 class="screen-title">🗓️ Wochenrückblick</h1></div>
     <p style="font-size:12px;color:var(--text-secondary);padding:0 16px 8px">Die letzten 7 Tage auf einen Blick.</p>
+
+    ${renderRecommendations(weeklyRecap)}
 
     <div class="activity-section">
       <h3>🏃 Bewegung</h3>
@@ -116,6 +130,28 @@ export function renderWeeklyReview(container) {
     renderWeeklyReview(container);
   });
   container.querySelector('#btn-upgrade-weekly')?.addEventListener('click', () => navigate('premium'));
+}
+
+/**
+ * Feature "Automatischer Wochenrückblick" (03.08.2026): konkrete, aber
+ * undosierte Lebensmittel-Empfehlungen für die letzte Kalenderwoche (siehe
+ * domain/weeklyReview.js buildWeeklyRecommendations()). Erscheint nur, wenn
+ * in der letzten Woche überhaupt etwas im Ernährungstagebuch stand - sonst
+ * gäbe es nichts Verlässliches zu berichten (kein Rauschen durch fehlendes
+ * Tracking, gleiches Prinzip wie getUnderCoveredTags() im Wochenplan).
+ */
+function renderRecommendations(recap) {
+  if (!recap.loggedDays) return '';
+  return `<div class="activity-section">
+    <h3>📋 Deine Empfehlungen für die letzte Woche</h3>
+    ${recap.recommendations.length ? `
+      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:10px">Allgemeine Hinweise, keine individuelle Therapieempfehlung – bei anhaltend niedrigen Werten im Zweifel ärztlich abklären lassen.</p>
+      ${recap.recommendations.map(r => `
+        <div class="macro-mirror" style="margin-bottom:8px">
+          <p class="macro-mirror-hint" style="margin:0"><strong>${r.label}</strong>: Zufuhr letzte Woche niedriger als empfohlen${r.foods.length ? ` – gute Quellen: ${r.foods.join(', ')}.` : '.'}</p>
+        </div>`).join('')}
+    ` : `<p style="font-size:13px;color:var(--text-secondary)">Deine Zufuhr lag letzte Woche bei allen getrackten Nährstoffen im grünen Bereich. 🎉</p>`}
+  </div>`;
 }
 
 function renderWeekComparison(trend) {

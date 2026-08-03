@@ -146,6 +146,26 @@ export const nutritionRepo = {
     return weeks;
   },
 
+  /**
+   * Tages-Totals für EINE feste Kalenderwoche (Montag-Sonntag), unabhängig
+   * vom heutigen Datum - im Unterschied zu getLast7DaysTotals() (rollierendes
+   * Fenster relativ zu "heute"). Gebraucht für den automatischen Wochen-
+   * rückblick (Feature-Wunsch 03.08.2026): die Auswertung soll sich immer auf
+   * die GENAU abgelaufene Kalenderwoche beziehen, auch wenn die App erst ein
+   * paar Tage nach Wochenbeginn wieder geöffnet wird.
+   * @param {string} mondayIso Montag der gewünschten Woche, 'YYYY-MM-DD'
+   */
+  getTotalsForWeek(mondayIso) {
+    const start = new Date(mondayIso);
+    const dates = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(start);
+      d.setDate(d.getDate() + i);
+      dates.push(d.toISOString().slice(0, 10));
+    }
+    return dates.map(date => ({ date, ...this.getDayTotals(date) }));
+  },
+
   /** Rohdaten für Export/Import (Backup-Funktion, Juli 2026) */
   getAll() {
     return this._load();

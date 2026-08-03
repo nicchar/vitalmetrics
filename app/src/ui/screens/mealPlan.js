@@ -10,17 +10,10 @@ import {
 } from '../../domain/mealPlan.js';
 import { recipeLogButtonHtml, wireRecipeLogButtons } from '../components/recipeLogControl.js';
 import { showToast } from '../components/toast.js';
+import { mondayOf } from '../../domain/dateUtils.js';
 
 const CATEGORY_LABEL = { vegetarisch: '🥬 Vegetarisch', fleisch_fisch: '🍗 Fleisch/Fisch', keto: '🥑 Keto', gemischt: '🍽️ Gemischt' };
 const MEAL_LABEL = { breakfast: 'Frühstück', lunch: 'Mittag', dinner: 'Abend' };
-
-function mondayOf(date) {
-  const d = new Date(date);
-  const day = d.getDay(); // 0 = So
-  const diff = day === 0 ? -6 : 1 - day;
-  d.setDate(d.getDate() + diff);
-  return d.toISOString().slice(0, 10);
-}
 
 export function renderMealPlan(container) {
   const recipes = state.get('recipes') || [];

@@ -97,3 +97,40 @@ export function buildWeeklyReview(activityDays, nutritionDays, fastingData, week
     nutritionTrend,
   };
 }
+
+/**
+ * Automatischer Wochenrückblick mit konkreten Empfehlungen (Feature-Wunsch
+ * 03.08.2026, Nicole: "aufgrund der Defizite angegeben wird, dass z.B. eine
+ * Karotte mehr gegessen werden soll, bei Vitamin-A-Defizit"). Ermittelt für
+ * EINE feste Kalenderwoche (siehe nutritionRepo.getTotalsForWeek()), bei
+ * welchen Nährstoffen die durchschnittliche Zufuhr unter `thresholdPct` des
+ * DGE-Referenzwerts lag, und ergänzt dazu Lebensmittel-Beispiele aus dem
+ * Biomarker-Katalog (bm.foods) - dieselbe Quelle, die auch die Handlungstipps
+ * im Ernährungstagebuch nutzen (nutrition.js).
+ *
+ * Bewusst OHNE Dosierungsangabe ("iss X Gramm mehr") - nur allgemeine
+ * Lebensmittel-Hinweise, konsistent mit healthClaims.js
+ * (PREFERRED_TERMS.recommendation: "allgemeiner Hinweis, keine individuelle
+ * Therapieempfehlung").
+ *
+ * @param {Array} weekTotals    nutritionRepo.getTotalsForWeek(mondayIso)
+ * @param {object} dgeRef       getDGERef(ageGroup, sex)
+ * @param {object[]} biomarkers catalog.biomarkers (für die foods-Liste)
+ * @returns {{loggedDays:number, recommendations:{intakeKey:string, label:string, foods:string[]}[]}}
+ */
+export function buildWeeklyRecommendations(weekTotals, dgeRef, biomarkers, thresholdPct = 70) {
+  const loggedDays = (weekTotals || []).filter(d => d.kcal > 0);
+  if (!loggedDays.length) return { loggedDays: 0, recommendations: [] };
+
+  const byIntakeKey = Object.fromEntries((biomarkers || []).filter(b => b.intakeKey).map(b => [b.intakeKey, b]));
+  const recommendations = [];
+  for (const [intakeKey, info] of Object.entries(dgeRef || {})) {
+    if (!info.ref) continue;
+    const avg = loggedDays.reduce((s, d) => s + (d[intakeKey] || 0), 0) / loggedDays.length;
+    if ((avg / info.ref) * 100 < thresholdPct) {
+      const foods = byIntakeKey[intakeKey]?.foods || [];
+      recommendations.push({ intakeKey, label: info.label, foods: foods.slice(0, 3) });
+    }
+  }
+  return { loggedDays: loggedDays.length, recommendations };
+}
