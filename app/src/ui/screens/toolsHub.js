@@ -1,6 +1,7 @@
 import { fastingRepo } from '../../infra/db/repositories/fastingRepo.js';
 import { cravingsRepo } from '../../infra/db/repositories/cravingsRepo.js';
 import { glucoseDayRepo } from '../../infra/db/repositories/glucoseDayRepo.js';
+import { customRecipeRepo } from '../../infra/db/repositories/customRecipeRepo.js';
 import { entitlements } from '../../domain/entitlements.js';
 import { navigate } from '../../router.js';
 
@@ -10,6 +11,7 @@ export function renderToolsHub(c) {
   const cravings = cravingsRepo.getAll();
   const today = new Date().toISOString().slice(0, 10);
   const todayGlu = Object.keys(glucoseDayRepo.getDay(today)).length;
+  const recipeCount = customRecipeRepo.getAll().length;
   const isPremium = entitlements.isPremium();
   // Einheitliche Kennzeichnung aller Premium-Karten (Experten-Review 7,
   // 26.07.2026) - vorher nur uneinheitlicher Text, kein gemeinsames Muster.
@@ -63,6 +65,15 @@ export function renderToolsHub(c) {
         </div>
         <div class="tool-card-arrow">›</div>
       </div>
+      <div class="tool-card" id="tool-my-recipes">
+        <div class="tool-card-icon">📖</div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">Eigene Rezepte</div>
+          <div class="tool-card-desc">Deine eigene Rezept-Sammlung, lokal gespeichert – direkt ins Ernährungstagebuch eintragbar</div>
+          <div class="tool-card-meta">${recipeCount > 0 ? `${recipeCount} eigene Rezept${recipeCount !== 1 ? 'e' : ''}` : 'Noch keine eigenen Rezepte'}</div>
+        </div>
+        <div class="tool-card-arrow">›</div>
+      </div>
       <div class="tool-card${premiumCls}" id="tool-weekly-review">
         <div class="tool-card-icon">🗓️</div>
         <div class="tool-card-body">
@@ -96,6 +107,7 @@ export function renderToolsHub(c) {
   c.querySelector('#tool-glucose').addEventListener('click', () => navigate('glucose_day'));
   c.querySelector('#tool-cravings').addEventListener('click', () => navigate('cravings'));
   c.querySelector('#tool-mealplan').addEventListener('click', () => navigate('mealplan'));
+  c.querySelector('#tool-my-recipes').addEventListener('click', () => navigate('my_recipes'));
   c.querySelector('#tool-weekly-review').addEventListener('click', () => navigate('weekly_review'));
   c.querySelector('#tool-skin-vitality').addEventListener('click', () => navigate('skin_vitality'));
   c.querySelector('#tool-cycle-wellness').addEventListener('click', () => navigate('cycle_wellness'));

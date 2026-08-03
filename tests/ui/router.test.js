@@ -89,7 +89,7 @@ test('SCREEN_NAMES enthält alle bekannten Screens (Regressionsschutz gegen fehl
   const expected = [
     'dashboard', 'entry', 'trend', 'profile', 'premium', 'onboarding',
     'activity', 'cycle', 'nutrition', 'tools', 'fasting', 'glucose_day',
-    'cravings', 'mealplan', 'weekly_review', 'skin_vitality',
+    'cravings', 'mealplan', 'weekly_review', 'skin_vitality', 'my_recipes',
   ];
   for (const name of expected) {
     assert.ok(SCREEN_NAMES.includes(name), `Screen "${name}" fehlt in SCREEN_NAMES`);
@@ -185,7 +185,7 @@ test('navigate: Fasten/Blutzucker/Wochenrückblick zeigen mit Premium den vollen
 test('navigate: Zyklustracker, Heißhunger, Wochenplan und PMS/Menopause bleiben ohne Premium voll nutzbar', () => {
   profileRepo.save({ onboardingDone: true, sex: 'f' });
   entitlements.setPremium(false);
-  for (const screen of ['cycle', 'cravings', 'mealplan']) {
+  for (const screen of ['cycle', 'cravings', 'mealplan', 'my_recipes']) {
     navigate(screen);
     const container = document.getElementById('screen-container');
     assert.ok(!/ist Teil von Premium/.test(container.innerHTML), `Screen "${screen}" sollte ohne Premium NICHT gesperrt sein`);

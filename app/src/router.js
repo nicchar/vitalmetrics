@@ -16,6 +16,7 @@ import { renderMealPlan } from './ui/screens/mealPlan.js';
 import { renderWeeklyReview } from './ui/screens/weeklyReview.js';
 import { renderSkinVitality } from './ui/screens/skinVitality.js';
 import { renderCycleWellness } from './ui/screens/cycleWellness.js';
+import { renderMyRecipes } from './ui/screens/myRecipes.js';
 import { profileRepo } from './infra/db/repositories/profileRepo.js';
 
 const screenRenderers = {
@@ -35,12 +36,13 @@ const screenRenderers = {
   mealplan: renderMealPlan,
   weekly_review: renderWeeklyReview,
   skin_vitality: renderSkinVitality,
-  cycle_wellness: renderCycleWellness
+  cycle_wellness: renderCycleWellness,
+  my_recipes: renderMyRecipes
 };
 
 // Diese Sub-Screens gehören inhaltlich zum "Tools"-Tab, damit dessen Nav-Icon
 // beim Reinklicken aktiv bleibt (statt keinen Tab hervorzuheben).
-const TOOLS_SUBSCREENS = ['fasting', 'glucose_day', 'cravings', 'mealplan', 'weekly_review', 'skin_vitality', 'cycle_wellness'];
+const TOOLS_SUBSCREENS = ['fasting', 'glucose_day', 'cravings', 'mealplan', 'weekly_review', 'skin_vitality', 'cycle_wellness', 'my_recipes'];
 
 // IA-Umbau (Juli 2026, UX-Review): "Eintragen"/"Verlauf" haben seitdem keinen
 // eigenen Bottom-Nav-Tab mehr (Zugriff ausschließlich über die Dashboard-
