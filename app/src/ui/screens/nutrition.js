@@ -4,10 +4,16 @@ import { nutritionRepo } from '../../infra/db/repositories/nutritionRepo.js';
 import { getDGERef } from '../../domain/nutrition.js';
 import { searchOpenFoodFacts, fetchProductByBarcode } from '../../infra/external/openFoodFacts.js';
 import { rankFoodMatches } from '../../domain/foodSearch.js';
+import { MEAL_TYPES, guessMealTypeByTime, groupEntriesByMealType } from '../../domain/mealType.js';
 import { showToast } from '../components/toast.js';
 
-// Modul-Status für die Ernährungssuche (übersteht Re-Renders innerhalb des Screens)
-let _nutrState = { selectedFood: null, searchProducts: [] };
+// Modul-Status für die Ernährungssuche (übersteht Re-Renders innerhalb des Screens).
+// mealType wird ABSICHTLICH nicht bei jedem renderNutrition()-Aufruf zurückgesetzt
+// (der nach jedem Hinzufügen erneut läuft) - sonst müsste man die Kategorie vor
+// jedem einzelnen Eintrag neu wählen. Nicole (03.08.2026): "erst die Mahlzeit-
+// Kategorie wählen und danach so wie immer handhaben" - die Auswahl gilt also,
+// bis sie aktiv geändert wird oder der Screen neu geöffnet wird.
+let _nutrState = { selectedFood: null, searchProducts: [], mealType: guessMealTypeByTime() };
 
 export function renderNutrition(c) {
   _nutrState.selectedFood = null;
@@ -24,22 +30,37 @@ export function renderNutrition(c) {
   // App leitet "haeufig verwendet" automatisch aus den letzten 30 Tagen ab.
   const frequentFoods = nutritionRepo.getFrequentFoods(30, 8);
 
-  // ── Eintragsliste ─────────────────────────────────────────────────────────
-  const entryList = entries.map((e, i) => {
-    const food = e.food;
-    if (!food) return '';
-    const kcal = Math.round(food.kal * e.grams / 100);
-    return `<div class="activity-item">
-      <div class="activity-item-left">
-        <span class="activity-item-emoji">${food.emoji || '🍽️'}</span>
-        <div>
-          <div class="activity-item-name">${food.name}</div>
-          <div class="activity-item-time">${e.grams} g · ${kcal} kcal</div>
-        </div>
+  // ── Eintragsliste, gruppiert nach Mahlzeit ──────────────────────────────────
+  // Feature "Mahlzeiten-Kategorisierung" (03.08.2026): statt einer flachen
+  // Liste stehen die Einträge jetzt unter Frühstück/Mittag/Abend/Snack/
+  // Sonstiges - siehe domain/mealType.js groupEntriesByMealType(). data-idx
+  // bleibt dabei der Original-Index im ungruppierten entries-Array, damit
+  // removeEntry(date, idx) unverändert funktioniert.
+  const mealGroups = groupEntriesByMealType(entries);
+  const entryListHtml = mealGroups.map(group => `
+    <div class="meal-group" style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span style="font-size:12px;font-weight:700;color:var(--text-secondary)">${group.emoji} ${group.label}</span>
+        <span style="font-size:12px;color:var(--text-secondary)">${group.kcal} kcal</span>
       </div>
-      <span class="activity-item-del" data-idx="${i}">✕</span>
-    </div>`;
-  }).join('');
+      <div class="activity-list">
+        ${group.items.map(({ entry: e, idx: i }) => {
+          const food = e.food;
+          if (!food) return '';
+          const kcal = Math.round(food.kal * e.grams / 100);
+          return `<div class="activity-item">
+            <div class="activity-item-left">
+              <span class="activity-item-emoji">${food.emoji || '🍽️'}</span>
+              <div>
+                <div class="activity-item-name">${food.name}</div>
+                <div class="activity-item-time">${e.grams} g · ${kcal} kcal</div>
+              </div>
+            </div>
+            <span class="activity-item-del" data-idx="${i}">✕</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`).join('');
 
   // ── Makro-Kacheln ───────────────────────────────────────────────────────────
   const macrosHtml = entries.length ? `
@@ -99,13 +120,26 @@ export function renderNutrition(c) {
 
     <div class="activity-section">
       <h3>📋 Deine Einträge heute</h3>
-      ${entryList
-        ? `<div class="activity-list">${entryList}</div>`
+      ${entryListHtml
+        ? entryListHtml
         : '<p style="font-size:13px;color:var(--text-secondary)">Noch keine Einträge heute – unten hinzufügen.</p>'}
     </div>
 
     <div class="activity-section">
       <h3>➕ Lebensmittel hinzufügen</h3>
+
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;color:var(--text-secondary);margin-bottom:6px">Für welche Mahlzeit? (gilt für alle Wege unten – Suche, Quick-Add, Barcode, eigene Eingabe)</div>
+        <div id="mealtype-selector" style="display:flex;gap:6px;flex-wrap:wrap">
+          ${MEAL_TYPES.map(mt => `
+            <button type="button" class="mealtype-btn${mt.key === _nutrState.mealType ? ' active' : ''}" data-mealtype="${mt.key}"
+              style="flex:1;min-width:70px;padding:8px 4px;border:1px solid var(--border);border-radius:8px;
+                     background:${mt.key === _nutrState.mealType ? 'var(--primary)' : 'var(--surface)'};
+                     color:${mt.key === _nutrState.mealType ? '#fff' : 'inherit'};font-size:12px;font-weight:600;cursor:pointer">
+              ${mt.emoji} ${mt.label}
+            </button>`).join('')}
+        </div>
+      </div>
 
       ${frequentFoods.length ? `
       <div style="font-size:11px;color:var(--text-secondary);margin-bottom:6px">🔁 Häufig verwendet (baut sich automatisch aus deinen letzten 30 Tagen auf)</div>
@@ -187,6 +221,19 @@ export function renderNutrition(c) {
   const customToggle = c.querySelector('#btn-custom-toggle');
   const customForm   = c.querySelector('#nutr-custom-form');
   const barcodeBtn   = c.querySelector('#btn-barcode-scan');
+
+  // ── Mahlzeit-Auswahl (gilt für alle Eintragswege unten) ──────────────────────
+  c.querySelectorAll('.mealtype-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      _nutrState.mealType = btn.dataset.mealtype;
+      c.querySelectorAll('.mealtype-btn').forEach(b => {
+        const active = b.dataset.mealtype === _nutrState.mealType;
+        b.classList.toggle('active', active);
+        b.style.background = active ? 'var(--primary)' : 'var(--surface)';
+        b.style.color = active ? '#fff' : 'inherit';
+      });
+    });
+  });
 
   function localSearch(query) {
     // Relevanz-Ranking statt reiner Datenbank-Reihenfolge - siehe domain/foodSearch.js
@@ -315,7 +362,7 @@ export function renderNutrition(c) {
     btn.addEventListener('click', () => {
       const item = frequentFoods[parseInt(btn.dataset.idx)];
       if (!item) return;
-      nutritionRepo.addEntry(today, { food: item.food, grams: item.grams });
+      nutritionRepo.addEntry(today, { food: item.food, grams: item.grams, mealType: _nutrState.mealType });
       showToast(`${item.food.emoji || '🍽️'} ${item.food.name} hinzugefügt (${item.grams} g)`);
       renderNutrition(c);
     });
@@ -346,7 +393,7 @@ export function renderNutrition(c) {
     const grams = parseInt(gramsInput.value);
     if (!grams || grams < 1) { showToast('Bitte Gramm eingeben'); return; }
     if (!_nutrState.selectedFood) return;
-    nutritionRepo.addEntry(today, { food: _nutrState.selectedFood, grams });
+    nutritionRepo.addEntry(today, { food: _nutrState.selectedFood, grams, mealType: _nutrState.mealType });
     showToast(`${_nutrState.selectedFood.emoji} ${_nutrState.selectedFood.name} hinzugefügt`);
     renderNutrition(c);
   });
@@ -371,7 +418,7 @@ export function renderNutrition(c) {
       b1: 0, b2: 0, b3: 0, b6: 0, b12: 0, folat: 0, eisen: 0, zink: 0, mag: 0, cal: 0,
       source: 'custom',
     };
-    nutritionRepo.addEntry(today, { food, grams });
+    nutritionRepo.addEntry(today, { food, grams, mealType: _nutrState.mealType });
     showToast(`✏️ ${name} hinzugefügt`);
     renderNutrition(c);
   });

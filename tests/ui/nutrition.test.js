@@ -29,9 +29,9 @@ test('nutrition.js: "Deine Einträge heute" ist eine eigene Sektion vor "Lebensm
   assert.ok(idxEntries < idxAdd, '"Deine Einträge heute" sollte vor "Lebensmittel hinzufügen" stehen (Sichtbarkeits-Fix)');
 });
 
-test('nutrition.js: entryList wird nicht mehr doppelt gerendert', () => {
-  const matches = src.match(/\$\{entryList/g) || [];
-  assert.equal(matches.length, 2, 'entryList sollte genau 2x referenziert werden: einmal in der Berechnung, einmal in der neuen Sektion');
+test('nutrition.js: entryListHtml wird nicht mehr doppelt gerendert (Mahlzeiten-Kategorisierung 03.08.2026 loeste die vorherige entryList-Variable ab)', () => {
+  const matches = src.match(/\$\{entryListHtml/g) || [];
+  assert.equal(matches.length, 1, 'entryListHtml sollte genau 1x in der Sektion referenziert werden');
 });
 
 test('nutrition.js: Leerzustand-Hinweis vorhanden, wenn noch keine Einträge existieren', () => {
@@ -56,4 +56,39 @@ test('nutrition.js: Barcode-Button hat ein sichtbares Textlabel, nicht nur das I
 
 test('nutrition.js: Hinweistext erklärt, dass "häufig verwendet" sich automatisch aufbaut', () => {
   assert.ok(src.includes('automatisch aus deinen letzten 30 Tagen'), 'Erklärender Hinweistext zu den Quick-Add-Chips fehlt');
+});
+
+/**
+ * Feature "Mahlzeiten-Kategorisierung" (03.08.2026): Frühstück/Mittag/Abend/
+ * Snack statt flacher Liste. Nicole: "erst die Mahlzeit-Kategorie wählen und
+ * danach so wie immer handhaben" - der Selector muss also VOR allen
+ * Eintragswegen (Quick-Add-Chips, Suche, Custom-Formular) im Markup stehen
+ * und für alle drei gelten.
+ */
+test('nutrition.js: importiert das mealType-Domain-Modul', () => {
+  assert.ok(src.includes("from '../../domain/mealType.js'"), 'Import von domain/mealType.js fehlt');
+  assert.ok(/MEAL_TYPES[,\s]/.test(src) && src.includes('guessMealTypeByTime') && src.includes('groupEntriesByMealType'));
+});
+
+test('nutrition.js: Mahlzeit-Selector steht vor den Quick-Add-Chips und der Suche', () => {
+  const idxSelector = src.indexOf('mealtype-selector');
+  const idxQuickAdd = src.indexOf('quick-add-chip');
+  const idxSearch = src.indexOf('inp-food-search');
+  assert.notEqual(idxSelector, -1, 'Mahlzeit-Selector fehlt im Markup');
+  assert.ok(idxSelector < idxQuickAdd, 'Selector sollte vor den Quick-Add-Chips stehen');
+  assert.ok(idxSelector < idxSearch, 'Selector sollte vor dem Suchfeld stehen');
+});
+
+test('nutrition.js: mealType wird NICHT bei jedem Render zurückgesetzt (Auswahl gilt für mehrere Eintragungen)', () => {
+  const idxReset = src.indexOf('export function renderNutrition');
+  const resetBlock = src.slice(idxReset, idxReset + 400);
+  assert.ok(!/mealType\s*=/.test(resetBlock), '_nutrState.mealType darf im Render-Reset-Block nicht überschrieben werden');
+});
+
+test('nutrition.js: alle drei Eintragswege (Quick-Add, Suche, eigene Eingabe) übergeben mealType an addEntry', () => {
+  const addEntryCalls = src.match(/nutritionRepo\.addEntry\([^)]*\)/gs) || [];
+  assert.equal(addEntryCalls.length, 3, 'Es sollten genau 3 addEntry-Aufrufe existieren (Quick-Add/Suche/Custom)');
+  for (const call of addEntryCalls) {
+    assert.ok(/mealType\s*:\s*_nutrState\.mealType/.test(call), `addEntry-Aufruf ohne mealType: ${call}`);
+  }
 });

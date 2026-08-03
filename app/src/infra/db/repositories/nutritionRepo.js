@@ -2,17 +2,31 @@
  * nutritionRepo.js
  *
  * Speichert tägliche Ernährungseinträge unter 'vm_nutrition', gruppiert nach
- * Datum. Jeder Eintrag: { food: {...Nährwerte pro 100g}, grams }.
+ * Datum. Jeder Eintrag: { food: {...Nährwerte pro 100g}, grams, mealType }.
+ *
+ * SCHEMA_VERSION 1->2 (03.08.2026): Mahlzeiten-Kategorisierung eingeführt
+ * (domain/mealType.js). migrate() ergänzt bei alten Einträgen ohne
+ * mealType-Feld automatisch 'other' ("Sonstiges") - kein Datenverlust, keine
+ * Rückfrage an die Nutzerin nötig.
  */
 import { storage } from '../sqlite.js';
 
 const KEY = 'vm_nutrition';
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
 const MICRO_KEYS = ['vit_a', 'vit_d', 'vit_e', 'vit_k', 'vit_c', 'b1', 'b2', 'b3', 'b6', 'b12', 'folat', 'eisen', 'zink', 'mag', 'cal'];
+
+function migrate(oldData) {
+  if (!oldData || typeof oldData !== 'object') return {};
+  const migrated = {};
+  for (const [date, entries] of Object.entries(oldData)) {
+    migrated[date] = (entries || []).map(e => ({ ...e, mealType: e.mealType || 'other' }));
+  }
+  return migrated;
+}
 
 export const nutritionRepo = {
   _load() {
-    return storage.getVersioned(KEY, SCHEMA_VERSION) || {};
+    return storage.getVersioned(KEY, SCHEMA_VERSION, migrate) || {};
   },
 
   getDay(dateStr) {
@@ -21,7 +35,7 @@ export const nutritionRepo = {
 
   addEntry(dateStr, entry) {
     const all = this._load();
-    all[dateStr] = [...(all[dateStr] || []), entry];
+    all[dateStr] = [...(all[dateStr] || []), { ...entry, mealType: entry.mealType || 'other' }];
     storage.setVersioned(KEY, all, SCHEMA_VERSION);
   },
 

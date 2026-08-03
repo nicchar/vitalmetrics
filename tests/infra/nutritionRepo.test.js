@@ -138,6 +138,43 @@ test('getWeeklyTotals: mittelt kcal/Mikronaehrstoffe nur ueber tatsaechlich gelo
   assert.equal(current.vit_d, 6); // (4+8)/2
 });
 
+// Mahlzeiten-Kategorisierung (03.08.2026)
+
+test('addEntry: uebernimmt das mitgegebene mealType unveraendert', () => {
+  const today = isoDaysAgo(0);
+  nutritionRepo.addEntry(today, { food: { name: 'Porridge', kal: 150 }, grams: 100, mealType: 'breakfast' });
+  assert.equal(nutritionRepo.getDay(today)[0].mealType, 'breakfast');
+});
+
+test('addEntry: ohne mealType greift defensiv der Default "other" (Rueckwaertskompatibilitaet)', () => {
+  const today = isoDaysAgo(0);
+  nutritionRepo.addEntry(today, { food: { name: 'Ohne Kategorie', kal: 100 }, grams: 100 });
+  assert.equal(nutritionRepo.getDay(today)[0].mealType, 'other');
+});
+
+test('Migration v1->v2: alte Eintraege ohne mealType-Feld werden beim Laden automatisch auf "other" migriert', () => {
+  const today = isoDaysAgo(0);
+  // Simuliert einen Altbestand aus der Zeit vor der Mahlzeiten-Kategorisierung:
+  // Envelope mit v:1 und Eintraegen ganz ohne mealType-Feld.
+  globalThis.localStorage.setItem('vm_nutrition', JSON.stringify({
+    v: 1,
+    data: { [today]: [{ food: { name: 'Alt-Eintrag', kal: 100 }, grams: 100 }] },
+  }));
+  const entries = nutritionRepo.getDay(today);
+  assert.equal(entries.length, 1);
+  assert.equal(entries[0].mealType, 'other');
+  assert.equal(entries[0].food.name, 'Alt-Eintrag', 'Migration darf sonst nichts am Eintrag veraendern');
+});
+
+test('Migration v1->v2: bereits vorhandenes mealType bleibt bei der Migration erhalten', () => {
+  const today = isoDaysAgo(0);
+  globalThis.localStorage.setItem('vm_nutrition', JSON.stringify({
+    v: 1,
+    data: { [today]: [{ food: { name: 'Schon markiert', kal: 100 }, grams: 100, mealType: 'lunch' }] },
+  }));
+  assert.equal(nutritionRepo.getDay(today)[0].mealType, 'lunch');
+});
+
 test('getWeeklyTotals: ein Eintrag genau 8 Tage zurueck landet in der VORHERIGEN Woche, nicht der aktuellen', () => {
   const food = { kal: 500, protein: 0, fat: 0, carbs: 0 };
   nutritionRepo.addEntry(isoDaysAgo(8), { food, grams: 100 });

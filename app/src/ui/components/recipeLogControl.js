@@ -14,6 +14,7 @@
  */
 import { nutritionRepo } from '../../infra/db/repositories/nutritionRepo.js';
 import { PORTION_FACTORS, computeLoggedNutrition, recipeToFoodEntry } from '../../domain/recipeLogging.js';
+import { MEAL_TYPES, guessMealTypeByTime } from '../../domain/mealType.js';
 import { showToast } from './toast.js';
 
 /**
@@ -56,6 +57,11 @@ export function wireRecipeLogButtons(container, recipes) {
 /** Baut die Portionsauswahl + Live-Vorschau + "Eintragen"-Button in `box`. */
 export function renderLogConfirm(box, recipe) {
   let factor = 1;
+  // Mahlzeiten-Kategorisierung (03.08.2026): Vorschlag per Tageszeit, jederzeit
+  // änderbar - Rezept-Log ist ein eigener Einstiegspunkt (Wochenplan,
+  // Rezeptideen auf trend.js) ohne den zentralen Selector aus nutrition.js,
+  // braucht also seine eigene Auswahl direkt hier.
+  let mealType = guessMealTypeByTime();
 
   function preview() {
     const n = computeLoggedNutrition(recipe, factor);
@@ -67,6 +73,15 @@ export function renderLogConfirm(box, recipe) {
 
   box.dataset.built = '1';
   box.innerHTML = `
+    <div class="log-recipe-mealtype" style="display:flex;gap:6px;margin:8px 0 6px;flex-wrap:wrap">
+      ${MEAL_TYPES.map(mt => `
+        <button type="button" class="log-recipe-mealtype-btn${mt.key === mealType ? ' active' : ''}" data-mealtype="${mt.key}"
+          style="flex:1;min-width:60px;padding:6px 4px;border:1px solid var(--border);border-radius:6px;
+                 background:${mt.key === mealType ? 'var(--primary)' : 'var(--surface)'};
+                 color:${mt.key === mealType ? '#fff' : 'inherit'};font-size:11px;font-weight:600;cursor:pointer">
+          ${mt.emoji} ${mt.label}
+        </button>`).join('')}
+    </div>
     <div class="log-recipe-portions" style="display:flex;gap:6px;margin:8px 0 6px">
       ${PORTION_FACTORS.map(f => `
         <button type="button" class="log-recipe-factor-btn${f === factor ? ' active' : ''}" data-factor="${f}"
@@ -79,6 +94,18 @@ export function renderLogConfirm(box, recipe) {
     <p class="log-recipe-preview" style="font-size:12px;color:var(--text-secondary);margin-bottom:8px">${preview()}</p>
     <button class="btn-primary log-recipe-submit" type="button" style="width:100%">Eintragen</button>
   `;
+
+  box.querySelectorAll('.log-recipe-mealtype-btn').forEach(mbtn => {
+    mbtn.addEventListener('click', () => {
+      mealType = mbtn.dataset.mealtype;
+      box.querySelectorAll('.log-recipe-mealtype-btn').forEach(b => {
+        const active = b.dataset.mealtype === mealType;
+        b.classList.toggle('active', active);
+        b.style.background = active ? 'var(--primary)' : 'var(--surface)';
+        b.style.color = active ? '#fff' : 'inherit';
+      });
+    });
+  });
 
   box.querySelectorAll('.log-recipe-factor-btn').forEach(fbtn => {
     fbtn.addEventListener('click', () => {
@@ -97,7 +124,7 @@ export function renderLogConfirm(box, recipe) {
     const entry = recipeToFoodEntry(recipe, factor);
     if (!entry) { showToast('Für dieses Rezept liegen noch keine Nährwerte vor'); return; }
     const today = new Date().toISOString().slice(0, 10);
-    nutritionRepo.addEntry(today, entry);
+    nutritionRepo.addEntry(today, { ...entry, mealType });
     showToast(`🍳 ${recipe.title} (${String(factor).replace('.', ',')}×) im Ernährungstagebuch eingetragen`);
     box.style.display = 'none';
   });
