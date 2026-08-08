@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WellANNI – Verstehe deinen Vitamin- und Mineralstoffhaushalt</title>
+<meta name="description" content="WellANNI analysiert deine erfassten Mahlzeiten und zeigt dir übersichtlich, welche Vitamine und Mineralstoffe darin enthalten sind. Jetzt kostenlos Android-Tester werden.">
+<meta property="og:title" content="WellANNI – Verstehe deinen Vitamin- und Mineralstoffhaushalt">
+<meta property="og:description" content="Nicht schätzen – nachvollziehen. WellANNI zeigt dir einen Überblick über deine erfasste Ernährung. Komplett lokal, keine Cloud, kein Konto.">
+<meta property="og:image" content="feature_graphic_1024x500.png">
+<meta property="og:type" content="website">
+<style>
+  :root {
+    --primary: #1a7a6e;
+    --primary-dark: #145f56;
+    --bg: #f4f6f8;
+    --surface: #ffffff;
+    --text: #212121;
+    --text-secondary: #616161;
+    --border: #e0e0e0;
+    --tint: #e8f5f3;
+    --warn-bg: #FFF3E0;
+    --warn-border: #FB8C00;
+    --warn-text: #E65100;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.7; }
+  a { color: var(--primary); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  img { max-width: 100%; display: block; }
+  section { padding: 64px 20px; max-width: 1080px; margin: 0 auto; }
+  h2 { font-size: 28px; font-weight: 800; color: var(--primary-dark); margin-bottom: 12px; letter-spacing: -0.3px; }
+  .eyebrow { color: var(--primary); font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; }
+  .lead { color: var(--text-secondary); font-size: 17px; max-width: 640px; margin-bottom: 36px; }
+  .card { background: var(--surface); border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 26px; border-radius: 10px; font-weight: 700; font-size: 15px; cursor: pointer; border: none; text-decoration: none; }
+  .btn:hover { text-decoration: none; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-secondary { background: var(--surface); color: var(--primary-dark); border: 1.5px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--primary); }
+  .disclaimer-box { background: var(--tint); border-left: 4px solid var(--primary); border-radius: 8px; padding: 16px 20px; margin-top: 28px; }
+  .disclaimer-box p { color: var(--primary-dark); font-size: 14px; margin: 0; }
+
+  /* Nav */
+  .navbar { position: sticky; top: 0; z-index: 50; background: var(--surface); border-bottom: 1px solid var(--border); }
+  .navwrap { max-width: 1080px; margin: 0 auto; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-size: 20px; font-weight: 800; color: var(--primary-dark); letter-spacing: -0.4px; }
+  nav.links { display: flex; gap: 28px; align-items: center; }
+  nav.links a { color: var(--text); font-weight: 500; font-size: 15px; }
+  nav.links a:hover { color: var(--primary); text-decoration: none; }
+  nav.links a.cta { background: var(--primary); color: #fff; padding: 9px 18px; border-radius: 8px; font-weight: 700; }
+  nav.links a.cta:hover { background: var(--primary-dark); }
+  #nav-toggle { display: none; }
+  .burger { display: none; cursor: pointer; font-size: 24px; color: var(--primary-dark); background: none; border: none; }
+
+  @media (max-width: 780px) {
+    nav.links { position: absolute; top: 100%; left: 0; right: 0; background: var(--surface); flex-direction: column; align-items: flex-start; padding: 8px 20px 20px; border-bottom: 1px solid var(--border); display: none; gap: 14px; }
+    #nav-toggle:checked ~ nav.links { display: flex; }
+    .burger { display: block; }
+  }
+
+  /* Hero */
+  .hero { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 48px; align-items: center; padding-top: 56px; }
+  .hero h1 { font-size: 40px; font-weight: 800; color: var(--primary-dark); line-height: 1.2; letter-spacing: -0.5px; margin-bottom: 16px; }
+  .hero .sub { font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 10px; }
+  .hero p.desc { color: var(--text-secondary); font-size: 16px; margin-bottom: 28px; max-width: 480px; }
+  .hero-buttons { display: flex; flex-wrap: wrap; gap: 14px; }
+  .phone-frame { justify-self: center; width: 240px; border-radius: 34px; background: #0e1b19; padding: 10px; box-shadow: 0 20px 50px rgba(20,95,86,0.25); }
+  .phone-frame img { border-radius: 26px; }
+  @media (max-width: 780px) {
+    .hero { grid-template-columns: 1fr; padding-top: 24px; }
+    .phone-frame { order: -1; width: 200px; }
+  }
+
+  /* Warum */
+  .why-list { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 32px; margin: 24px 0 28px; }
+  .why-list li { color: var(--text); font-weight: 600; padding-left: 26px; position: relative; }
+  .why-list li::before { content: "?"; position: absolute; left: 0; color: var(--primary); font-weight: 800; }
+  @media (max-width: 600px) { .why-list { grid-template-columns: 1fr; } }
+
+  /* Steps */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 8px; }
+  .step-num { width: 36px; height: 36px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; margin-bottom: 14px; }
+  .step h3 { font-size: 17px; color: var(--primary-dark); margin-bottom: 6px; }
+  .step p { color: var(--text-secondary); font-size: 15px; }
+  @media (max-width: 700px) { .steps { grid-template-columns: 1fr; } }
+
+  /* Funktionen */
+  .features { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 8px; }
+  .feature { text-align: left; }
+  .feature .emoji { font-size: 30px; margin-bottom: 12px; }
+  .feature h3 { font-size: 17px; color: var(--primary-dark); margin-bottom: 8px; }
+  .feature p { color: var(--text-secondary); font-size: 14.5px; }
+  @media (max-width: 900px) { .features { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .features { grid-template-columns: 1fr; } }
+
+  /* Datenschutz */
+  .privacy { background: var(--primary-dark); color: #fff; border-radius: 16px; padding: 48px 40px; }
+  .privacy h2 { color: #fff; }
+  .privacy .lead { color: #cfe9e4; }
+  .privacy-list { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 32px; margin-bottom: 20px; }
+  .privacy-list li { font-weight: 700; font-size: 15.5px; }
+  .privacy-list li span.check { color: #6fd8c6; margin-right: 8px; }
+  @media (max-width: 600px) { .privacy { padding: 32px 24px; } .privacy-list { grid-template-columns: 1fr; } }
+
+  /* Screenshots */
+  .shots { display: flex; gap: 20px; overflow-x: auto; padding: 8px 4px 16px; scroll-snap-type: x mandatory; }
+  .shot { flex: 0 0 auto; scroll-snap-align: start; text-align: center; }
+  .shot .phone-frame { width: 180px; margin-bottom: 10px; }
+  .shot p { color: var(--text-secondary); font-size: 14px; font-weight: 600; }
+
+  /* Tester */
+  .tester { background: var(--surface); border-radius: 16px; padding: 48px 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+  .tester-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+  .tester-list { list-style: none; margin: 18px 0 24px; }
+  .tester-list li { font-weight: 600; margin-bottom: 8px; }
+  .tester-list li span.check { color: var(--primary); margin-right: 8px; }
+  form .field { margin-bottom: 16px; }
+  form label { display: block; font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  form input[type=text], form input[type=email] { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 15px; font-family: inherit; }
+  form input:focus { outline: none; border-color: var(--primary); }
+  form button { width: 100%; margin-top: 4px; }
+  .form-note { font-size: 13px; color: var(--text-secondary); margin-top: 12px; }
+  .honeypot { position: absolute; left: -9999px; }
+  @media (max-width: 780px) { .tester-grid { grid-template-columns: 1fr; } }
+
+  /* FAQ */
+  details { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 12px; }
+  summary { font-weight: 700; color: var(--primary-dark); cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; font-size: 20px; color: var(--primary); }
+  details[open] summary::after { content: "–"; }
+  details p { margin-top: 12px; color: var(--text-secondary); }
+
+  /* Über uns */
+  .about { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: flex-start; }
+  .avatar-row { display: flex; gap: 12px; }
+  .avatar { width: 56px; height: 56px; border-radius: 50%; background: var(--tint); color: var(--primary-dark); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 20px; border: 2px solid var(--primary); }
+  @media (max-width: 600px) { .about { grid-template-columns: 1fr; } }
+
+  footer { border-top: 1px solid var(--border); margin-top: 40px; }
+  .footer-wrap { max-width: 1080px; margin: 0 auto; padding: 32px 20px; display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; align-items: center; }
+  .footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+  .footer-links a { font-size: 14px; color: var(--text-secondary); }
+  .footer-links a:hover { color: var(--primary); }
+  .version-tag { font-size: 12px; color: var(--text-secondary); background: var(--tint); padding: 4px 10px; border-radius: 20px; }
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="navwrap">
+    <div class="logo">💊 WellANNI</div>
+    <input type="checkbox" id="nav-toggle">
+    <label class="burger" for="nav-toggle">☰</label>
+    <nav class="links">
+      <a href="#home">Home</a>
+      <a href="#funktionen">Funktionen</a>
+      <a href="#datenschutz">Datenschutz</a>
+      <a href="#faq">FAQ</a>
+      <a href="#tester" class="cta">Tester werden</a>
+    </nav>
+  </div>
+</div>
+
+<!-- HERO -->
+<section id="home" class="hero">
+  <div>
+    <h1>Verstehe deinen Vitamin- und Mineralstoffhaushalt.</h1>
+    <p class="sub">Nicht schätzen – nachvollziehen.</p>
+    <p class="desc">WellANNI analysiert deine erfassten Mahlzeiten und zeigt dir übersichtlich, welche Vitamine und Mineralstoffe darin enthalten sind – und wo sich anhand deiner Ernährung mögliche Versorgungslücken abzeichnen könnten. WellANNI ersetzt keine ärztliche Diagnose oder Ernährungsberatung.</p>
+    <div class="hero-buttons">
+      <a href="#tester" class="btn btn-primary">🟢 Kostenlos Tester werden</a>
+      <a href="VitalMetrics.html" class="btn btn-secondary">▶ App kennenlernen</a>
+    </div>
+  </div>
+  <div class="phone-frame">
+    <img src="screenshot_phone_dashboard.png" alt="WellANNI Dashboard mit Übersicht der Nährstoffwerte">
+  </div>
+</section>
+
+<!-- WARUM -->
+<section id="warum">
+  <div class="eyebrow">Warum WellANNI?</div>
+  <h2>Der eigene Nährstoffhaushalt ist selten transparent.</h2>
+  <p class="lead">Viele stellen sich Fragen wie diese:</p>
+  <ul class="why-list">
+    <li>Nehme ich genug Eisen zu mir?</li>
+    <li>Ist meine Magnesiumversorgung ausreichend?</li>
+    <li>Welche Lebensmittel kommen bei mir eher selten vor?</li>
+    <li>Wie vollständig ist mein Nährstoffbild wirklich?</li>
+  </ul>
+  <p class="lead" style="margin-bottom:0">WellANNI unterstützt dabei, die eigene Nährstoffaufnahme besser zu verstehen und einzuordnen – einfach, verständlich und vollständig lokal auf deinem Smartphone.</p>
+</section>
+
+<!-- SO FUNKTIONIERT'S -->
+<section id="ablauf">
+  <div class="eyebrow">So funktioniert's</div>
+  <h2>In drei Schritten zum Überblick</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3>Mahlzeiten erfassen</h3>
+      <p>Trage ein, was du isst.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3>Analyse ansehen</h3>
+      <p>WellANNI ordnet deine Angaben Vitaminen und Mineralstoffen zu.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3>Verstehen</h3>
+      <p>Du bekommst einen Überblick über deine erfasste Versorgung, aufbereitet in der Lernwelt.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FUNKTIONEN -->
+<section id="funktionen">
+  <div class="eyebrow">Funktionen</div>
+  <h2>Was WellANNI kann</h2>
+  <div class="features">
+    <div class="feature">
+      <div class="emoji">🥗</div>
+      <h3>Ernährung erfassen</h3>
+      <p>Erfasse deine Mahlzeiten und behalte deine erfasste Vitamin- und Mineralstoffzufuhr im Blick.</p>
+    </div>
+    <div class="feature">
+      <div class="emoji">📊</div>
+      <h3>Nährstoffanalyse</h3>
+      <p>WellANNI liefert einen Überblick über deine erfasste Ernährung und zeigt, wo sich Optimierungspotenzial abzeichnen könnte.</p>
+    </div>
+    <div class="feature">
+      <div class="emoji">📚</div>
+      <h3>Lernwelt</h3>
+      <p>Verstehe die Funktionen von Vitaminen und Mineralstoffen, mögliche Anzeichen einer unzureichenden Versorgung sowie natürliche Lebensmittelquellen.</p>
+    </div>
+    <div class="feature">
+      <div class="emoji">🧪</div>
+      <h3>Laborwerte (optional)</h3>
+      <p>Falls Blutwerte vorliegen, können bis zu 30 Laborparameter ergänzt und gemeinsam mit den Ernährungsdaten betrachtet werden.</p>
+    </div>
+  </div>
+  <div class="disclaimer-box">
+    <p>Hinweis: WellANNI dient der besseren Einordnung deiner Ernährung und ersetzt keine ärztliche Diagnose, Behandlung oder Ernährungsberatung.</p>
+  </div>
+</section>
+
+<!-- DATENSCHUTZ -->
+<section id="datenschutz">
+  <div class="privacy">
+    <div class="eyebrow" style="color:#6fd8c6">Datenschutz</div>
+    <h2>Deine Daten gehören dir.</h2>
+    <p class="lead">Gerade bei Gesundheitsdaten ist das kein Detail, sondern die Grundlage. WellANNI verarbeitet deine Angaben ausschließlich auf deinem Gerät – nichts wird an einen Server übertragen oder gespeichert.</p>
+    <ul class="privacy-list">
+      <li><span class="check">✔</span>Keine Cloud</li>
+      <li><span class="check">✔</span>Kein Benutzerkonto</li>
+      <li><span class="check">✔</span>Keine Datensammlung</li>
+      <li><span class="check">✔</span>Alles bleibt lokal auf deinem Smartphone</li>
+    </ul>
+  </div>
+</section>
+
+<!-- SCREENSHOTS -->
+<section id="screenshots">
+  <div class="eyebrow">Einblicke</div>
+  <h2>So sieht WellANNI aus</h2>
+  <div class="shots">
+    <div class="shot">
+      <div class="phone-frame"><img src="screenshot_phone_dashboard.png" alt="Dashboard-Ansicht von WellANNI"></div>
+      <p>Dashboard</p>
+    </div>
+    <div class="shot">
+      <div class="phone-frame"><img src="screenshot_phone_eingabe.png" alt="Werteingabe in WellANNI"></div>
+      <p>Wert erfassen</p>
+    </div>
+    <div class="shot">
+      <div class="phone-frame"><img src="screenshot_phone_vitamin_d.png" alt="Verlaufsansicht eines Nährstoffwerts in WellANNI"></div>
+      <p>Verlauf</p>
+    </div>
+  </div>
+</section>
+
+<!-- TESTER -->
+<section id="tester">
+  <div class="tester">
+    <div class="tester-grid">
+      <div>
+        <div class="eyebrow">Aktuelle Testphase</div>
+        <h2>Wir suchen Android-Tester</h2>
+        <p class="lead">Hilf mit, WellANNI weiterzuentwickeln.</p>
+        <p style="color:var(--text-secondary);margin-bottom:6px">Gesucht werden Menschen, die:</p>
+        <ul class="tester-list">
+          <li><span class="check">✔</span>Android nutzen</li>
+          <li><span class="check">✔</span>Interesse an Ernährung haben</li>
+          <li><span class="check">✔</span>ehrliches Feedback geben möchten</li>
+        </ul>
+        <p style="color:var(--text-secondary)">Die Teilnahme ist kostenlos.</p>
+      </div>
+      <div>
+        <form action="https://formspree.io/f/xjybgaev" method="POST">
+          <input type="text" name="_gotcha" class="honeypot" tabindex="-1" autocomplete="off">
+          <input type="hidden" name="_subject" value="Neue Tester-Anmeldung WellANNI">
+          <div class="field">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="Name" placeholder="Dein Name" required>
+          </div>
+          <div class="field">
+            <label for="email">Gmail-Adresse</label>
+            <input type="email" id="email" name="E-Mail" placeholder="dein.name@gmail.com" required>
+          </div>
+          <button type="submit" class="btn btn-primary">👉 Jetzt Tester werden</button>
+        </form>
+        <p class="form-note">Bitte eine Gmail-Adresse angeben – sie wird für die Freischaltung im geschlossenen Play-Store-Test benötigt. Du erhältst danach eine Einladung per E-Mail.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="eyebrow">FAQ</div>
+  <h2>Häufige Fragen</h2>
+  <details>
+    <summary>Kostet die Teilnahme etwas?</summary>
+    <p>Nein.</p>
+  </details>
+  <details>
+    <summary>Werden meine Daten gespeichert?</summary>
+    <p>Nein. Alle Daten bleiben ausschließlich auf deinem Smartphone.</p>
+  </details>
+  <details>
+    <summary>Welche Geräte werden unterstützt?</summary>
+    <p>Aktuell Android.</p>
+  </details>
+  <details>
+    <summary>Muss ich Laborwerte besitzen?</summary>
+    <p>Nein. Die Funktion ist komplett optional.</p>
+  </details>
+  <details>
+    <summary>Wie läuft der Test ab?</summary>
+    <p>Nach deiner Anmeldung erhältst du eine Einladung zum geschlossenen Test über Google Play.</p>
+  </details>
+  <details>
+    <summary>Ersetzt WellANNI eine ärztliche Beratung?</summary>
+    <p>Nein. WellANNI liefert einen Überblick über deine erfasste Ernährung, ersetzt aber keine ärztliche Diagnose oder Ernährungsberatung.</p>
+  </details>
+</section>
+
+<!-- ÜBER UNS -->
+<section id="ueber-uns">
+  <div class="eyebrow">Über uns</div>
+  <h2>Hallo, wir sind Nicole und Anika.</h2>
+  <div class="about">
+    <div class="avatar-row">
+      <div class="avatar">N</div>
+      <div class="avatar">A</div>
+    </div>
+    <div>
+      <p class="lead" style="margin-bottom:14px">Wir beschäftigen uns seit längerer Zeit mit der Frage, wie Menschen ihre Ernährung besser verstehen können. Aus dieser Motivation heraus ist WellANNI entstanden. Anika bringt medizinisches Fachwissen ein, Nicole die Konzeption und Umsetzung der App. Gemeinsam ist es unser Ziel, wissenschaftliche Informationen verständlich aufzubereiten und Menschen dabei zu unterstützen, ihre Ernährungsgewohnheiten bewusster zu betrachten.</p>
+      <p class="lead" style="margin-bottom:0">WellANNI befindet sich aktuell in einer Testphase. Wir freuen uns über jedes ehrliche Feedback – Lob, Kritik und Verbesserungsvorschläge gleichermaßen.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-wrap">
+    <div class="footer-links">
+      <a href="impressum.html">Impressum</a>
+      <a href="datenschutzerklaerung.html">Datenschutz</a>
+      <a href="agb.html">AGB</a>
+      <a href="https://github.com/nicchar/vitalmetrics" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <span class="version-tag">Version Beta</span>
+  </div>
+</footer>
+
+</body>
+</html>
