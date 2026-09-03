@@ -8,6 +8,14 @@ const defaults = {
   weightGoal: null,   // kg
   sex: '',            // 'm' | 'f' | ''
   birthYear: null,
+  // Review 11 (19.08.2026): Körpergröße + Aktivitätslevel für die grobe
+  // Grundumsatz-/Protein-Einschätzung (domain/energyNeeds.js). height war
+  // vorher nirgends in der App erfasst (auch der BMI wurde bislang manuell
+  // eingetragen statt berechnet) - beides bewusst optional, die App rechnet
+  // erst, wenn beides vorliegt (siehe calcBMR: gibt sonst null zurück statt
+  // zu raten).
+  height: null,        // cm
+  activityLevel: '',   // '' | 'sitzend' | 'leicht_aktiv' | 'aktiv' | 'sehr_aktiv' (siehe domain/energyNeeds.js ACTIVITY_LEVELS)
   // Block E: feste Auswahlliste (KEIN Freitext-Diagnosefeld) für allgemeine
   // Medikamenten-/Supplement-Wechselwirkungshinweise, siehe medicationInteractions.js
   medications: [],

@@ -8,6 +8,7 @@ import { DISCLAIMER_FULL } from '../../domain/healthClaims.js';
 import { notifications } from '../../domain/notifications.js';
 import { openLegalLink } from '../../domain/legalLinks.js';
 import { dataExportService } from '../../infra/data/dataExportService.js';
+import { ACTIVITY_LEVELS } from '../../domain/energyNeeds.js';
 
 export function renderProfile(container) {
   const profile = profileRepo.get();
@@ -39,6 +40,18 @@ export function renderProfile(container) {
         <div class="form-group">
           <label for="p-weightgoal">Zielgewicht (kg)</label>
           <input type="number" id="p-weightgoal" class="form-control" value="${profile.weightGoal || ''}" placeholder="z. B. 70" min="30" max="300">
+        </div>
+        <div class="form-group">
+          <label for="p-height">Körpergröße (cm)</label>
+          <input type="number" id="p-height" class="form-control" value="${profile.height || ''}" placeholder="z. B. 168" min="120" max="230">
+          <p class="hint-text">Optional – für die grobe Tagesbedarfs-Einschätzung (Kalorien, Protein) auf der Startseite.</p>
+        </div>
+        <div class="form-group">
+          <label for="p-activity">Aktivitätslevel</label>
+          <select id="p-activity" class="form-control">
+            <option value="" ${!profile.activityLevel ? 'selected' : ''}>Keine Angabe</option>
+            ${ACTIVITY_LEVELS.map(a => `<option value="${a.key}" ${profile.activityLevel === a.key ? 'selected' : ''}>${a.label}</option>`).join('')}
+          </select>
         </div>
         <button class="btn-primary" id="btn-save-profile">Speichern</button>
       </div>
@@ -108,7 +121,9 @@ export function renderProfile(container) {
       name: container.querySelector('#p-name').value.trim(),
       birthYear: parseInt(container.querySelector('#p-birthyear').value) || null,
       sex: container.querySelector('#p-sex').value,
-      weightGoal: parseFloat(container.querySelector('#p-weightgoal').value) || null
+      weightGoal: parseFloat(container.querySelector('#p-weightgoal').value) || null,
+      height: parseFloat(container.querySelector('#p-height').value) || null,
+      activityLevel: container.querySelector('#p-activity').value
     });
     showToast('✅ Profil gespeichert!');
   });

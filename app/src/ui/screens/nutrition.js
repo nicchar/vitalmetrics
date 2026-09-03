@@ -1,7 +1,9 @@
 import { state } from '../../appState.js';
 import { profileRepo } from '../../infra/db/repositories/profileRepo.js';
-import { nutritionRepo } from '../../infra/db/repositories/nutritionRepo.js';
+import { measurementRepo } from '../../infra/db/repositories/measurementRepo.js';
+import { nutritionRepo, MICRO_KEYS } from '../../infra/db/repositories/nutritionRepo.js';
 import { getDGERef } from '../../domain/nutrition.js';
+import { getProteinRefRange } from '../../domain/energyNeeds.js';
 import { searchOpenFoodFacts, fetchProductByBarcode } from '../../infra/external/openFoodFacts.js';
 import { rankFoodMatches } from '../../domain/foodSearch.js';
 import { MEAL_TYPES, guessMealTypeByTime, groupEntriesByMealType } from '../../domain/mealType.js';
@@ -14,6 +16,20 @@ import { showToast } from '../components/toast.js';
 // Kategorie wählen und danach so wie immer handhaben" - die Auswahl gilt also,
 // bis sie aktiv geändert wird oder der Screen neu geöffnet wird.
 let _nutrState = { selectedFood: null, searchProducts: [], mealType: guessMealTypeByTime() };
+
+/**
+ * Prüft, ob ein von Open Food Facts geliefertes Produkt KOMPLETT ohne
+ * Mikronährstoff-Angaben ist (Tester-Fund 18.08.2026: bei Barcode-Scans
+ * wurden Mikronährstoffe "nicht mitgezogen", obwohl sie bei Datenbank-
+ * Auswahl da sind - Ursache ist meist keine App-Falschverdrahtung, sondern
+ * dass Hersteller Vitamine/Mineralstoffe bei OFF nur selten pflegen,
+ * anders als die vollständige lokale BLS-Datenbank). Nur relevant für
+ * source === 'openfoodfacts' - der Custom-Eingabe-Screen fragt gar keine
+ * Mikronährstoffe ab und die lokale Suche hat immer vollständige Werte.
+ */
+function hasNoMicronutrients(food) {
+  return MICRO_KEYS.every(k => !(food[k] > 0));
+}
 
 export function renderNutrition(c) {
   _nutrState.selectedFood = null;
@@ -29,6 +45,16 @@ export function renderNutrition(c) {
   // Alltagsreibung-Review Juli 2026: keine manuellen Favoriten noetig - die
   // App leitet "haeufig verwendet" automatisch aus den letzten 30 Tagen ab.
   const frequentFoods = nutritionRepo.getFrequentFoods(30, 8);
+
+  // Protein-Referenz (Review 11, 19.08.2026): Nicoles Wunsch, Protein nicht
+  // losgelöst von Gewicht/Aktivitätslevel zu behandeln - Referenz kommt aus
+  // energyNeeds.js (DGE-Basis + ggf. Sport-Positionspapier), NICHT aus einem
+  // eigenen Zielwert. Ohne hinterlegtes Gewicht bewusst keine Schätzung.
+  const weightHistory = measurementRepo.getByBiomarker('gewicht');
+  const latestWeight = weightHistory.length ? weightHistory[weightHistory.length - 1].value : null;
+  const proteinRef = latestWeight
+    ? getProteinRefRange(latestWeight, profile.activityLevel, profile.ageGroup === '70+')
+    : null;
 
   // ── Eintragsliste, gruppiert nach Mahlzeit ──────────────────────────────────
   // Feature "Mahlzeiten-Kategorisierung" (03.08.2026): statt einer flachen
@@ -78,6 +104,29 @@ export function renderNutrition(c) {
         <div style="font-size:11px;color:var(--text-secondary)">Kohlenhydrate</div>
       </div>
     </div>` : '';
+
+  // ── Protein-Referenz (Review 11) ────────────────────────────────────────────
+  // Bewusst KEINE Ampelfarben/Score wie bei den Mikronährstoff-Balken unten -
+  // Nicoles ausdrückliche Vorgabe für die neuen Gewichts-/Protein-Features:
+  // "zurückhaltend wie der Zyklus-Bereich", reine Orientierung, kein Ziel.
+  let proteinRefHtml = '';
+  if (entries.length && proteinRef) {
+    const refLabel = proteinRef.min === proteinRef.max ? `${proteinRef.min}` : `${proteinRef.min}–${proteinRef.max}`;
+    const barMax = proteinRef.max || proteinRef.min;
+    const pct = barMax ? Math.min(100, Math.round((totals.protein / barMax) * 100)) : 0;
+    proteinRefHtml = `<div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px">
+        <span style="font-weight:600">🥩 Protein-Referenz</span>
+        <span style="color:var(--text-secondary)">${totals.protein} / ${refLabel} g</span>
+      </div>
+      <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:var(--primary);border-radius:3px;transition:width .4s"></div>
+      </div>
+      <div style="font-size:11px;color:var(--text-secondary);margin-top:2px">Grobe Orientierung auf Basis deines Gewichts${profile.activityLevel ? ' und Aktivitätslevels' : ''} – kein festes Ziel.</div>
+    </div>`;
+  } else if (entries.length && !proteinRef) {
+    proteinRefHtml = `<p style="font-size:11px;color:var(--text-secondary);margin-bottom:12px">Trage dein Gewicht ein (Profil), um hier eine grobe Protein-Referenz zu sehen.</p>`;
+  }
 
   // ── Mikronährstoff-Balken ───────────────────────────────────────────────────
   // Handlungstipp bei niedriger Zufuhr (Alltagsreibung-Review Juli 2026:
@@ -201,6 +250,7 @@ export function renderNutrition(c) {
     <div class="activity-section">
       <h3>📊 Makros heute</h3>
       ${macrosHtml || '<p style="font-size:13px;color:var(--text-secondary)">Noch keine Einträge.</p>'}
+      ${proteinRefHtml}
       ${entries.length ? `
         <h3 style="margin-top:4px">🧬 Mikronährstoffe</h3>
         <p style="font-size:11px;color:var(--text-secondary);margin-bottom:12px">
@@ -325,6 +375,8 @@ export function renderNutrition(c) {
               <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
                 ${food.emoji} ${food.name}</div>
               ${food.brand ? `<div style="font-size:11px;color:var(--text-secondary)">${food.brand}</div>` : ''}
+              ${food.source === 'openfoodfacts' && hasNoMicronutrients(food)
+                ? '<div style="font-size:11px;color:#f59e0b">⚠️ Keine Mikronährstoff-Angaben</div>' : ''}
             </div>
             <div style="font-size:13px;font-weight:700;color:var(--primary);white-space:nowrap">${food.kal} kcal</div>
           </div>`).join('')}
@@ -341,7 +393,14 @@ export function renderNutrition(c) {
         cardName.innerHTML = `${food.emoji} <strong>${food.name}</strong>`
           + (food.brand ? ` · <span style="color:var(--text-secondary)">${food.brand}</span>` : '')
           + `<br><span style="font-size:11px;color:var(--text-secondary)">
-             ${food.kal} kcal · ${food.protein}g P · ${food.fat}g F · ${food.carbs}g KH pro 100 g</span>`;
+             ${food.kal} kcal · ${food.protein}g P · ${food.fat}g F · ${food.carbs}g KH pro 100 g</span>`
+          + (food.source === 'openfoodfacts' && hasNoMicronutrients(food)
+            ? `<div style="margin-top:8px;padding:8px;background:#fef3c7;border-radius:6px;font-size:11px;color:#92400e">
+                 ⚠️ Open Food Facts liefert für dieses Produkt keine Mikronährstoff-Angaben (Herstellerabhängig,
+                 kein App-Fehler). Falls dir das wichtig ist: lieber ein ähnliches Lebensmittel über die lokale
+                 Suche (BLS-Datenbank, oben ohne 🌐-Symbol) wählen.
+               </div>`
+            : '');
         card.style.display = 'block';
         resultsBox.innerHTML = '';
         searchInput.value = food.name.slice(0, 40);

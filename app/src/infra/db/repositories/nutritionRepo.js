@@ -13,7 +13,10 @@ import { storage } from '../sqlite.js';
 
 const KEY = 'vm_nutrition';
 const SCHEMA_VERSION = 2;
-const MICRO_KEYS = ['vit_a', 'vit_d', 'vit_e', 'vit_k', 'vit_c', 'b1', 'b2', 'b3', 'b6', 'b12', 'folat', 'eisen', 'zink', 'mag', 'cal'];
+// Exportiert (18.08.2026), damit die UI (nutrition.js) mit derselben Liste
+// prüfen kann, ob ein Open-Food-Facts-Produkt komplett ohne
+// Mikronährstoff-Angaben ist - statt die 15 Keys ein zweites Mal zu pflegen.
+export const MICRO_KEYS = ['vit_a', 'vit_d', 'vit_e', 'vit_k', 'vit_c', 'b1', 'b2', 'b3', 'b6', 'b12', 'folat', 'eisen', 'zink', 'mag', 'cal'];
 
 function migrate(oldData) {
   if (!oldData || typeof oldData !== 'object') return {};

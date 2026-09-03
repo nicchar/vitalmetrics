@@ -2,6 +2,7 @@ import { fastingRepo } from '../../infra/db/repositories/fastingRepo.js';
 import { cravingsRepo } from '../../infra/db/repositories/cravingsRepo.js';
 import { glucoseDayRepo } from '../../infra/db/repositories/glucoseDayRepo.js';
 import { customRecipeRepo } from '../../infra/db/repositories/customRecipeRepo.js';
+import { profileRepo } from '../../infra/db/repositories/profileRepo.js';
 import { entitlements } from '../../domain/entitlements.js';
 import { navigate } from '../../router.js';
 
@@ -13,6 +14,11 @@ export function renderToolsHub(c) {
   const todayGlu = Object.keys(glucoseDayRepo.getDay(today)).length;
   const recipeCount = customRecipeRepo.getAll().length;
   const isPremium = entitlements.isPremium();
+  // Tester-Fund 18.08.2026: die "PMS, Prämenopause & Menopause"-Karte war hier
+  // IMMER sichtbar, unabhängig vom Geschlecht - anders als der Zyklus-Tab in
+  // der Bottom-Nav, der sich in router.js (updateCycleNavVisibility) schon
+  // korrekt bei sex !== 'f' ausblendet. Jetzt konsistent: gleiche Bedingung.
+  const showCycleWellness = profileRepo.get().sex === 'f';
   // Einheitliche Kennzeichnung aller Premium-Karten (Experten-Review 7,
   // 26.07.2026) - vorher nur uneinheitlicher Text, kein gemeinsames Muster.
   const premiumCls = isPremium ? '' : ' tool-card-premium';
@@ -92,6 +98,7 @@ export function renderToolsHub(c) {
         </div>
         <div class="tool-card-arrow">›</div>
       </div>
+      ${showCycleWellness ? `
       <div class="tool-card" id="tool-cycle-wellness">
         <div class="tool-card-icon">🌸</div>
         <div class="tool-card-body">
@@ -99,7 +106,7 @@ export function renderToolsHub(c) {
           <div class="tool-card-desc">Mikronährstoffe je Lebensphase, traditionelle Perspektiven – reiner Lerninhalt</div>
         </div>
         <div class="tool-card-arrow">›</div>
-      </div>
+      </div>` : ''}
     </div>
   </div>`;
 
@@ -110,5 +117,5 @@ export function renderToolsHub(c) {
   c.querySelector('#tool-my-recipes').addEventListener('click', () => navigate('my_recipes'));
   c.querySelector('#tool-weekly-review').addEventListener('click', () => navigate('weekly_review'));
   c.querySelector('#tool-skin-vitality').addEventListener('click', () => navigate('skin_vitality'));
-  c.querySelector('#tool-cycle-wellness').addEventListener('click', () => navigate('cycle_wellness'));
+  c.querySelector('#tool-cycle-wellness')?.addEventListener('click', () => navigate('cycle_wellness'));
 }

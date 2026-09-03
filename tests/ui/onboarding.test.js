@@ -48,25 +48,34 @@ test('onboarding.js: Einführungs-Karte hat keine eigenen Pflichtfelder (darf de
 
 /**
  * Review 9 (30.07.2026), Priorisierungsvorschlag Punkt 6: Fortschrittsanzeige
- * für die 3 Datenerfassungs-Schritte (Einführungskarte zählt laut
- * Expertenrunde nicht mit, da kein Pflichtfeld).
+ * für die Datenerfassungs-Schritte (Einführungskarte zählt laut Expertenrunde
+ * nicht mit, da kein Pflichtfeld).
+ *
+ * Review 11 (19.08.2026): um Körpergröße (Schritt 4) und Aktivitätslevel
+ * (Schritt 5) auf "VON 5" erweitert - beide OPTIONAL, siehe Test weiter unten.
  */
-test('onboarding.js: Fortschrittsanzeige "Schritt X von 3" für alle 3 Datenerfassungs-Schritte vorhanden', () => {
+test('onboarding.js: Fortschrittsanzeige "Schritt X von 5" für alle 5 Datenerfassungs-Schritte vorhanden', () => {
   const src = readFileSync(path.resolve(__dirname, '../../app/src/ui/screens/onboarding.js'), 'utf-8');
-  for (const step of ['SCHRITT 1 VON 3', 'SCHRITT 2 VON 3', 'SCHRITT 3 VON 3']) {
+  for (const step of ['SCHRITT 1 VON 5', 'SCHRITT 2 VON 5', 'SCHRITT 3 VON 5', 'SCHRITT 4 VON 5', 'SCHRITT 5 VON 5']) {
     assert.ok(src.includes(step), `Fortschrittsanzeige "${step}" fehlt`);
   }
-  // Reihenfolge: Datenschutz -> Geschlecht -> Alter, jeweils direkt vor der passenden Karte.
-  const idx1 = src.indexOf('SCHRITT 1 VON 3');
-  const idx2 = src.indexOf('SCHRITT 2 VON 3');
-  const idx3 = src.indexOf('SCHRITT 3 VON 3');
+  // Reihenfolge: Datenschutz -> Geschlecht -> Alter -> Größe -> Aktivitätslevel.
+  const idx1 = src.indexOf('SCHRITT 1 VON 5');
+  const idx2 = src.indexOf('SCHRITT 2 VON 5');
+  const idx3 = src.indexOf('SCHRITT 3 VON 5');
+  const idx4 = src.indexOf('SCHRITT 4 VON 5');
+  const idx5 = src.indexOf('SCHRITT 5 VON 5');
   const idxConsent = src.indexOf('Bevor es losgeht');
   const idxSex     = src.indexOf('Dein Geschlecht');
-  const idxAge      = src.indexOf('Deine Altersgruppe');
+  const idxAge     = src.indexOf('Deine Altersgruppe');
+  const idxHeight  = src.indexOf('Deine Körpergröße');
+  const idxActivity = src.indexOf('Wie aktiv bist du im Alltag?');
   assert.ok(idx1 < idxConsent && idx1 > src.indexOf('Was ist WellANNI?'));
   assert.ok(idx2 < idxSex);
   assert.ok(idx3 < idxAge);
-  assert.ok(idx1 < idx2 && idx2 < idx3, 'Schritte sollten in aufsteigender Reihenfolge stehen');
+  assert.ok(idx4 < idxHeight);
+  assert.ok(idx5 < idxActivity);
+  assert.ok(idx1 < idx2 && idx2 < idx3 && idx3 < idx4 && idx4 < idx5, 'Schritte sollten in aufsteigender Reihenfolge stehen');
 });
 
 /**
@@ -103,4 +112,51 @@ test('onboarding.js: Einführungs-Karte stellt Ernährungs-Tracking (nicht Werte
   assert.ok(/trackt nicht die Nährstoffe direkt, sondern\s*\n?\s*deine Ernährung/.test(introBlock),
     'Sollte klarstellen, dass Ernährung (nicht Nährstoffwerte direkt) getrackt wird');
   assert.ok(/Supplement/i.test(introBlock), 'Sollte Supplements als möglichen Alltagstipp erwähnen');
+});
+
+/**
+ * Review 11 (19.08.2026): Körpergröße (Schritt 4) und Aktivitätslevel
+ * (Schritt 5) sind bewusst OPTIONAL - Nicoles Wunsch nach einer groben
+ * Grundumsatz-/Protein-Einschätzung darf das Onboarding nicht zusätzlich
+ * verlängern/blockieren. updateDoneButton() darf sich also NICHT ändern.
+ */
+test('onboarding.js: Körpergröße/Aktivitätslevel sind optional - updateDoneButton() hängt weiterhin nur von Geschlecht/Alter/Consent ab', () => {
+  const src = readFileSync(path.resolve(__dirname, '../../app/src/ui/screens/onboarding.js'), 'utf-8');
+  const fnMatch = src.match(/function updateDoneButton\(\)[\s\S]*?\n  \}/);
+  assert.ok(fnMatch, 'updateDoneButton() nicht gefunden');
+  assert.ok(!/selectedActivity|onb-height/.test(fnMatch[0]),
+    'Körpergröße/Aktivitätslevel dürfen den "Los geht\'s"-Button nicht blockieren (siehe SCHRITT 4/5 · OPTIONAL im Markup)');
+  assert.ok(src.includes('SCHRITT 4 VON 5 · OPTIONAL'));
+  assert.ok(src.includes('SCHRITT 5 VON 5 · OPTIONAL'));
+});
+
+test('onboarding.js: importiert ACTIVITY_LEVELS aus energyNeeds.js und rendert einen Button je Aktivitätsstufe', () => {
+  const src = readFileSync(path.resolve(__dirname, '../../app/src/ui/screens/onboarding.js'), 'utf-8');
+  assert.ok(src.includes("from '../../domain/energyNeeds.js'"), 'Import von domain/energyNeeds.js fehlt');
+  assert.ok(src.includes('ACTIVITY_LEVELS.map'), 'Aktivitätsstufen sollten aus ACTIVITY_LEVELS gerendert werden, nicht hartkodiert');
+  assert.ok(src.includes('data-activity="${a.key}"'), 'activity-btn sollte data-activity=a.key setzen');
+});
+
+test('onboarding.js: Körpergröße-Feld ist ein numerisches Input mit id="onb-height"', () => {
+  const src = readFileSync(path.resolve(__dirname, '../../app/src/ui/screens/onboarding.js'), 'utf-8');
+  assert.match(src, /<input type="number" id="onb-height"/);
+});
+
+test('onboarding.js: .activity-btn-Klicks setzen die .selected-Klasse (analog zu .sex-btn/.age-btn)', () => {
+  const src = readFileSync(path.resolve(__dirname, '../../app/src/ui/screens/onboarding.js'), 'utf-8');
+  const idx = src.indexOf("querySelectorAll('.activity-btn')");
+  assert.notEqual(idx, -1, 'Event-Wiring für .activity-btn fehlt');
+  const block = src.slice(idx, idx + 350);
+  assert.ok(block.includes("classList.add('selected')"));
+  assert.ok(block.includes('selectedActivity = btn.dataset.activity'));
+});
+
+test('onboarding.js: btn-done speichert height (geparst) und activityLevel im Profil, zusätzlich zu sex/ageGroup', () => {
+  const src = readFileSync(path.resolve(__dirname, '../../app/src/ui/screens/onboarding.js'), 'utf-8');
+  const idx = src.indexOf("querySelector('#btn-done').addEventListener");
+  const block = src.slice(idx, idx + 500);
+  assert.match(block, /height:\s*heightVal\s*>\s*0\s*\?\s*heightVal\s*:\s*null/);
+  assert.match(block, /activityLevel:\s*selectedActivity\s*\|\|\s*''/);
+  assert.ok(block.includes('sex: selectedSex'), 'sex sollte weiterhin gespeichert werden');
+  assert.ok(block.includes('ageGroup: selectedAge'), 'ageGroup sollte weiterhin gespeichert werden');
 });

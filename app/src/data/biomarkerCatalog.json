@@ -1286,6 +1286,26 @@
       "accessTier": "selftest"
     },
     {
+      "id": "hueftumfang",
+      "name": "Hüftumfang",
+      "category": "body",
+      "unit": "cm",
+      "refMin": null,
+      "refMax": null,
+      "refByGender": null,
+      "premium": true,
+      "selfTestAvailable": false,
+      "description": "Zusammen mit dem Taillenumfang Grundlage für das Taille-Hüft-Verhältnis (WHR) – kein eigener Referenzbereich, da nur im Verhältnis zur Taille aussagekräftig",
+      "function": "Bezugsgröße für das Taille-Hüft-Verhältnis (Waist-to-Hip-Ratio)",
+      "foods": [],
+      "deficiencySymptoms": [],
+      "tips": [
+        "Messung an der breitesten Stelle des Gesäßes, im Stehen.",
+        "Erst zusammen mit dem Taillenumfang aussagekräftig – das Verhältnis (WHR) zeigt die Startseite, sobald beide Werte vorliegen."
+      ],
+      "accessTier": "selftest"
+    },
+    {
       "id": "coq10",
       "name": "Coenzym Q10",
       "category": "longevity",

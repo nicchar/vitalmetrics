@@ -270,3 +270,96 @@ test('buildShoppingList: zaehlbare Einheiten werden nach der Skalierung aufgerun
   const eggs = list.find(i => i.label.includes('Eier'));
   assert.equal(eggs.label, '1 Eier');
 });
+
+// Review 12 (19.08.2026), Tester-Feedback: "an zwei Wochentagen jeweils
+// Mittag- und Abendessen dasselbe Rezept" + "in jedem Rezept wird Fleisch
+// oder Fisch verwendet" + "Frühstück eine komplett eigene Kategorie".
+
+test('generatePlan: Mittag und Abend sind an KEINEM Tag identisch, auch nicht bei einem sehr kleinen Pool', () => {
+  // 'recipes' hat fuer 'vegetarisch' nur genau 2 Mittag/Abend-Optionen (r2, r3)
+  // - genau der Fall, in dem der urspruengliche Bug auftrat (Wochen-Fallback
+  // reintroduziert sonst leicht ein Duplikat ueber den Tag-Boost).
+  const plan = generatePlan(recipes, 'vegetarisch', '2026-08-03');
+  for (const day of plan.days) {
+    assert.notEqual(day.lunch, day.dinner, `Tag ${day.date}: Mittag und Abend duerfen nicht gleich sein`);
+  }
+});
+
+test('generatePlan: kein Rezept wird zweimal in derselben Woche verwendet, wenn der Pool exakt genug Rezepte fuer alle Mittag/Abend-Slots hat', () => {
+  const vierzehnMittagsrezepte = Array.from({ length: 14 }, (_, i) => ({
+    id: `lunch_${i}`,
+    category: 'vegetarisch',
+    mealType: 'lunch',
+    tags: [],
+    ingredients: [],
+    steps: [],
+  }));
+  const plan = generatePlan(vierzehnMittagsrezepte, 'vegetarisch', '2026-08-03');
+  const usedIds = plan.days.flatMap(d => [d.lunch, d.dinner]);
+  assert.equal(usedIds.length, 14);
+  assert.equal(new Set(usedIds).size, 14, 'bei genau 14 verfuegbaren Rezepten fuer 14 Slots darf keines doppelt vorkommen');
+});
+
+test('getEligiblePool: "fleisch_fisch" umfasst seit Review 12 den GESAMTEN Mittag/Abend-Pool, nicht nur Fleisch/Fisch-Rezepte', () => {
+  const pool = getEligiblePool(recipes, 'fleisch_fisch');
+  assert.deepEqual(pool.lunch.map(r => r.id).sort(), ['r2', 'r3', 'r4'], 'vegetarische Rezepte (r2, r3) muessen im Fleisch/Fisch-Pool ebenfalls waehlbar sein');
+});
+
+test('getEligiblePool: "vegetarisch" bleibt strikt - Fleisch/Fisch-Rezepte sind dort weiterhin ausgeschlossen', () => {
+  const pool = getEligiblePool(recipes, 'vegetarisch');
+  assert.ok(!pool.lunch.some(r => r.id === 'r4'), 'r4 (fleisch_fisch) darf im vegetarischen Pool nicht auftauchen');
+});
+
+test('getEligiblePool: Fruehstueck ist von der gewaehlten Mittag/Abend-Kategorie entkoppelt', () => {
+  // r1 ist als 'vegetarisch' einsortiert, muss aber auch bei Kategorie
+  // 'fleisch_fisch' als Fruehstuecksoption erscheinen (Nicole: "zum
+  // Fruehstueck Skyr mit Beeren" soll unabhaengig von der Mittag/Abend-Wahl
+  // moeglich sein).
+  const poolFleischFisch = getEligiblePool(recipes, 'fleisch_fisch');
+  assert.deepEqual(poolFleischFisch.breakfast.map(r => r.id), ['r1']);
+
+  const poolVegetarisch = getEligiblePool(recipes, 'vegetarisch');
+  assert.deepEqual(poolVegetarisch.breakfast.map(r => r.id), ['r1'], 'Fruehstueck ist bei jeder Kategorie identisch');
+});
+
+test('generatePlan: FLEISCH_FISCH_WEIGHT bevorzugt Fleisch/Fisch, wenn der Zufallswert niedrig ist', () => {
+  const gemischterPool = [
+    { id: 'meat_a', category: 'fleisch_fisch', mealType: 'lunch', tags: [], ingredients: [], steps: [] },
+    { id: 'meat_b', category: 'fleisch_fisch', mealType: 'lunch', tags: [], ingredients: [], steps: [] },
+    { id: 'meat_c', category: 'fleisch_fisch', mealType: 'lunch', tags: [], ingredients: [], steps: [] },
+    { id: 'veg_a', category: 'vegetarisch', mealType: 'lunch', tags: [], ingredients: [], steps: [] },
+    { id: 'veg_b', category: 'vegetarisch', mealType: 'lunch', tags: [], ingredients: [], steps: [] },
+    { id: 'veg_c', category: 'vegetarisch', mealType: 'lunch', tags: [], ingredients: [], steps: [] },
+  ];
+  const meatIds = new Set(['meat_a', 'meat_b', 'meat_c']);
+  const originalRandom = Math.random;
+  try {
+    Math.random = () => 0.01; // deutlich unter FLEISCH_FISCH_WEIGHT (0.65)
+    const plan = generatePlan(gemischterPool, 'fleisch_fisch', '2026-08-03');
+    // Am ersten Tag sind noch alle 6 Rezepte "frisch" (beide Varianten im
+    // Kandidaten-Pool verfuegbar) - die Gewichtung muss hier greifen.
+    assert.ok(meatIds.has(plan.days[0].lunch), `erwartete Fleisch/Fisch-Rezept bei niedrigem Zufallswert, bekam ${plan.days[0].lunch}`);
+  } finally {
+    Math.random = originalRandom;
+  }
+});
+
+test('generatePlan: FLEISCH_FISCH_WEIGHT erlaubt auch vegetarische Auswahl, wenn der Zufallswert hoch ist ("Fleisch/Fisch" ist Praeferenz, keine Pflicht)', () => {
+  const gemischterPool = [
+    { id: 'meat_a', category: 'fleisch_fisch', mealType: 'lunch', tags: [], ingredients: [], steps: [] },
+    { id: 'meat_b', category: 'fleisch_fisch', mealType: 'lunch', tags: [], ingredients: [], steps: [] },
+    { id: 'meat_c', category: 'fleisch_fisch', mealType: 'lunch', tags: [], ingredients: [], steps: [] },
+    { id: 'veg_a', category: 'vegetarisch', mealType: 'lunch', tags: [], ingredients: [], steps: [] },
+    { id: 'veg_b', category: 'vegetarisch', mealType: 'lunch', tags: [], ingredients: [], steps: [] },
+    { id: 'veg_c', category: 'vegetarisch', mealType: 'lunch', tags: [], ingredients: [], steps: [] },
+  ];
+  const meatIds = new Set(['meat_a', 'meat_b', 'meat_c']);
+  const originalRandom = Math.random;
+  try {
+    Math.random = () => 0.99; // deutlich ueber FLEISCH_FISCH_WEIGHT (0.65)
+    const plan = generatePlan(gemischterPool, 'fleisch_fisch', '2026-08-03');
+    assert.ok(!meatIds.has(plan.days[0].lunch), `erwartete vegetarisches Rezept bei hohem Zufallswert, bekam ${plan.days[0].lunch}`);
+  } finally {
+    Math.random = originalRandom;
+  }
+});

@@ -99,20 +99,46 @@ export function filterByIntolerances(recipes, activeIntolerances = []) {
  * aber ohne zu würfeln. Von generatePlan() selbst UND von der UI genutzt
  * (Rezept-Tausch-Auswahl, siehe mealPlan.js "🔄 Tauschen"), damit beide
  * garantiert denselben Pool sehen und kein zweites Mal gepflegt werden muss.
+ *
+ * Review 12 (19.08.2026), Nutzer-Feedback ("in jedem Rezept wird Fleisch oder
+ * Fisch verwendet, das muss nicht sein" / "Frühstück eine komplett eigene
+ * Kategorie"): zwei Verhaltensänderungen gegenüber vorher.
+ * 1. Frühstück ist jetzt IMMER von der gewählten Mittag/Abend-Kategorie
+ *    entkoppelt - unabhängig von "Fleisch/Fisch"/"Vegetarisch"/"Keto"/
+ *    "Gemischt" kommen Frühstücksvorschläge aus dem GESAMTEN Frühstücks-Pool
+ *    (Porridge/Quark/Obst/Gemüse ebenso wie die herzhaften Varianten).
+ *    Vorher fielen z.B. bei "Fleisch/Fisch" alle Skyr-/Porridge-Rezepte weg,
+ *    weil die nur unter "Vegetarisch"/"Keto" einsortiert sind.
+ * 2. "Fleisch/Fisch" ist für Mittag/Abend keine strikte Pflicht mehr, sondern
+ *    eine Präferenz: der Pool umfasst jetzt ALLE Kategorien (wie "Gemischt"),
+ *    die tatsächliche Fleisch/Fisch-Bevorzugung passiert als Gewichtung beim
+ *    Würfeln in generatePlan() - siehe FLEISCH_FISCH_WEIGHT dort.
+ *    "Vegetarisch" und "Keto" bleiben dagegen bewusst STRIKT (Nicole:
+ *    "bei vegetarisch ist Fleisch verboten") - dort wird weiterhin nur aus
+ *    Rezepten der jeweiligen Kategorie gewählt.
  */
 export function getEligiblePool(recipes, category, activeIntolerances = []) {
   const withoutIntolerances = filterByIntolerances(recipes, activeIntolerances);
-  const pool = category === 'gemischt' ? withoutIntolerances : withoutIntolerances.filter(r => r.category === category);
+
+  const breakfast = withoutIntolerances.filter(r => r.mealType === 'breakfast');
+
+  const allLunch = withoutIntolerances.filter(r => r.mealType === 'lunch');
+  const lunch = (category === 'gemischt' || category === 'fleisch_fisch')
+    ? allLunch
+    : allLunch.filter(r => r.category === category);
+
   return {
-    breakfast: pool.filter(r => r.mealType === 'breakfast'),
-    lunch: pool.filter(r => r.mealType === 'lunch'),
-    dinner: pool.filter(r => r.mealType === 'lunch'), // Abendessen nutzt denselben Pool wie Mittag
+    breakfast,
+    lunch,
+    dinner: lunch, // Abendessen nutzt denselben Pool wie Mittag
   };
 }
 
 /**
  * Erzeugt einen neuen 7-Tage-Plan. `category` ist 'vegetarisch' | 'fleisch_fisch'
- * | 'keto' | 'gemischt'. Bei 'gemischt' wird über alle Kategorien gestreut.
+ * | 'keto' | 'gemischt'. Bei 'gemischt' wird über alle Kategorien gestreut;
+ * bei 'fleisch_fisch' seit Review 12 ebenfalls (siehe getEligiblePool()),
+ * mit einer Ziehungs-Gewichtung Richtung Fleisch/Fisch (FLEISCH_FISCH_WEIGHT).
  *
  * `underCoveredTags` (optional): Rezept-Tag-IDs, die bei der Auswahl bevorzugt
  * werden, siehe getUnderCoveredTags(). Sanfte Praeferenz, kein Zwang - wenn
@@ -134,30 +160,95 @@ export function generatePlan(recipes, category, weekStartIso, underCoveredTags =
   const byMeal = getEligiblePool(recipes, category, activeIntolerances);
   const recipesById = Object.fromEntries(recipes.map(r => [r.id, r]));
 
-  const usedRecently = { breakfast: [], lunch: [], dinner: [] };
+  // Review 12 (19.08.2026), Tester-Fund ("an zwei Wochentagen jeweils Mittag-
+  // und Abendessen dasselbe Rezept" + "bitte immer eine Berücksichtigung,
+  // dass das Rezept nicht zweimal an einem Tag gewählt werden darf und auch
+  // nicht zweimal in einer Woche"): STRIKTE Wochen-Einzigartigkeit statt der
+  // vorherigen "nicht dieselben letzten 3"-Weichspülung. Mittag UND Abend
+  // teilen sich einen gemeinsamen "lunchDinner"-Track (sie nutzen ohnehin
+  // denselben Rezept-Pool, siehe getEligiblePool()) - so kann ein Rezept
+  // niemals zweimal am selben Tag ODER an zwei verschiedenen Tagen derselben
+  // Woche auftauchen. Frühstück wird unabhängig davon getrackt (eigener,
+  // disjunkter Rezept-Pool). Fällt defensiv auf den vollen Pool zurück, falls
+  // ein sehr enger Filter (z.B. mehrere gleichzeitige Unverträglichkeiten)
+  // weniger eindeutige Rezepte übrig lässt, als die Woche Slots braucht -
+  // niemals eine leere Mahlzeit erzeugen.
+  const usedThisWeek = { breakfast: new Set(), lunchDinner: new Set() };
 
-  function pick(mealType) {
+  // Pins gelten für die GANZE Woche und zählen daher vorab als "diese Woche
+  // verwendet" - sonst könnte eine zufällige Auswahl in der jeweils anderen
+  // Mahlzeit (Mittag/Abend teilen sich den Pool) dieselbe Woche über exakt
+  // das gepinnte Rezept "duplizieren".
+  for (const mealType of ['breakfast', 'lunch', 'dinner']) {
+    const pinnedId = pins[mealType];
+    if (pinnedId && recipesById[pinnedId]) {
+      const trackKey = mealType === 'breakfast' ? 'breakfast' : 'lunchDinner';
+      usedThisWeek[trackKey].add(pinnedId);
+    }
+  }
+
+  // "Fleisch/Fisch" ist seit Review 12 eine Präferenz, keine Pflicht mehr
+  // (Nutzer-Feedback: bei durchgehender Fleisch/Fisch-Wahl enthielt vorher
+  // buchstäblich JEDES Rezept Fleisch/Fisch). Der Pool (getEligiblePool)
+  // enthält jetzt auch vegetarische/Keto-Gerichte; hier wird nur noch die
+  // AUSWAHL innerhalb des Pools in Richtung Fleisch/Fisch gewichtet, nicht
+  // mehr erzwungen. 65% ist eine bewusste Mitte zwischen "kaum merkbar" und
+  // "de facto wieder Pflicht" - im Schnitt über Mittag+Abend ergibt das ca.
+  // 1,3 Fleisch/Fisch-Mahlzeiten pro Tag, mit echter Streuung (mal 0, mal 1,
+  // mal 2), wie von Nicole beschrieben ("einmal am Tag... auch mal zweimal...
+  // auch mal vegetarisch").
+  const FLEISCH_FISCH_WEIGHT = 0.65;
+  const preferredIds = category === 'fleisch_fisch'
+    ? new Set(recipes.filter(r => r.category === 'fleisch_fisch').map(r => r.id))
+    : null;
+
+  function pick(mealType, sameDayExcludeId = null) {
+    const trackKey = mealType === 'breakfast' ? 'breakfast' : 'lunchDinner';
     const options = byMeal[mealType];
     if (!options.length) return null;
-    const avoid = usedRecently[mealType];
-    const fresh = options.filter(r => !avoid.includes(r.id));
-    const pool2 = fresh.length ? fresh : options;
+    const used = usedThisWeek[trackKey];
+
+    let candidates = options.filter(r => !used.has(r.id));
+    if (!candidates.length) candidates = options; // Pool zu klein fuer volle Wochen-Einzigartigkeit - Fallback
+
+    // Selbst-Duplikat-Schutz: der Wochen-Fallback oben (und der Tag-Boost
+    // gleich danach) koennten sonst in kleinen Pools genau das Rezept
+    // reproduzieren, das heute schon fuer Mittag gewaehlt wurde (der
+    // urspruengliche Bug-Report: "an zwei Wochentagen jeweils Mittag- und
+    // Abendessen das gleiche Rezept"). Deshalb wird der Ausschluss NACH dem
+    // Wochen-Fallback, aber VOR dem Tag-Boost angewendet - und nur, wenn
+    // dadurch nicht der Pool komplett leerlaeuft (1-Rezept-Pool = Duplikat
+    // unvermeidbar, aber besser als eine leere Mahlzeit).
+    if (sameDayExcludeId) {
+      const withoutSameDay = candidates.filter(r => r.id !== sameDayExcludeId);
+      if (withoutSameDay.length) candidates = withoutSameDay;
+    }
 
     const boosted = underCoveredTags.length
-      ? pool2.filter(r => r.tags?.some(t => underCoveredTags.includes(t)))
+      ? candidates.filter(r => r.tags?.some(t => underCoveredTags.includes(t)))
       : [];
-    const finalPool = boosted.length ? boosted : pool2;
+    let pool = boosted.length ? boosted : candidates;
 
-    const choice = finalPool[Math.floor(Math.random() * finalPool.length)];
-    avoid.push(choice.id);
-    if (avoid.length > 3) avoid.shift(); // nicht dieselben letzten 3 Tage wiederholen
+    // Fleisch/Fisch-Gewichtung nur anwenden, wenn im aktuellen (schon
+    // gefilterten) Pool tatsächlich BEIDE Varianten verfügbar sind - sonst
+    // würde der Würfel wirkungslos bzw. die Auswahl künstlich einschränken.
+    if (preferredIds && trackKey === 'lunchDinner') {
+      const preferred = pool.filter(r => preferredIds.has(r.id));
+      const rest = pool.filter(r => !preferredIds.has(r.id));
+      if (preferred.length && rest.length) {
+        pool = Math.random() < FLEISCH_FISCH_WEIGHT ? preferred : rest;
+      }
+    }
+
+    const choice = pool[Math.floor(Math.random() * pool.length)];
+    used.add(choice.id);
     return choice.id;
   }
 
-  function pinnedOrPicked(mealType) {
+  function pinnedOrPicked(mealType, sameDayExcludeId = null) {
     const pinnedId = pins[mealType];
     if (pinnedId && recipesById[pinnedId]) return pinnedId;
-    return pick(mealType);
+    return pick(mealType, sameDayExcludeId);
   }
 
   const start = new Date(weekStartIso);
@@ -165,12 +256,17 @@ export function generatePlan(recipes, category, weekStartIso, underCoveredTags =
   for (let i = 0; i < 7; i++) {
     const d = new Date(start);
     d.setDate(d.getDate() + i);
+    const breakfastId = pinnedOrPicked('breakfast');
+    const lunchId = pinnedOrPicked('lunch');
+    // Abend erhaelt explizit die heutige Mittags-Wahl als Ausschluss - das ist
+    // der eigentliche Fix fuer den gemeldeten Bug (siehe pick() oben).
+    const dinnerId = pinnedOrPicked('dinner', lunchId);
     days.push({
       date: d.toISOString().slice(0, 10),
       weekday: WEEKDAYS[i],
-      breakfast: pinnedOrPicked('breakfast'),
-      lunch: pinnedOrPicked('lunch'),
-      dinner: pinnedOrPicked('dinner'),
+      breakfast: breakfastId,
+      lunch: lunchId,
+      dinner: dinnerId,
     });
   }
   return { weekStart: weekStartIso, category, pins: { ...pins }, days };

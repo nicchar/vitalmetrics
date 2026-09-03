@@ -6,15 +6,73 @@ import { getDGERef } from '../../domain/nutrition.js';
 import { getStatus, getStatusColor } from '../../domain/status.js';
 import { getRefRangeLabel } from '../../domain/ranges.js';
 import { entitlements } from '../../domain/entitlements.js';
-import { getSeasonalTip } from '../../domain/seasonalTips.js';
+import { getSeasonalTip, getWildHerbTip, WILDHERB_SAFETY_NOTE } from '../../domain/seasonalTips.js';
 import { getUnderCoveredTags } from '../../domain/mealPlan.js';
 import { getAccessTierBadge } from '../../domain/biomarkerAccess.js';
 import { DISCLAIMER_SHORT, REFERENCE_VALUES_NOTE } from '../../domain/healthClaims.js';
+import { calcTDEERange, getProteinRefRange, calcWHR, getWHRRefLabel, estimateAge } from '../../domain/energyNeeds.js';
 import { mondayOf, previousMonday } from '../../domain/dateUtils.js';
 import { buildWeeklyRecommendations } from '../../domain/weeklyReview.js';
 import { navigate } from '../../router.js';
 import { exportService } from '../../infra/pdf/exportService.js';
 import { showToast } from '../components/toast.js';
+
+/**
+ * "Heute"-Bereich (Review 11, 19.08.2026): fasst Kalorien/Makros aus dem
+ * Ernährungstagebuch UND die Körperwerte (Gewicht/Taille/Hüfte/WHR) an EINER
+ * Stelle oben auf der Startseite zusammen - Nicoles ausdrücklicher Wunsch,
+ * Protein nicht isoliert von den übrigen Makros zu zeigen ("ich möchte
+ * protein nicht eigenständig ohne kalorien und kohlenhydrate und fett
+ * behandeln"). Bewusst rein deskriptiv wie der Zyklus-Bereich: Kalorien-
+ * Spanne als "Orientierung, kein Ziel" (siehe energyNeeds.js), kein Score,
+ * keine Ampel, keine Diät-Sprache - dieselbe Zurückhaltung wie status.js.
+ */
+function renderHeuteCard({ dayTotals, tdee, proteinRef, weightEntry, waistEntry, hipEntry, whr, profile }) {
+  const hasAnyBodyValue = weightEntry || waistEntry || hipEntry;
+
+  let kcalLine;
+  if (tdee) {
+    kcalLine = `<div class="heute-kcal-value">${dayTotals.kcal} <span class="heute-kcal-unit">kcal heute</span></div>
+      <div class="heute-kcal-ref">Orientierung: ca. ${tdee.min}–${tdee.max} kcal/Tag · grobe Schätzung, kein Ziel zum Unter- oder Überschreiten</div>`;
+  } else {
+    kcalLine = `<div class="heute-kcal-value">${dayTotals.kcal} <span class="heute-kcal-unit">kcal heute</span></div>
+      <div class="heute-kcal-ref heute-hint">Trage Gewicht, Körpergröße und Aktivitätslevel ein (Profil) für eine grobe Tagesbedarfs-Einschätzung.</div>`;
+  }
+
+  const proteinRefText = proteinRef
+    ? ` <span class="heute-macro-ref">/ ${proteinRef.min === proteinRef.max ? proteinRef.min : `${proteinRef.min}–${proteinRef.max}`} g Referenz</span>`
+    : '';
+
+  const macrosHtml = `<div class="heute-macros">
+    <div class="heute-macro"><span class="heute-macro-label">Protein</span><span class="heute-macro-value">${dayTotals.protein} g${proteinRefText}</span></div>
+    <div class="heute-macro"><span class="heute-macro-label">Kohlenhydrate</span><span class="heute-macro-value">${dayTotals.carbs} g</span></div>
+    <div class="heute-macro"><span class="heute-macro-label">Fett</span><span class="heute-macro-value">${dayTotals.fat} g</span></div>
+  </div>`;
+
+  let bodyHtml;
+  if (hasAnyBodyValue) {
+    const rows = [];
+    if (weightEntry) rows.push(`<div class="heute-body-item"><span class="heute-body-label">⚖️ Gewicht</span><span class="heute-body-value">${weightEntry.value} kg</span></div>`);
+    if (waistEntry) rows.push(`<div class="heute-body-item"><span class="heute-body-label">📏 Taille</span><span class="heute-body-value">${waistEntry.value} cm</span></div>`);
+    if (hipEntry) rows.push(`<div class="heute-body-item"><span class="heute-body-label">📏 Hüfte</span><span class="heute-body-value">${hipEntry.value} cm</span></div>`);
+    if (whr != null) rows.push(`<div class="heute-body-item"><span class="heute-body-label">Taille-Hüft-Verhältnis</span><span class="heute-body-value">${whr}</span></div>`);
+    bodyHtml = `<div class="heute-body">${rows.join('')}${whr != null ? `<div class="heute-body-note">${getWHRRefLabel(profile.sex)} – rein informativ, keine automatische Bewertung durch die App.</div>` : ''}</div>`;
+  } else {
+    bodyHtml = `<div class="heute-body heute-hint">Noch kein Gewicht, keine Taille oder Hüfte erfasst. Trage sie unten unter "Meine Werte im Detail" ein, um sie hier zu sehen.</div>`;
+  }
+
+  return `<div class="heute-card" id="heute-card">
+    <h2 class="heute-title">📅 Heute</h2>
+    ${kcalLine}
+    ${macrosHtml}
+    <div class="heute-divider"></div>
+    ${bodyHtml}
+    <div class="heute-actions">
+      <button class="btn-card btn-heute-nutrition" id="btn-heute-nutrition">🍽️ Essen eintragen</button>
+      <button class="btn-card btn-heute-weight" id="btn-heute-weight">⚖️ Gewicht/Maße eintragen</button>
+    </div>
+  </div>`;
+}
 
 export function renderDashboard(container) {
   const catalog = state.get('catalog');
@@ -27,6 +85,25 @@ export function renderDashboard(container) {
   const today = new Date().toISOString().slice(0, 10);
   const dgeRef = getDGERef(profile.ageGroup, profile.sex);
   const dayTotals = nutritionRepo.getDayTotals(today);
+
+  // "Heute"-Bereich (Review 11): Grundumsatz/TDEE + Protein-Referenz brauchen
+  // das zuletzt eingetragene Gewicht; ohne Gewicht keine Schätzung (siehe
+  // energyNeeds.js - bewusst kein Rateergebnis auf Basis eines angenommenen
+  // Durchschnittsgewichts).
+  const weightHistory = measurementRepo.getByBiomarker('gewicht');
+  const weightEntry = weightHistory[weightHistory.length - 1] || null;
+  const waistHistory = measurementRepo.getByBiomarker('taillenumfang');
+  const waistEntry = waistHistory[waistHistory.length - 1] || null;
+  const hipHistory = measurementRepo.getByBiomarker('hueftumfang');
+  const hipEntry = hipHistory[hipHistory.length - 1] || null;
+  const age = estimateAge(profile);
+  const tdee = weightEntry
+    ? calcTDEERange(weightEntry.value, profile.height, age, profile.sex, profile.activityLevel)
+    : null;
+  const proteinRef = weightEntry
+    ? getProteinRefRange(weightEntry.value, profile.activityLevel, profile.ageGroup === '70+')
+    : null;
+  const whr = (waistEntry && hipEntry) ? calcWHR(waistEntry.value, hipEntry.value) : null;
 
   // Group biomarkers by category
   const grouped = {};
@@ -52,16 +129,23 @@ export function renderDashboard(container) {
         <button class="btn-pdf-export" id="btn-pdf-export" title="Bericht als PDF exportieren">📄 PDF</button>
       </div>
     </div>
-    <div style="margin-bottom:4px">
-      <input type="text" id="dash-search" class="sport-select"
-        style="width:100%"
-        placeholder="🔍 Wert suchen (z. B. Vitamin D, Eisen) …">
-    </div>`;
+    ${renderHeuteCard({ dayTotals, tdee, proteinRef, weightEntry, waistEntry, hipEntry, whr, profile })}`;
 
   // Saisonaler Hinweis (Block E) - rein informativ, keine individuelle Bewertung.
   const seasonalTip = getSeasonalTip();
   if (seasonalTip) {
     html += `<div class="seasonal-tip-banner"><span>${seasonalTip.icon}</span><span>${seasonalTip.text}</span></div>`;
+  }
+
+  // Wildkräuter des Monats (Review 11) - eigener Banner, bewusst mit
+  // Sicherheitshinweis zur Verwechslungsgefahr (Heilpraktikerin-Feedback).
+  const wildHerbTip = getWildHerbTip();
+  if (wildHerbTip) {
+    html += `<div class="wildherb-banner">
+      <div class="wildherb-banner-head"><span>${wildHerbTip.icon}</span><span>Wildkraut des Monats: ${wildHerbTip.name}</span></div>
+      <div class="wildherb-banner-text">${wildHerbTip.text}</div>
+      <div class="wildherb-banner-safety">⚠️ ${WILDHERB_SAFETY_NOTE}</div>
+    </div>`;
   }
 
   // Premium banner (if not premium)
@@ -126,6 +210,18 @@ export function renderDashboard(container) {
       <div class="tool-card-arrow">›</div>
     </div>`;
   }
+
+  // Startseiten-Umbau (Review 11): die Detailkarten aller Vitalstoffe stehen
+  // seitdem als eigener, sekundärer Bereich UNTER dem "Heute"-Überblick statt
+  // ihn zu dominieren ("wirkt schon zu sehr in der App" war Nicoles zentraler
+  // Kritikpunkt). Die Suche gehört inhaltlich zu diesem Detailbereich, daher
+  // jetzt direkt darüber statt ganz oben auf der Seite.
+  html += `<h2 class="category-title" style="margin-top:18px">📊 Meine Werte im Detail</h2>
+    <div style="margin-bottom:4px">
+      <input type="text" id="dash-search" class="sport-select"
+        style="width:100%"
+        placeholder="🔍 Wert suchen (z. B. Vitamin D, Eisen) …">
+    </div>`;
 
   for (const [catKey, biomarkers] of Object.entries(grouped)) {
     html += `<div class="category-section">
@@ -213,6 +309,9 @@ export function renderDashboard(container) {
       section.style.display = sectionHasMatch ? '' : 'none';
     });
   });
+
+  container.querySelector('#btn-heute-nutrition')?.addEventListener('click', () => navigate('nutrition'));
+  container.querySelector('#btn-heute-weight')?.addEventListener('click', () => navigate('entry', 'gewicht'));
 
   // Events
   container.querySelectorAll('.btn-entry').forEach(btn => {

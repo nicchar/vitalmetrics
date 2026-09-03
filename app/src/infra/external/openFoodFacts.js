@@ -42,7 +42,11 @@ export function mapOFFFood(product) {
     vit_c: n['vitamin-c_100g'] || 0,
     b1: n['vitamin-b1_100g'] || 0,
     b2: n['vitamin-b2_100g'] || 0,
-    b3: n['niacin_100g'] || 0,
+    // OFF führt Niacin/Vitamin B3 intern unter 'vitamin-pp_100g' (historischer
+    // Name "Vitamine PP"), nicht unter 'niacin_100g' - dadurch war B3 bei
+    // Scans/Suche praktisch immer 0 (Fund 18.08.2026). 'niacin_100g' bleibt
+    // als Fallback, falls OFF den Wert doch mal unter diesem Namen liefert.
+    b3: n['vitamin-pp_100g'] || n['niacin_100g'] || 0,
     b6: n['vitamin-b6_100g'] || 0,
     b12: n['vitamin-b12_100g'] || 0,
     folat: n['folates_100g'] || 0,

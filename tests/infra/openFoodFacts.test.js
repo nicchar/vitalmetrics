@@ -42,6 +42,25 @@ test('mapOFFFood: mappt Kernfelder korrekt und rundet sinnvoll', () => {
   assert.equal(food.source, 'openfoodfacts');
 });
 
+test('mapOFFFood: Niacin/Vitamin B3 wird ueber den OFF-Schluessel "vitamin-pp_100g" gelesen (nicht "niacin_100g")', () => {
+  // Tester-Fund 18.08.2026: Open Food Facts fuehrt Niacin/Vitamin B3 intern unter
+  // 'vitamin-pp_100g' (historischer Name "Vitamine PP"), nicht unter 'niacin_100g' -
+  // b3 war dadurch bei Scans/Suche praktisch immer 0.
+  const food = mapOFFFood({
+    product_name: 'Testprodukt',
+    nutriments: { 'vitamin-pp_100g': 3.4 },
+  });
+  assert.equal(food.b3, 3.4);
+});
+
+test('mapOFFFood: "niacin_100g" bleibt als Fallback nutzbar, falls OFF den Wert doch mal so liefert', () => {
+  const food = mapOFFFood({
+    product_name: 'Testprodukt',
+    nutriments: { niacin_100g: 2.1 },
+  });
+  assert.equal(food.b3, 2.1);
+});
+
 test('mapOFFFood: fehlender Name faellt auf "Unbekannt" zurueck, keine Exceptions bei leeren nutriments', () => {
   const food = mapOFFFood({});
   assert.equal(food.name, 'Unbekannt');

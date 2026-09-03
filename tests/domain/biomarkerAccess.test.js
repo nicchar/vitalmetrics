@@ -44,10 +44,11 @@ test('getAccessTierBadge: null bei unbekannter/fehlender Stufe (kein Absturz im 
   assert.equal(getAccessTierBadge(null), null);
 });
 
-test('biomarkerCatalog.json: alle 47 Biomarker haben ein gueltiges accessTier-Feld', () => {
+test('biomarkerCatalog.json: alle 48 Biomarker haben ein gueltiges accessTier-Feld', () => {
   const catalogPath = path.resolve(__dirname, '../../app/src/data/biomarkerCatalog.json');
   const catalog = JSON.parse(readFileSync(catalogPath, 'utf-8'));
-  assert.equal(catalog.biomarkers.length, 47);
+  // Review 11 (19.08.2026): +1 durch den neuen Biomarker "hueftumfang" (Hüftumfang, WHR-Bezugsgröße).
+  assert.equal(catalog.biomarkers.length, 48);
   const missing = [];
   const invalid = [];
   for (const bm of catalog.biomarkers) {
