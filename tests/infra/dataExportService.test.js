@@ -24,7 +24,7 @@ beforeEach(() => {
 
 test('gatherAllData: enthält alle erwarteten Bereiche', () => {
   const data = gatherAllData();
-  for (const key of ['profile', 'measurements', 'nutrition', 'activity', 'cycle', 'fasting', 'glucoseDay', 'cravings', 'mealPlan', 'hydration', 'sleep']) {
+  for (const key of ['profile', 'measurements', 'nutrition', 'activity', 'cycle', 'fasting', 'cravings', 'mealPlan', 'hydration', 'sleep']) {
     assert.ok(key in data, `Bereich fehlt: ${key}`);
   }
 });

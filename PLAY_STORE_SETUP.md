@@ -168,37 +168,40 @@ Die .aab-Datei liegt dann unter: `android/app/build/outputs/bundle/release/app-r
 ### 4.1 Store-Eintrag ausfüllen
 Play Console → Deine App → Store-Präsenz → Haupt-Store-Eintrag
 
-**Kurzbeschreibung (80 Zeichen):**
-Vitalstoffe tracken, Ernährung planen, Wellness-Alltag im Blick behalten.
+**Kurzbeschreibung (80 Zeichen) – aktualisiert 19.09.2026:**
+Mehr als Kalorien: 45 Vitalstoffe, Zyklus & PMS im Blick.
 
-**Vollständige Beschreibung (4000 Zeichen max) – aktualisiert auf Version 2.0.0 (Juli 2026):**
+**Vollständige Beschreibung (4000 Zeichen max) – aktualisiert 19.09.2026 (nach Google-Play-Ablehnung "Falsche Erklärung zu Gesundheits-Apps"):**
 ```
-WellANNI hilft dir, deine Vitamin- und Mineralstoffzufuhr im Blick zu behalten – für mehr Energie im Alltag.
+Es steckt mehr in deiner Ernährung als Kalorien, Eiweiß, Fett und Kohlenhydrate. WellANNI schaut weiter: auf 45 Vitamine und Mineralstoffe, die zum Beispiel bei Energie, Zyklus und PMS eine Rolle spielen – nicht nur auf Makronährstoffe.
 
-📊 47 VITALSTOFFE IM ÜBERBLICK
-Vitamine, Mineralstoffe und weitere Werte – inkl. Zufuhr-Tracking gegen DGE-Referenzwerte für 15 Nährstoffe direkt aus deinem Ernährungstagebuch.
+⚕️ WICHTIGER HINWEIS: WellANNI ist kein Medizinprodukt und ersetzt keine ärztliche Beratung, Diagnose oder Behandlung. Die App hilft dir dabei, besser zu verstehen, welchen Einfluss deine Ernährung auf dein Wohlbefinden haben kann.
 
-🎯 WIE KOMME ICH AN MEINE WERTE?
-Neu: Jeder Vitalstoff zeigt dir, wie du realistisch an einen Wert kommst – automatisch aus dem Ernährungstagebuch, per Heimtest ohne Arzttermin, beim Hausarzt oder nur über Speziallabore. Keine Ratespiele mehr, was ein Bluttest überhaupt abdeckt.
+🥗 DEINE ERNÄHRUNG
+Du trägst ein, was du isst, und WellANNI berechnet automatisch, wie gut du bei 15 zentralen Mikronährstoffen versorgt bist – im Abgleich mit den DGE-Referenzwerten (Free: die 5 wichtigsten). Die übrigen Vitalstoffe aus dem 45er-Katalog trägst du bei Bedarf mit einem gemessenen Wert ein (Heimtest, Hausarzt oder Speziallabor). Über 500 Rezepte (vegetarisch, mit Fleisch/Fisch, Keto), Wochenplan mit Einkaufsliste, Unverträglichkeiten-Filter und Barcode-Scan machen das Tracken zur Gewohnheit statt zur Pflicht.
 
-🥗 ERNÄHRUNG ZUERST
-Über 270 Rezepte (vegetarisch, mit Fleisch/Fisch, Keto), Wochenplan mit automatischer Einkaufsliste und Unverträglichkeiten-Filter (Laktose/Gluten/Nüsse). Echte Lebensmitteldaten aus dem BLS 4.0 (Bundeslebensmittelschlüssel) plus Online-Suche über Open Food Facts.
+🎯 VITALSTOFFE WIRKLICH VERSTEHEN
+Zu jedem der 45 Vitalstoffe erfährst du, wofür er im Körper wichtig ist und woran sich ein Mangel zeigen könnte – wissenschaftlich eingeordnet statt Bauchgefühl.
 
-⏱️ HEALTH TOOLS
-Intervallfasten-Tracker, Blutzucker-Tagesgang, Heißhunger-Journal, Zyklustracker, Bewegungs-, Hydration- und Schlaf-Tracking sowie Wochenrückblick – alles an einem Ort.
+🌙 ZYKLUS, PMS & MENOPAUSE
+Zykluskalender mit Phasenberechnung, ein Symptom-Tagebuch, das trackt statt zu bewerten, und ein Lernbereich zu PMS, Prämenopause und Menopause – welche Nährstoffe in welcher Lebensphase eine Rolle spielen.
 
-✨ HAUTGESUNDHEIT & VITALITÄT (Premium)
-Vitamin C, Zink, Biotin & Co. neu eingeordnet: welche bereits getrackten Werte eine belegte Rolle für Haut, Haare und Nägel spielen – inklusive Blutzucker, Lifestyle-Faktoren und Darm-Haut-Achse.
+⏱️ DER GANZE ALLTAG IM BLICK
+Bewegungs-, Hydration- und Schlaf-Tracking sowie ein Heißhunger-Journal mit Muster-Erkennung ergänzen das Bild – für einen echten Überblick über deinen Körper, nicht nur über dein Essen.
+
+⭐ PREMIUM: TIEFE AUSWERTUNG
+Verlaufs-Charts für alle 45 Vitalstoffe, Ernährungsverlauf über 12 Wochen für alle 15 Mikronährstoffe, Wochenrückblick, Intervallfasten-Tracker mit Streak sowie die Auswertung „Beauty-Nährstoffe" (Vitamin C, Zink, Biotin & Co. für Haut, Haare und Nägel).
+
+🔒 100% LOKAL – KEIN SERVER, KEINE CLOUD
+Alle Daten bleiben ausschließlich auf deinem Gerät. Keine Registrierung, keine Datenweitergabe, kein Tracking durch Dritte.
 
 📄 PDF-EXPORT & BACKUP
-Erstelle Berichte, die du z. B. für ein Ernährungsberatungsgespräch mitnehmen kannst. Eigene Daten jederzeit als Datei sichern oder auf ein neues Gerät übertragen.
+Berichte für dein nächstes Ernährungsberatungsgespräch. Eigene Daten jederzeit sichern oder aufs neue Gerät übertragen.
 
-🔒 100% LOKAL – KEIN SERVER
-Alle Daten bleiben ausschließlich auf deinem Gerät. Keine Registrierung, keine Cloud, keine Datenweitergabe.
-
-⚕️ WICHTIGER HINWEIS
-WellANNI ist kein Medizinprodukt und ersetzt keine ärztliche Beratung, Diagnose oder Behandlung. Die App dient ausschließlich der persönlichen Gesundheitsbeobachtung im Wellness-Bereich.
+Lade WellANNI jetzt herunter und lerne, worauf es bei deiner Ernährung wirklich ankommt – weit über Kalorien hinaus.
 ```
+
+Hinweis: Frühere Fassungen erwähnten "Blutzucker-Tagesgang" und "Hautgesundheit" – beide Features/Begriffe wurden entfernt (siehe WellANNI_Playstore_Texte_2026.docx, Abschnitte 7–9, und Aktualisierung 19.09.2026). Diese Fassung ersetzt alle vorherigen.
 
 **Wichtig (Health Content Policy, Stand Januar 2026):** Der Satz "WellANNI ist
 kein Medizinprodukt..." muss wörtlich so oder sinngemäß in der Store-Beschreibung

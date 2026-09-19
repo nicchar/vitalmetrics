@@ -28,7 +28,6 @@ import { nutritionRepo } from '../db/repositories/nutritionRepo.js';
 import { activityRepo } from '../db/repositories/activityRepo.js';
 import { cycleRepo } from '../db/repositories/cycleRepo.js';
 import { fastingRepo } from '../db/repositories/fastingRepo.js';
-import { glucoseDayRepo } from '../db/repositories/glucoseDayRepo.js';
 import { cravingsRepo } from '../db/repositories/cravingsRepo.js';
 import { mealPlanRepo } from '../db/repositories/mealPlanRepo.js';
 import { hydrationRepo } from '../db/repositories/hydrationRepo.js';
@@ -52,7 +51,6 @@ export function gatherAllData() {
     activity: activityRepo.getAll(),
     cycle: cycleRepo.get(),
     fasting: fastingRepo.get(),
-    glucoseDay: glucoseDayRepo.getAll(),
     cravings: cravingsRepo.getAll(),
     mealPlan: mealPlanRepo.get(),
     hydration: hydrationRepo.getAll(),
@@ -69,7 +67,6 @@ export function applyAllData(data) {
   if (data.activity) activityRepo.replaceAll(data.activity);
   if (data.cycle) cycleRepo.save(data.cycle);
   if (data.fasting) fastingRepo.save(data.fasting);
-  if (data.glucoseDay) glucoseDayRepo.replaceAll(data.glucoseDay);
   if (data.cravings) cravingsRepo.saveAll(data.cravings);
   if (data.mealPlan) mealPlanRepo.save(data.mealPlan); else mealPlanRepo.clear();
   if (data.hydration) hydrationRepo.replaceAll(data.hydration);
