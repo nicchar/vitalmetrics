@@ -2,6 +2,7 @@ import { profileRepo } from '../../infra/db/repositories/profileRepo.js';
 import { navigate } from '../../router.js';
 import { openLegalLink } from '../../domain/legalLinks.js';
 import { ACTIVITY_LEVELS } from '../../domain/energyNeeds.js';
+import { HEALTH_CONSENT_TEXT, healthConsentFields } from '../../domain/consent.js';
 
 export function renderOnboarding(container) {
   container.innerHTML = `
@@ -18,13 +19,13 @@ export function renderOnboarding(container) {
           oder Calcium – man nennt sie auch Nährstoffe. Sie stecken hinter vielen Dingen, die du im Alltag spürst:
           Energie, Konzentration, ein starkes Immunsystem. WellANNI trackt nicht die Nährstoffe direkt, sondern
           deine Ernährung – und rechnet daraus aus, wie gut das deinen Bedarf deckt. So bekommst du ein Gefühl
-          dafür, ob du genug bekommst oder ob ein Supplement sinnvoll sein könnte. Ganz ohne Vorwissen, wie ein
+          dafür, ob du gut versorgt bist. Ganz ohne Vorwissen, wie ein
           einfaches Tagebuch fürs Essen.
         </p>
         <ul style="margin:8px 0 0;padding-left:20px;font-size:14px;color:var(--text-secondary);line-height:1.6">
           <li>📝 Trage kurz ein, was du isst, wie du dich bewegst oder – falls relevant – deinen Zyklus. Dauert nur wenige Sekunden.</li>
           <li>🔍 Die App vergleicht deine Zufuhr mit den offiziellen Empfehlungen der Deutschen Gesellschaft für Ernährung (DGE) und zeigt dir, wo du gut versorgt bist und wo vielleicht noch etwas fehlt (kein Diagnosewert, nur zur Orientierung).</li>
-          <li>💡 Bei niedriger Zufuhr bekommst du Alltagstipps – z. B. welche Lebensmittel helfen oder ob ein Supplement eine Option wäre.</li>
+          <li>💡 Bei niedriger Zufuhr bekommst du Alltagstipps – z. B. welche Lebensmittel helfen können.</li>
           <li>🔒 Alles bleibt auf deinem Gerät – keine Cloud, kein Account, niemand sieht deine Daten außer dir.</li>
         </ul>
       </div>
@@ -32,10 +33,14 @@ export function renderOnboarding(container) {
       <div class="onboarding-card">
         <div style="font-size:11px;font-weight:700;color:var(--text-secondary);letter-spacing:.03em;margin-bottom:2px">SCHRITT 1 VON 5</div>
         <h2 class="step-label">Bevor es losgeht</h2>
-        <p class="step-hint">Alle deine Werte bleiben ausschließlich auf deinem Gerät – es gibt keinen Server und keine Cloud. Wenn du später die optionale tägliche Erinnerung aktivierst, wird diese ebenfalls rein lokal über dein Gerät geplant.</p>
+        <p class="step-hint">Alle deine Werte bleiben ausschließlich auf deinem Gerät – es gibt keinen Server und keine Cloud. Nur wenn du aktiv online nach einem Lebensmittel suchst oder einen Barcode scannst, wird der Suchbegriff bzw. Barcode (ohne Gesundheitsdaten) an die Datenbank Open Food Facts gesendet. Die optionale tägliche Erinnerung wird rein lokal über dein Gerät geplant.</p>
         <label style="display:flex;align-items:flex-start;gap:10px;font-size:14px;margin-top:8px">
           <input type="checkbox" id="consent-check" style="margin-top:3px">
-          <span>Ich habe die <a href="#" id="link-datenschutz">Datenschutzerklärung</a> und die <a href="#" id="link-agb">AGB</a> gelesen und stimme zu.</span>
+          <span>Ich bin mindestens 18 Jahre alt, akzeptiere die <a href="#" id="link-agb">AGB</a> und habe die <a href="#" id="link-datenschutz">Datenschutzerklärung</a> zur Kenntnis genommen.</span>
+        </label>
+        <label style="display:flex;align-items:flex-start;gap:10px;font-size:14px;margin-top:10px">
+          <input type="checkbox" id="health-consent-check" style="margin-top:3px">
+          <span>${HEALTH_CONSENT_TEXT}</span>
         </label>
       </div>
 
@@ -95,11 +100,13 @@ export function renderOnboarding(container) {
 
   function updateDoneButton() {
     const btn = container.querySelector('#btn-done');
-    const consentChecked = container.querySelector('#consent-check').checked;
+    const consentChecked = container.querySelector('#consent-check').checked
+      && container.querySelector('#health-consent-check').checked;
     btn.disabled = selectedSex === null || selectedAge === null || !consentChecked;
   }
 
   container.querySelector('#consent-check').addEventListener('change', updateDoneButton);
+  container.querySelector('#health-consent-check').addEventListener('change', updateDoneButton);
   container.querySelector('#link-datenschutz').addEventListener('click', e => {
     e.preventDefault();
     openLegalLink('datenschutz');
@@ -144,7 +151,8 @@ export function renderOnboarding(container) {
       activityLevel: selectedActivity || '',
       onboardingDone: true,
       consentGiven: true,
-      consentDate: new Date().toISOString()
+      consentDate: new Date().toISOString(),
+      ...healthConsentFields(),
     });
     navigate('dashboard');
   });

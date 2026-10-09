@@ -91,15 +91,11 @@ const TEST_LINKS = {
   zink:        'Zink+Bluttest+Selbsttest',
   folsaeure:   'Folsaeure+Bluttest+Heimtest',
   cholesterin: 'Cholesterin+Schnelltest+Heimtest',
-  blutzucker:  'Blutzucker+Messgeraet+Teststreifen',
   blutdruck:   'Blutdruckmessgeraet+Oberarm',
   selen:       'Selen+Bluttest+Heimtest',
   haemoglobin: 'Haemoglobin+Bluttest+Heimtest',
-  hba1c:       'HbA1c+Selbsttest+Heimtest',
   magnesium:   'Magnesium+Bluttest+Heimtest',
   calcium:     'Calcium+Bluttest+Heimtest',
-  hscrp:       'hsCRP+Entzuendungsmarker+Bluttest',
-  glucose:     'Blutzucker+Messgeraet+Teststreifen',
   coq10:       'CoQ10+Ubiquinol+Bluttest+Heimtest',
 };
 

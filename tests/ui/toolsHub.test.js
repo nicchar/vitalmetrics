@@ -27,22 +27,15 @@ test('toolsHub.js: Karte zeigt die Anzahl gespeicherter eigener Rezepte an', () 
 });
 
 /**
- * Tester-Fund 18.08.2026: Die Karte "PMS, Prämenopause & Menopause" war hier
- * IMMER sichtbar, unabhängig vom Geschlecht - anders als der Zyklus-Tab in
- * der Bottom-Nav, der sich in router.js schon korrekt bei sex !== 'f'
- * ausblendet (updateCycleNavVisibility). Jetzt konsistent gemacht.
+ * Google-Play-Ablehnung 29.09.2026 ("Funktionen in Screenshots nicht
+ * vorhanden"): Zyklus-Tracker und PMS-/Menopause-Karte müssen für ALLE im
+ * Tools-Bereich erreichbar sein - unabhängig vom gewählten Geschlecht. Löst die
+ * frühere Regel (Tester-Fund 18.08.2026: nur bei sex === 'f') bewusst ab.
  */
-test('toolsHub.js: importiert profileRepo und blendet die Menopause-Karte nur bei sex === "f" ein', () => {
-  assert.ok(src.includes("import { profileRepo } from '../../infra/db/repositories/profileRepo.js'"),
-    'Import von profileRepo fehlt');
-  assert.ok(/const showCycleWellness = profileRepo\.get\(\)\.sex === 'f'/.test(src),
-    'Sichtbarkeits-Flag für die Menopause-Karte fehlt oder prüft nicht auf sex === "f"');
-  const idxCard = src.indexOf('id="tool-cycle-wellness"');
-  const block = src.slice(Math.max(0, idxCard - 200), idxCard);
-  assert.ok(block.includes('showCycleWellness ?'), 'Karte sollte hinter showCycleWellness im Template stehen');
-});
-
-test('toolsHub.js: Event-Listener für die Menopause-Karte nutzt optional chaining (Karte existiert nicht immer im DOM)', () => {
-  assert.ok(src.includes("querySelector('#tool-cycle-wellness')?.addEventListener('click', () => navigate('cycle_wellness'))"),
-    'Event-Wiring sollte ?. nutzen, da die Karte bei Männern/keine Angabe gar nicht gerendert wird');
+test('toolsHub.js: Zyklus-Tracker und Menopause-Karte sind unabhängig vom Geschlecht sichtbar', () => {
+  assert.ok(!src.includes('showCycleWellness ?'), 'Karten dürfen nicht mehr hinter einer Geschlechts-Bedingung stehen');
+  assert.ok(src.includes('id="tool-cycle"'), 'Zyklus-Tracker-Karte fehlt');
+  assert.ok(src.includes('id="tool-cycle-wellness"'), 'Menopause-Karte fehlt');
+  assert.ok(src.includes("querySelector('#tool-cycle').addEventListener('click', () => navigate('cycle'))"));
+  assert.ok(src.includes("querySelector('#tool-cycle-wellness').addEventListener('click', () => navigate('cycle_wellness'))"));
 });

@@ -1,13 +1,11 @@
 import { profileRepo } from '../../infra/db/repositories/profileRepo.js';
-import { measurementRepo } from '../../infra/db/repositories/measurementRepo.js';
 import { navigate } from '../../router.js';
 import { showToast } from '../components/toast.js';
 import { feedbackService } from '../../infra/feedback/feedbackService.js';
-import { MEDICATION_CATEGORIES } from '../../domain/medicationInteractions.js';
 import { DISCLAIMER_FULL } from '../../domain/healthClaims.js';
 import { notifications } from '../../domain/notifications.js';
 import { openLegalLink } from '../../domain/legalLinks.js';
-import { dataExportService } from '../../infra/data/dataExportService.js';
+import { dataExportService, deleteAllUserData } from '../../infra/data/dataExportService.js';
 import { ACTIVITY_LEVELS } from '../../domain/energyNeeds.js';
 
 export function renderProfile(container) {
@@ -57,17 +55,6 @@ export function renderProfile(container) {
       </div>
 
       <div class="profile-card">
-        <h3>Medikamente & Supplemente</h3>
-        <p class="hint-text">Falls zutreffend – für allgemeine Wechselwirkungshinweise bei passenden Nährstoffen. Kein Ersatz für ärztliche/pharmazeutische Beratung.</p>
-        ${Object.entries(MEDICATION_CATEGORIES).map(([key, label]) => `
-          <label style="display:flex;align-items:center;gap:8px;font-size:13px;padding:6px 0">
-            <input type="checkbox" class="p-medication" value="${key}" ${profile.medications?.includes(key) ? 'checked' : ''}>
-            ${label}
-          </label>`).join('')}
-        <button class="btn-primary" id="btn-save-medications" style="margin-top:8px">Speichern</button>
-      </div>
-
-      <div class="profile-card">
         <h3>Tägliche Erinnerung</h3>
         <p class="hint-text">Eine lokale Erinnerung auf deinem Gerät – kein Server, keine Übertragung von Daten. Neutraler Hinweistext, sichtbar auch bei gesperrtem Bildschirm.</p>
         <label style="display:flex;align-items:center;gap:8px;font-size:14px;padding:6px 0">
@@ -90,7 +77,7 @@ export function renderProfile(container) {
 
       <div class="profile-card danger-zone">
         <h3>Daten</h3>
-        <p class="hint-text">Alle gespeicherten Messwerte löschen. Diese Aktion kann nicht rückgängig gemacht werden.</p>
+        <p class="hint-text">Löscht alle deine Daten auf diesem Gerät: Profil, Messwerte, Ernährungstagebuch, Zyklus &amp; Symptome, Fasten, Heißhunger-Journal, Schlaf, Trinkmenge, Wochenplan und eigene Rezepte. Dein Premium-Abo bleibt erhalten. Tipp: Vorher exportieren, falls du ein Backup möchtest. Das Löschen kann nicht rückgängig gemacht werden.</p>
         <button class="btn-danger" id="btn-clear-data">Alle Daten löschen</button>
       </div>
 
@@ -106,6 +93,7 @@ export function renderProfile(container) {
         <p>WellANNI hilft dir, deine Vitamin- und Mineralstoffwerte im Blick zu behalten.</p>
         <p class="disclaimer-text">⚠️ ${DISCLAIMER_FULL}</p>
         <p class="disclaimer-text">🥗 Lebensmitteldaten: Max Rubner-Institut (2025): Bundeslebensmittelschlüssel (BLS), Version 4.0 – Deutsche Nährstoffdatenbank. Karlsruhe. Lizenz: <a href="https://creativecommons.org/licenses/by/4.0/deed.de" target="_blank" rel="noopener">CC BY 4.0</a>. DOI: 10.25826/Data20251217-134202-0</p>
+        <p class="disclaimer-text">🔎 Online-Suche &amp; Barcode-Scan: Produktdaten von <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a>, verfügbar unter der <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener">Open Database License (ODbL)</a>. Angaben ohne Gewähr.</p>
         <p style="margin-top:8px">
           <a href="#" id="link-impressum">Impressum</a> ·
           <a href="#" id="link-datenschutz-profile">Datenschutzerklärung</a> ·
@@ -126,12 +114,6 @@ export function renderProfile(container) {
       activityLevel: container.querySelector('#p-activity').value
     });
     showToast('✅ Profil gespeichert!');
-  });
-
-  container.querySelector('#btn-save-medications').addEventListener('click', () => {
-    const medications = [...container.querySelectorAll('.p-medication:checked')].map(el => el.value);
-    profileRepo.save({ medications });
-    showToast('✅ Gespeichert!');
   });
 
   const reminderCheckbox = container.querySelector('#p-reminder-enabled');
@@ -210,10 +192,11 @@ export function renderProfile(container) {
   });
 
   container.querySelector('#btn-clear-data').addEventListener('click', () => {
-    if (confirm('Wirklich alle Messwerte löschen? Das kann nicht rückgängig gemacht werden.')) {
-      measurementRepo.clear();
+    if (confirm('Wirklich ALLE deine Daten löschen (Profil, Messwerte, Tagebücher, Zyklus, Rezepte)? Das kann nicht rückgängig gemacht werden.')) {
+      deleteAllUserData();
+      notifications.cancelReminder().catch(() => {});
       showToast('Alle Daten gelöscht.');
-      navigate('dashboard');
+      navigate('onboarding');
     }
   });
 

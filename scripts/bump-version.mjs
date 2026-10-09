@@ -25,6 +25,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const GRADLE_PATH = path.join(ROOT, 'android', 'app', 'build.gradle');
 const PKG_PATH = path.join(ROOT, 'package.json');
+const APP_VERSION_PATH = path.join(ROOT, 'app', 'src', 'appVersion.js');
 
 const part = process.argv[2] || 'patch';
 if (!['patch', 'minor', 'major'].includes(part)) {
@@ -61,10 +62,16 @@ async function main() {
   pkg.version = newName;
   await fs.writeFile(PKG_PATH, JSON.stringify(pkg, null, 2) + '\n', 'utf8');
 
+  // App-interne Versionsanzeige (u.a. Feedback-Mail) mitziehen.
+  let appVersionSrc = await fs.readFile(APP_VERSION_PATH, 'utf8');
+  appVersionSrc = appVersionSrc.replace(/APP_VERSION = '[^']+'/, `APP_VERSION = '${newName}'`);
+  await fs.writeFile(APP_VERSION_PATH, appVersionSrc, 'utf8');
+
   console.log(`Version gebumpt (${part}):`);
   console.log(`  versionCode: ${oldCode} -> ${newCode}`);
   console.log(`  versionName: ${oldName} -> ${newName}`);
   console.log(`  package.json "version": ${newName}`);
+  console.log(`  app/src/appVersion.js: ${newName}`);
 }
 
 main().catch((err) => {

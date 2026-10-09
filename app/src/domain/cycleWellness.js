@@ -11,27 +11,31 @@
  * Leitplanken aus dem Review (bitte bei Änderungen respektieren):
  * 1. Kein Bezug zu den eigenen Trackingdaten der Nutzerin - reines,
  *    für alle Nutzerinnen gleiches Lernmaterial (Regulatory-Affairs).
- * 2. Mönchspfeffer (Vitex agnus-castus) und Traubensilberkerze (Cimicifuga
- *    racemosa) sind in Deutschland Wirkstoffe zugelassener Arzneimittel,
- *    kein "nur traditionelles Kraut" - deshalb NUR generisch ohne
- *    Wirkversprechen erwähnt, mit Verweis auf ärztliche/apothekerliche
- *    Beratung vor Anwendung. Kein Produktname, keine Dosierung.
- * 3. PMDS wird NUR als eigenständiger Lernabsatz erwähnt (Definition,
- *    wann ärztliche/therapeutische Abklärung sinnvoll ist) - niemals als
- *    Bewertung, Score oder Label für die eigenen getrackten Symptome.
- * 4. Perimenopause/Menopause werden durchgängig als natürlicher Übergang
+ * 2. Perimenopause/Menopause werden durchgängig als natürlicher Übergang
  *    beschrieben, nicht als Krankheitszustand (Gynäkologin).
- * 5. EFSA-Formulierungen: die Nährstoff-Claims unten sind ein Stichproben-
+ * 3. EFSA-Formulierungen: die Nährstoff-Claims unten sind ein Stichproben-
  *    Abgleich gegen den amtlichen Wortlaut der Verordnung (EU) 432/2012
  *    (Stand Juli 2026, Calcium/Vitamin D/Vitamin K neu recherchiert;
  *    Magnesium/Eisen/Vitamin B6/Zink/Omega-3 aus insightsByNutrient.json
  *    übernommen, dort bereits geprüft) - KEIN Ersatz für die vollständige
  *    verbatim-Prüfung wie in Entscheidung/Task #60. Vor Veröffentlichung
  *    noch einmal gegenprüfen.
+ *
+ * Entscheidung 11.09.2026 (Nicole, nach wiederholten Google-Play-Ablehnungen
+ * "Diseases and Conditions Management"): Der frühere Pflanzenstoff-Hinweis
+ * (nannte zwei konkrete Heilpflanzen mit behördlicher Zulassung als
+ * Fertigpräparat beim Namen, inkl. Warnung vor Wechselwirkungen) sowie der
+ * frühere Lernabsatz zu
+ * einer benannten, klinisch eingeordneten Stimmungsstörung wurden ersatzlos
+ * entfernt. Begründung: Wir sind keine Ärzte/Mediziner und geben keine
+ * Ratschläge - nur allgemeingültige, rechtlich unbedenkliche Informationen im
+ * Ton eines Frauenmagazins, ohne Fachbegriffe aus Pharmazie/Diagnostik. Die
+ * beiden früheren Exporte existieren bewusst nicht mehr (siehe Test-Datei
+ * cycleWellness.test.js, Regressionsschutz gegen ein Wiederauftauchen der
+ * entfernten Begriffe im Modul).
  */
 
 import { EVIDENCE } from './skinVitality.js';
-import { TRADITIONAL_DISCLAIMER } from './traditionalPerspectives.js';
 
 export { EVIDENCE };
 
@@ -116,23 +120,3 @@ export const CYCLE_WELLNESS_CLUSTERS = [
   },
 ];
 
-/**
- * Traditionelle/pflanzliche Perspektive - siehe Leitplanke 2 oben. Bewusst
- * ohne Wirkversprechen, ohne Produktname, ohne Dosierungshinweis.
- */
-export const TRADITIONAL_PHYTO_NOTE =
-  'In der Phytotherapie werden bei PMS traditionell Präparate auf Basis von Mönchspfeffer (Vitex agnus-castus) eingesetzt, bei Wechseljahresbeschwerden Präparate auf Basis von Traubensilberkerze (Cimicifuga racemosa). ' +
-  'Beide sind in Deutschland Wirkstoffe zugelassener Arzneimittel, keine reinen Nahrungsergänzungsmittel - deshalb hier bewusst ohne Wirkversprechen genannt. ' +
-  'Vor einer Anwendung ärztliche oder apothekerliche Beratung einholen, insbesondere bei Wechselwirkungen mit anderen Medikamenten.';
-
-/**
- * PMDS-Lerninhalt - komplett unabhängig vom Zyklus-Symptom-Tagebuch, siehe
- * Leitplanke 3. Wird nirgends mit cycleSymptomsRepo-Daten verknüpft.
- */
-export const PMDS_LEARNING_CONTENT = {
-  title: 'Was ist PMDS?',
-  text:
-    'Die prämenstruelle dysphorische Störung (PMDS) ist eine deutlich stärkere, behandlungsbedürftige Form des PMS - mit ausgeprägten Stimmungssymptomen bis hin zu depressiven Verstimmungen in der Lutealphase. ' +
-    'Sie unterscheidet sich von "normalem" PMS durch Intensität und Dauer der Beschwerden.',
-  hint: 'Wenn du wiederkehrend stark belastet bist, kann ärztliche oder therapeutische Abklärung helfen. Dieser Text bewertet keine eigenen Trackingdaten - er ist ein allgemeiner Lerninhalt.',
-};

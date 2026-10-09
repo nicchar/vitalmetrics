@@ -13,6 +13,7 @@
  */
 
 import { storage } from '../db/sqlite.js';
+import { APP_VERSION } from '../../appVersion.js';
 
 const APP_ID        = 'com.vitalmetrics.app';
 const FEEDBACK_MAIL = 'doehring.nicole@gmail.com';
@@ -69,7 +70,7 @@ export const feedbackService = {
       'ich möchte folgendes Feedback zur WellANNI App teilen:\n\n' +
       '[Dein Feedback hier]\n\n' +
       '---\n' +
-      `App-Version: 2.0.0\n` +
+      `App-Version: ${APP_VERSION}\n` +
       `Gerät: ${navigator.userAgent}\n`
     );
     window.open(`mailto:${FEEDBACK_MAIL}?subject=${subject}&body=${body}`, '_system');

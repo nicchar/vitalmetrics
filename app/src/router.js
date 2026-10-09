@@ -10,13 +10,13 @@ import { renderCycle } from './ui/screens/cycle.js';
 import { renderNutrition } from './ui/screens/nutrition.js';
 import { renderToolsHub } from './ui/screens/toolsHub.js';
 import { renderFasting } from './ui/screens/fasting.js';
-import { renderGlucoseDay } from './ui/screens/glucoseDay.js';
 import { renderCravings } from './ui/screens/cravings.js';
 import { renderMealPlan } from './ui/screens/mealPlan.js';
 import { renderWeeklyReview } from './ui/screens/weeklyReview.js';
 import { renderSkinVitality } from './ui/screens/skinVitality.js';
 import { renderCycleWellness } from './ui/screens/cycleWellness.js';
 import { renderMyRecipes } from './ui/screens/myRecipes.js';
+import { renderHealthConsent } from './ui/screens/healthConsent.js';
 import { profileRepo } from './infra/db/repositories/profileRepo.js';
 
 const screenRenderers = {
@@ -31,18 +31,18 @@ const screenRenderers = {
   nutrition: renderNutrition,
   tools: renderToolsHub,
   fasting: renderFasting,
-  glucose_day: renderGlucoseDay,
   cravings: renderCravings,
   mealplan: renderMealPlan,
   weekly_review: renderWeeklyReview,
   skin_vitality: renderSkinVitality,
   cycle_wellness: renderCycleWellness,
-  my_recipes: renderMyRecipes
+  my_recipes: renderMyRecipes,
+  health_consent: renderHealthConsent
 };
 
 // Diese Sub-Screens gehören inhaltlich zum "Tools"-Tab, damit dessen Nav-Icon
 // beim Reinklicken aktiv bleibt (statt keinen Tab hervorzuheben).
-const TOOLS_SUBSCREENS = ['fasting', 'glucose_day', 'cravings', 'mealplan', 'weekly_review', 'skin_vitality', 'cycle_wellness', 'my_recipes'];
+const TOOLS_SUBSCREENS = ['fasting', 'cravings', 'mealplan', 'weekly_review', 'skin_vitality', 'cycle_wellness', 'my_recipes'];
 
 // IA-Umbau (Juli 2026, UX-Review): "Eintragen"/"Verlauf" haben seitdem keinen
 // eigenen Bottom-Nav-Tab mehr (Zugriff ausschließlich über die Dashboard-
@@ -50,7 +50,7 @@ const TOOLS_SUBSCREENS = ['fasting', 'glucose_day', 'cravings', 'mealplan', 'wee
 // statt gar kein Tab.
 const DASHBOARD_SUBSCREENS = ['entry', 'trend'];
 
-const NO_NAV_SCREENS = ['onboarding'];
+const NO_NAV_SCREENS = ['onboarding', 'health_consent'];
 
 // Für Tests (tests/ui/router.test.js): welche Screens es gibt und welche davon
 // zum Tools-Tab bzw. zum Dashboard-Tab gehören, ohne die internen Objekte

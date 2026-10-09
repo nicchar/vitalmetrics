@@ -1,24 +1,28 @@
 import { fastingRepo } from '../../infra/db/repositories/fastingRepo.js';
 import { cravingsRepo } from '../../infra/db/repositories/cravingsRepo.js';
-import { glucoseDayRepo } from '../../infra/db/repositories/glucoseDayRepo.js';
 import { customRecipeRepo } from '../../infra/db/repositories/customRecipeRepo.js';
 import { profileRepo } from '../../infra/db/repositories/profileRepo.js';
 import { entitlements } from '../../domain/entitlements.js';
 import { navigate } from '../../router.js';
+import { state } from '../../appState.js';
 
 export function renderToolsHub(c) {
   const fd = fastingRepo.get();
   const streak = fd.streak || 0;
   const cravings = cravingsRepo.getAll();
-  const today = new Date().toISOString().slice(0, 10);
-  const todayGlu = Object.keys(glucoseDayRepo.getDay(today)).length;
   const recipeCount = customRecipeRepo.getAll().length;
   const isPremium = entitlements.isPremium();
-  // Tester-Fund 18.08.2026: die "PMS, Prämenopause & Menopause"-Karte war hier
-  // IMMER sichtbar, unabhängig vom Geschlecht - anders als der Zyklus-Tab in
-  // der Bottom-Nav, der sich in router.js (updateCycleNavVisibility) schon
-  // korrekt bei sex !== 'f' ausblendet. Jetzt konsistent: gleiche Bedingung.
-  const showCycleWellness = profileRepo.get().sex === 'f';
+  // Google-Play-Ablehnung 29.09.2026 ("Funktionen in Screenshots nicht
+  // vorhanden"): Prüfer, die im Onboarding nicht "weiblich" wählen, fanden
+  // den Zyklus-Tracker nicht, weil der Zyklus-Tab in der Bottom-Nav nur bei
+  // sex === 'f' sichtbar ist. Deshalb sind Zyklus-Tracker UND die PMS-/
+  // Menopause-Karte hier jetzt für ALLE erreichbar (eigene Gruppe
+  // "Frauengesundheit"). Der Bottom-Nav-Tab bleibt weiterhin nur bei 'f'.
+  // (Löst die frühere Regel vom Tester-Fund 18.08.2026 bewusst ab.)
+  const isFemale = profileRepo.get().sex === 'f';
+  // Rezeptanzahl dynamisch statt fest '272' (tatsächlich 310) - Store-Angaben
+  // und App müssen übereinstimmen (Google-Play-Ablehnung 29.09.2026).
+  const appRecipeCount = (state.get('recipes') || []).length;
   // Einheitliche Kennzeichnung aller Premium-Karten (Experten-Review 7,
   // 26.07.2026) - vorher nur uneinheitlicher Text, kein gemeinsames Muster.
   const premiumCls = isPremium ? '' : ' tool-card-premium';
@@ -41,17 +45,6 @@ export function renderToolsHub(c) {
         </div>
         <div class="tool-card-arrow">›</div>
       </div>
-      <div class="tool-card${premiumCls}" id="tool-glucose">
-        <div class="tool-card-icon">🩸</div>
-        <div class="tool-card-body">
-          <div class="tool-card-title">Blutzucker Tagesgang</div>
-          <div class="tool-card-desc">Nüchtern · nach Mahlzeiten · abends — Insulinresistenz erkennen</div>
-          ${isPremium
-            ? (todayGlu > 0 ? `<div class="tool-card-meta">✅ Heute ${todayGlu} Wert${todayGlu > 1 ? 'e' : ''} eingetragen</div>` : `<div class="tool-card-meta">Noch keine Tageswerte heute</div>`)
-            : '<div class="tool-card-meta">🔒 Premium</div>'}
-        </div>
-        <div class="tool-card-arrow">›</div>
-      </div>
       <div class="tool-card" id="tool-cravings">
         <div class="tool-card-icon">🍫</div>
         <div class="tool-card-body">
@@ -66,7 +59,7 @@ export function renderToolsHub(c) {
         <div class="tool-card-icon">📅</div>
         <div class="tool-card-body">
           <div class="tool-card-title">Wochenplan & Einkaufsliste</div>
-          <div class="tool-card-desc">7 Tage Frühstück/Mittag/Abend aus 272 Rezepten · automatische Einkaufsliste</div>
+          <div class="tool-card-desc">7 Tage Frühstück/Mittag/Abend aus ${appRecipeCount} Rezepten · automatische Einkaufsliste</div>
           <div class="tool-card-meta">Vegetarisch · Fleisch/Fisch · Keto</div>
         </div>
         <div class="tool-card-arrow">›</div>
@@ -92,13 +85,22 @@ export function renderToolsHub(c) {
       <div class="tool-card${premiumCls}" id="tool-skin-vitality">
         <div class="tool-card-icon">✨</div>
         <div class="tool-card-body">
-          <div class="tool-card-title">Hautgesundheit & Vitalität</div>
-          <div class="tool-card-desc">Vitamin C, Zink & Co., Blutzucker und Darm-Haut-Achse neu eingeordnet</div>
+          <div class="tool-card-title">Beauty-Nährstoffe</div>
+          <div class="tool-card-desc">Vitamin C, Zink, Biotin & Co. sowie Darm-Haut-Achse neu eingeordnet</div>
           ${isPremium ? '' : '<div class="tool-card-meta">🔒 Premium</div>'}
         </div>
         <div class="tool-card-arrow">›</div>
       </div>
-      ${showCycleWellness ? `
+      <div class="tools-hub-group-label">Frauengesundheit</div>
+      <div class="tool-card" id="tool-cycle">
+        <div class="tool-card-icon">🌙</div>
+        <div class="tool-card-body">
+          <div class="tool-card-title">Zyklus-Tracker</div>
+          <div class="tool-card-desc">Zyklusphasen, Symptom-Tagebuch und passende Nährstoffe je Phase</div>
+          ${isFemale ? '' : '<div class="tool-card-meta">Für Menschen mit Menstruationszyklus</div>'}
+        </div>
+        <div class="tool-card-arrow">›</div>
+      </div>
       <div class="tool-card" id="tool-cycle-wellness">
         <div class="tool-card-icon">🌸</div>
         <div class="tool-card-body">
@@ -106,16 +108,16 @@ export function renderToolsHub(c) {
           <div class="tool-card-desc">Mikronährstoffe je Lebensphase, traditionelle Perspektiven – reiner Lerninhalt</div>
         </div>
         <div class="tool-card-arrow">›</div>
-      </div>` : ''}
+      </div>
     </div>
   </div>`;
 
   c.querySelector('#tool-fasting').addEventListener('click', () => navigate('fasting'));
-  c.querySelector('#tool-glucose').addEventListener('click', () => navigate('glucose_day'));
   c.querySelector('#tool-cravings').addEventListener('click', () => navigate('cravings'));
   c.querySelector('#tool-mealplan').addEventListener('click', () => navigate('mealplan'));
   c.querySelector('#tool-my-recipes').addEventListener('click', () => navigate('my_recipes'));
   c.querySelector('#tool-weekly-review').addEventListener('click', () => navigate('weekly_review'));
   c.querySelector('#tool-skin-vitality').addEventListener('click', () => navigate('skin_vitality'));
-  c.querySelector('#tool-cycle-wellness')?.addEventListener('click', () => navigate('cycle_wellness'));
+  c.querySelector('#tool-cycle').addEventListener('click', () => navigate('cycle'));
+  c.querySelector('#tool-cycle-wellness').addEventListener('click', () => navigate('cycle_wellness'));
 }

@@ -37,3 +37,16 @@ test('profile.js: btn-save-profile speichert height (geparst) und activityLevel 
   assert.match(block, /activityLevel:\s*container\.querySelector\('#p-activity'\)\.value/);
   assert.ok(block.includes('weightGoal'), 'Bestehendes weightGoal-Feld sollte weiterhin gespeichert werden');
 });
+
+test('profile.js: "Alle Daten löschen" löscht ALLE Nutzerdaten (nicht nur Messwerte) und startet das Onboarding neu', () => {
+  const idx = src.indexOf("querySelector('#btn-clear-data').addEventListener");
+  const block = src.slice(idx, idx + 600);
+  assert.ok(block.includes('deleteAllUserData()'), 'Sollte deleteAllUserData() aufrufen');
+  assert.ok(!block.includes('measurementRepo.clear()'), 'Nur Messwerte zu löschen widerspricht der Datenschutzerklärung');
+  assert.ok(block.includes('cancelReminder'), 'Geplante Erinnerung sollte mit gelöscht werden');
+  assert.ok(block.includes("navigate('onboarding')"));
+});
+
+test('profile.js: Quellenangabe Open Food Facts (ODbL) vorhanden', () => {
+  assert.ok(src.includes('Open Food Facts') && src.includes('ODbL'));
+});

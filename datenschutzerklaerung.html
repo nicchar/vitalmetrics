@@ -24,7 +24,8 @@
   .highlight-box p { color: #145f56; margin-bottom: 6px; }
   .highlight-box p:last-child { margin-bottom: 0; }
   .last-updated { font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; }
-  table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 14px; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 14px; table-layout: fixed; }
+  th, td { overflow-wrap: anywhere; hyphens: auto; }
   th { background: #e8f5f3; color: var(--primary); padding: 10px 12px; text-align: left; font-weight: 600; }
   td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
   tr:last-child td { border-bottom: none; }
@@ -56,23 +57,30 @@
 
 <main>
 
-  <p class="last-updated">Stand: Juli 2026 · Diese Erklärung gilt für die App <strong>WellANNI</strong> (Android).</p>
+  <p class="last-updated">Stand: September 2026 · Diese Erklärung gilt für die App <strong>WellANNI</strong> (Android) und die zugehörigen Rechtstext-Seiten.</p>
 
   <div class="highlight-box">
-    <p><strong>Kurz zusammengefasst:</strong> WellANNI speichert alle deine Daten <strong>ausschließlich lokal auf deinem Gerät</strong>. Es werden keine persönlichen Gesundheitsdaten an Server übertragen, gespeichert oder weitergegeben. Du behältst die vollständige Kontrolle über deine Daten.</p>
+    <p><strong>Kurz zusammengefasst:</strong> WellANNI speichert deine Gesundheits- und Tagebuchdaten <strong>ausschließlich lokal auf deinem Gerät</strong>. Es gibt kein Nutzerkonto, keinen eigenen Server, keine Cloud-Sicherung, keine Analyse- oder Werbe-Tracker. Die Anbieterin hat keinen Zugriff auf deine Daten.</p>
+    <p>Eine Verbindung ins Internet entsteht nur, wenn du sie aktiv auslöst – z. B. bei der Online-Lebensmittelsuche oder dem Barcode-Scan (Open Food Facts), beim Kauf von Premium (Google Play), beim Öffnen eines Partnerlinks (Amazon) oder dieser Rechtstexte. Dabei werden <strong>keine Gesundheitsdaten</strong> übertragen.</p>
   </div>
 
   <div class="toc">
     <h3>Inhaltsverzeichnis</h3>
     <ol>
-      <li><a href="#verantwortlicher">Verantwortlicher</a></li>
-      <li><a href="#grundsaetze">Grundsätze der Datenverarbeitung</a></li>
+      <li><a href="#verantwortlicher">Verantwortliche</a></li>
+      <li><a href="#grundsaetze">Grundsätze und Rechtsgrundlagen</a></li>
       <li><a href="#lokale-daten">Lokal gespeicherte Daten</a></li>
+      <li><a href="#open-food-facts">Online-Lebensmittelsuche und Barcode-Scan</a></li>
       <li><a href="#in-app-kaeufe">In-App-Käufe (Premium)</a></li>
-      <li><a href="#affiliate">Affiliate-Links (Amazon PartnerNet)</a></li>
+      <li><a href="#affiliate">Partnerlinks (Amazon)</a></li>
+      <li><a href="#teilen">Export, PDF-Bericht und Teilen</a></li>
+      <li><a href="#feedback">Feedback und App-Bewertung</a></li>
+      <li><a href="#website">Rechtstext-Seiten (GitHub Pages)</a></li>
       <li><a href="#drittanbieter">Google Play Store und Android</a></li>
+      <li><a href="#drittland">Übermittlung in Drittländer</a></li>
       <li><a href="#rechte">Deine Rechte</a></li>
-      <li><a href="#kinder">Kinder und Jugendliche</a></li>
+      <li><a href="#profiling">Kein Tracking, kein Profiling</a></li>
+      <li><a href="#kinder">Mindestalter</a></li>
       <li><a href="#aenderungen">Änderungen dieser Erklärung</a></li>
       <li><a href="#kontakt">Kontakt</a></li>
     </ol>
@@ -80,20 +88,26 @@
 
   <!-- 1 -->
   <div class="card" id="verantwortlicher">
-    <h2>1. Verantwortlicher</h2>
-    <p>Verantwortliche im Sinne der Datenschutz-Grundverordnung (DSGVO) und anderer nationaler Datenschutzgesetze sowie sonstiger datenschutzrechtlicher Bestimmungen ist:</p>
+    <h2>1. Verantwortliche</h2>
+    <p>Verantwortliche im Sinne der Datenschutz-Grundverordnung (DSGVO) ist:</p>
     <p>
-      <strong>Nicole Doehring</strong><br>
+      <strong>Nicole Doehring</strong>, Einzelunternehmerin<br>
+      Holzvogtweg 4, 23568 Lübeck, Deutschland<br>
+      Telefon: <a href="tel:+4915679790921">+49 1567 9790921</a><br>
       E-Mail: <a href="mailto:doehring.nicole@gmail.com">doehring.nicole@gmail.com</a>
     </p>
-    <p>Die vollständige Anschrift ist dem <a href="impressum.html">Impressum</a> zu entnehmen.</p>
+    <p>Eine Pflicht zur Benennung eines Datenschutzbeauftragten besteht nicht. Wende dich bei Fragen direkt an die oben genannte Kontaktadresse.</p>
   </div>
 
   <!-- 2 -->
   <div class="card" id="grundsaetze">
-    <h2>2. Grundsätze der Datenverarbeitung</h2>
-    <p>Die Verarbeitung personenbezogener Daten erfolgt stets im Einklang mit der DSGVO sowie den anwendbaren landesspezifischen Datenschutzbestimmungen. Wir verarbeiten personenbezogene Daten nur, soweit dies zur Bereitstellung einer funktionsfähigen App sowie unserer Inhalte und Leistungen erforderlich ist.</p>
-    <p>Die Rechtsgrundlage für die Verarbeitung ist Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung), soweit die Verarbeitung zur Erbringung des Dienstes notwendig ist, sowie Art. 6 Abs. 1 lit. a DSGVO (Einwilligung), sofern du uns diese erteilt hast.</p>
+    <h2>2. Grundsätze und Rechtsgrundlagen</h2>
+    <p>Wir verarbeiten personenbezogene Daten nur, soweit dies für die Funktionen der App erforderlich ist oder du eingewilligt hast. Rechtsgrundlagen sind je nach Vorgang:</p>
+    <ul>
+      <li><strong>Art. 6 Abs. 1 lit. a und Art. 9 Abs. 2 lit. a DSGVO</strong> – deine ausdrückliche Einwilligung, insbesondere für die Verarbeitung von Gesundheitsdaten in der App (siehe Ziffer 3),</li>
+      <li><strong>Art. 6 Abs. 1 lit. b DSGVO</strong> – Erfüllung des Nutzungsvertrags bzw. Bereitstellung einer von dir angeforderten Funktion (z. B. Premium-Kauf, Online-Suche),</li>
+      <li><strong>Art. 6 Abs. 1 lit. f DSGVO</strong> – berechtigte Interessen, z. B. an der Beantwortung von Anfragen oder an Provisionseinnahmen über Partnerlinks.</li>
+    </ul>
   </div>
 
   <!-- 3 -->
@@ -101,106 +115,137 @@
     <h2>3. Lokal gespeicherte Daten</h2>
 
     <h3>Welche Daten werden gespeichert?</h3>
-    <p>WellANNI speichert folgende Daten <strong>ausschließlich lokal auf deinem Gerät</strong> (im internen App-Speicher via localStorage / SQLite). Diese Daten werden zu keinem Zeitpunkt an einen Server, eine Cloud oder Dritte übertragen:</p>
+    <p>WellANNI speichert die folgenden Daten <strong>ausschließlich lokal auf deinem Gerät</strong> im geschützten App-Speicher. Sie werden nicht an die Anbieterin, einen Server, eine Cloud oder Dritte übertragen; die automatische Android-Cloud-Sicherung ist für WellANNI deaktiviert.</p>
 
     <table>
       <tr><th>Datenkategorie</th><th>Beispiele</th><th>Zweck</th></tr>
-      <tr><td>Profilangaben</td><td>Name (optional), Geschlecht, Altersgruppe, Körpergröße, Zielgewicht</td><td>Anzeige geschlechtsspezifischer DGE-Referenzwerte, BMI-Berechnung</td></tr>
-      <tr><td>Messwerte</td><td>Blutwerte (Vitamin D, B12, Eisen usw.), Gewicht, BMI, Taillenumfang mit Datum</td><td>Verlaufsdarstellung, Statusbewertung im Normbereich</td></tr>
-      <tr><td>Medikamente & Supplemente</td><td>Auswahl aus festen Kategorien (z. B. Blutverdünner, Schilddrüsenmedikamente) – kein Freitextfeld</td><td>Allgemeine, gut belegte Wechselwirkungshinweise bei passenden Nährstoffen</td></tr>
-      <tr><td>Ernährungstagebuch</td><td>Erfasste Lebensmittel (aus dem Bundeslebensmittelschlüssel) und Menge in Gramm mit Datum</td><td>Berechnung der täglichen Zufuhr an Makro- und Mikronährstoffen, Zufuhr-Deckungsanzeige</td></tr>
-      <tr><td>Wochenplan & Einkaufsliste</td><td>Gewählte Rezept-Kategorie (vegetarisch/Fleisch-Fisch/Keto), erzeugter Wochenplan</td><td>Anzeige des Essensplans und der daraus abgeleiteten Einkaufsliste</td></tr>
-      <tr><td>Zyklus-Daten</td><td>Start-Daten des Zyklus (nur sichtbar, wenn "weiblich" als Geschlecht gewählt wurde)</td><td>Berechnung von Zykluslänge und -phase</td></tr>
-      <tr><td>Intervallfasten</td><td>Fastenfenster-Zeiten, Streak-Zähler</td><td>Anzeige von Fasten-/Autophagie-Phasen und Serien</td></tr>
-      <tr><td>Blutzucker-Tagesgang</td><td>Zeitpunkt-Kategorie (nüchtern/nach Mahlzeit/abends) mit Wert</td><td>Darstellung des Tagesverlaufs</td></tr>
-      <tr><td>Heißhunger-Journal</td><td>Stimmung, Auslöser, Zeitpunkt</td><td>Erkennung persönlicher Muster</td></tr>
-      <tr><td>Erinnerungseinstellung</td><td>Ein/Aus-Status und Uhrzeit einer täglichen Erinnerung</td><td>Planung einer lokalen Benachrichtigung über das Betriebssystem (siehe Abschnitt "Lokale Erinnerungen" unten)</td></tr>
-      <tr><td>Hydration</td><td>Erfasste Trinkmenge (ml) pro Tag</td><td>Anzeige im Bereich "Hautgesundheit & Vitalität" (Premium)</td></tr>
-      <tr><td>Schlaf</td><td>Schlafdauer und subjektive Qualitätsangabe (1-5) pro Tag</td><td>Anzeige im Bereich "Hautgesundheit & Vitalität" (Premium), reines Self-Tracking ohne Schlafanalyse</td></tr>
-      <tr><td>App-Einstellungen</td><td>Premium-Status, Onboarding-Status</td><td>Funktionssteuerung der App</td></tr>
+      <tr><td>Profilangaben</td><td>Name (optional), Geschlecht, Altersgruppe, Körpergröße, Zielgewicht, Aktivitätslevel, Unverträglichkeiten (Auswahlliste)</td><td>Passende DGE-Referenzwerte, grobe Energie-/Proteinbedarfs-Einschätzung, Wochenplan-Filter</td></tr>
+      <tr><td>Messwerte</td><td>Selbst eingetragene Labor- und Körperwerte, z. B. Vitamine, Mineralstoffe, Ferritin, TSH, Hormon-, Darm- und Stoffwechselwerte aus Selbsttests, Gewicht, BMI, Taillen-/Hüftumfang, Alkohol- und Koffeinkonsum – jeweils mit Datum</td><td>Verlaufsdarstellung, Einordnung gegenüber allgemeinen Referenzbereichen</td></tr>
+      <tr><td>Ernährungstagebuch</td><td>Lebensmittel (aus dem Bundeslebensmittelschlüssel oder Open Food Facts), Menge, Mahlzeit, Datum</td><td>Berechnung der Nährstoffzufuhr und Bedarfsdeckung</td></tr>
+      <tr><td>Eigene Rezepte, Wochenplan &amp; Einkaufsliste</td><td>Selbst angelegte Rezepte, gewählte Rezept-Kategorie, erzeugter Wochenplan</td><td>Rezeptsammlung, Essensplan und Einkaufsliste</td></tr>
+      <tr><td>Bewegung</td><td>Schritte, Sporteinheiten (Art, Dauer)</td><td>Tages- und Wochenübersicht</td></tr>
+      <tr><td>Zyklus-Daten</td><td>Startdaten des Zyklus (nur bei Geschlecht „weiblich“)</td><td>Berechnung von Zykluslänge und -phase</td></tr>
+      <tr><td>Zyklus-Symptomtagebuch</td><td>Symptome aus einer festen Auswahl (z. B. Krämpfe, Hitzewallungen), optionale Notiz, Datum</td><td>Unbewertete Dokumentation für dich (z. B. PMS, Menopause)</td></tr>
+      <tr><td>Intervallfasten</td><td>Fastenfenster-Zeiten, Serien</td><td>Anzeige von Fastenphasen und Serien</td></tr>
+      <tr><td>Heißhunger-Journal</td><td>Stimmung, Auslöser, Zeitpunkt</td><td>Erkennen persönlicher Muster</td></tr>
+      <tr><td>Schlaf &amp; Trinkmenge</td><td>Schlafdauer, subjektive Qualität (1–5), Trinkmenge in ml</td><td>Bereich „Hautgesundheit &amp; Vitalität“</td></tr>
+      <tr><td>Einstellungen &amp; Einwilligungen</td><td>Erinnerung an/aus und Uhrzeit, Onboarding-Status, Zeitpunkt deiner Einwilligungen, Premium-Status (Zwischenspeicher)</td><td>Funktionssteuerung, Nachweis der Einwilligung</td></tr>
+      <tr><td>Nutzungszähler</td><td>Installationsdatum, Anzahl der Einträge, ob bereits nach einer Bewertung gefragt wurde</td><td>Einmalige Bitte um eine App-Bewertung</td></tr>
     </table>
 
-    <h3>Lokale Erinnerungen (Benachrichtigungen)</h3>
-    <p>Wenn du die tägliche Erinnerung im Profil aktivierst, plant die App über die Benachrichtigungsfunktion deines Betriebssystems eine wiederkehrende, lokale Benachrichtigung zur gewählten Uhrzeit. Diese Planung findet ausschließlich auf deinem Gerät statt – es wird kein Push-Dienst und kein externer Server verwendet, und es werden keine Daten an uns oder Dritte übertragen. Der angezeigte Text ist bewusst neutral gehalten und enthält keinen Gesundheitsbezug, damit auf einem gesperrten Bildschirm keine Rückschlüsse auf die Nutzung der App möglich sind. Du kannst die Erinnerung jederzeit im Profil wieder deaktivieren.</p>
-
-    <h3>Wo werden die Daten gespeichert?</h3>
-    <p>Alle Daten verbleiben auf deinem Smartphone oder Tablet im geschützten App-Speicher. Bei der Deinstallation der App werden alle gespeicherten Daten unwiderruflich gelöscht. Du kannst deine Daten jederzeit über die Funktion „Alle Daten löschen" im Profil-Bereich der App entfernen.</p>
-
-    <h3>Kein Server, keine Cloud, keine Weitergabe</h3>
-    <p>WellANNI betreibt keinen eigenen Server und keine eigene Cloud-Infrastruktur. Es findet keine Übertragung deiner Gesundheitsdaten an Dritte, an externe Server oder an den Anbieter der App statt.</p>
-
     <div class="highlight-box">
-      <p>⚕️ <strong>Gesundheitsdaten (Art. 9 DSGVO):</strong> Blutwerte und Messwerte, Medikamenten-/Supplement-Angaben, Zyklus-Daten, Blutzuckerwerte sowie das Ernährungstagebuch stellen besondere Kategorien personenbezogener Daten (Gesundheitsdaten) dar. Da diese Daten ausschließlich lokal auf deinem Gerät verarbeitet werden und den privaten Bereich nicht verlassen, erfolgt die Verarbeitung auf Grundlage von Art. 9 Abs. 2 lit. a DSGVO (ausdrückliche Einwilligung) sowie Art. 9 Abs. 2 lit. h DSGVO (Gesundheitsvorsorge für eigene Zwecke).</p>
+      <p>⚕️ <strong>Gesundheitsdaten (Art. 9 DSGVO):</strong> Messwerte, Ernährungs-, Zyklus-, Symptom-, Fasten-, Schlaf- und Gewichtsangaben sind besondere Kategorien personenbezogener Daten. WellANNI verarbeitet sie nur auf Grundlage deiner <strong>ausdrücklichen Einwilligung</strong> (Art. 9 Abs. 2 lit. a DSGVO), die du bei der Einrichtung der App separat erteilst. Du kannst sie jederzeit mit Wirkung für die Zukunft widerrufen, indem du im Profil „Alle Daten löschen“ wählst oder die App deinstallierst. Die Rechtmäßigkeit der bis dahin erfolgten Verarbeitung bleibt unberührt.</p>
     </div>
+
+    <h3>Speicherdauer und Löschung</h3>
+    <p>Die Daten bleiben gespeichert, bis du sie löschst. Einzelne Einträge kannst du jederzeit in der App löschen; über Profil → „Alle Daten löschen“ entfernst du sämtliche oben genannten Daten auf einmal (ausgenommen der zwischengespeicherte Premium-Status, der ohnehin bei jedem Start mit Google Play abgeglichen wird). Bei Deinstallation der App werden alle Daten unwiderruflich gelöscht.</p>
+
+    <h3>Datensicherheit</h3>
+    <p>Die Daten liegen im geschützten Speicherbereich der App, auf den andere Apps nicht zugreifen können. Schütze dein Gerät bitte zusätzlich mit einer Bildschirmsperre. Da die Anbieterin keinen Zugriff hat, kann sie verlorene Daten nicht wiederherstellen – nutze für eine Sicherung die Export-Funktion (Ziffer 7).</p>
+
+    <h3>Lokale Erinnerungen (Benachrichtigungen)</h3>
+    <p>Wenn du die tägliche Erinnerung im Profil aktivierst, plant die App über die Benachrichtigungsfunktion deines Betriebssystems eine wiederkehrende, lokale Benachrichtigung zur gewählten Uhrzeit. Es wird kein Push-Dienst und kein externer Server verwendet. Der Text ist bewusst neutral gehalten und enthält keinen Gesundheitsbezug. Du kannst die Erinnerung jederzeit im Profil deaktivieren.</p>
   </div>
 
   <!-- 4 -->
-  <div class="card" id="in-app-kaeufe">
-    <h2>4. In-App-Käufe (Premium-Version)</h2>
-    <p>WellANNI ist aktuell ausschließlich für Android verfügbar. Wenn du die Premium-Version kaufst, wird dieser Kauf vollständig über den Google Play Store abgewickelt: Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA. Datenschutzrichtlinie: <a href="https://policies.google.com/privacy?hl=de" target="_blank" rel="noopener">policies.google.com/privacy</a></p>
-    <p>Wir erhalten von Google ausschließlich die Information, ob ein Kauf bzw. Abo erfolgreich abgeschlossen wurde. Zahlungsdaten (Kreditkarte, Bankverbindung etc.) werden zu keinem Zeitpunkt an uns übermittelt.</p>
-    <p><strong>Abonnements:</strong> WellANNI Premium wird als Monatsabo oder Jahresabo angeboten. Beide verlängern sich automatisch, sofern sie nicht mindestens 24 Stunden vor Ende der Laufzeit im Google-Konto gekündigt werden. Die Aboverwaltung erfolgt ausschließlich über Google Play.</p>
+  <div class="card" id="open-food-facts">
+    <h2>4. Online-Lebensmittelsuche und Barcode-Scan</h2>
+    <h3>Open Food Facts</h3>
+    <p>Die in der App enthaltene Lebensmitteldatenbank funktioniert offline. Nur wenn du <strong>aktiv</strong> die Online-Suche startest oder einen Barcode scannst, fragt die App die offene Produktdatenbank <strong>Open Food Facts</strong> (Open Food Facts, Association loi 1901, Paris, Frankreich) ab. Dabei werden übertragen: dein Suchbegriff bzw. der gescannte Barcode sowie technisch notwendig deine IP-Adresse und allgemeine Geräte-/Browserangaben. Gesundheits- oder Profildaten werden nicht übertragen.</p>
+    <p>Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Bereitstellung der von dir angeforderten Suchfunktion). Weitere Informationen: <a href="https://world.openfoodfacts.org/privacy" target="_blank" rel="noopener">Datenschutzhinweise von Open Food Facts</a>. Die Produktdaten stehen unter der Open Database License (ODbL).</p>
+    <h3>Kamera und Barcode-Erkennung</h3>
+    <p>Für den Barcode-Scan fragt die App – nur wenn du auf „Barcode scannen“ tippst – die Kamera-Berechtigung an. Die Erkennung erfolgt über Google ML Kit (Google Play-Dienste der Google Ireland Limited) direkt auf deinem Gerät; die Anbieterin speichert oder überträgt keine Kamerabilder. Google kann für den Betrieb der Play-Dienste technische Daten verarbeiten und das Erkennungsmodell herunterladen, siehe <a href="https://developers.google.com/ml-kit/terms" target="_blank" rel="noopener">ML Kit Nutzungsbedingungen</a> und <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google-Datenschutzerklärung</a>. Du kannst die Kamera-Berechtigung jederzeit in den Android-Einstellungen widerrufen.</p>
   </div>
 
   <!-- 5 -->
-  <div class="card" id="affiliate">
-    <h2>5. Affiliate-Links (Amazon PartnerNet)</h2>
-    <p>WellANNI nimmt am Amazon PartnerNet-Programm teil. Wenn du über einen Link in der App ein Supplement oder ein Produkt bei Amazon kaufst, erhalten wir eine Provision. Für dich entstehen dabei keine zusätzlichen Kosten.</p>
-    <p>Wenn du auf einen Amazon-Link tippst, wird eine Verbindung zu den Servern von Amazon Europe Core S.à r.l., 38 avenue John F. Kennedy, L-1855 Luxemburg hergestellt. Amazon erhebt dabei Daten gemäß seiner Datenschutzrichtlinie: <a href="https://www.amazon.de/gp/help/customer/display.html?nodeId=GX7NJQ4ZB8MHFRNJ" target="_blank" rel="noopener">amazon.de – Datenschutz</a></p>
-    <p>Affiliate-Links in der App sind als solche gekennzeichnet mit dem Hinweis <em>„Werbung"</em> oder <em>„[Amazon-Partnerlink]"</em>.</p>
-    <p>Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigte Interessen des Verantwortlichen).</p>
+  <div class="card" id="in-app-kaeufe">
+    <h2>5. In-App-Käufe (Premium)</h2>
+    <p>Der Kauf von WellANNI Premium wird vollständig über Google Play abgewickelt (Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland). Die App erhält von Google lediglich die Information, ob ein gültiges Abo besteht (inkl. technischer Kaufbestätigung). Zahlungsdaten wie Kreditkarten- oder Bankdaten erhält die Anbieterin zu keinem Zeitpunkt. Über die Google Play Console erhält die Anbieterin zudem die für Abrechnung und Steuer erforderlichen Transaktionsinformationen (z. B. Bestellnummer, Land, Betrag).</p>
+    <p>Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO; für steuerliche Aufbewahrungspflichten Art. 6 Abs. 1 lit. c DSGVO. Datenschutzerklärung von Google: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a>.</p>
   </div>
 
   <!-- 6 -->
-  <div class="card" id="drittanbieter">
-    <h2>6. Google Play Store und Android</h2>
-    <p>Beim Herunterladen der App werden zwingend erforderliche Informationen an den Google Play Store übertragen, insbesondere Nutzername, E-Mail-Adresse, Kundennummer deines Google-Konto, Zeitpunkt des Downloads sowie ggf. Zahlungsinformationen. Auf diese Datenerhebung haben wir keinen Einfluss. Soweit notwendig, verarbeitet Google diese Daten als eigenverantwortlicher Verarbeiter.</p>
-    <p>Das Betriebssystem Android erhebt technische Nutzungsdaten (z. B. Absturzberichte). Details entnehme bitte den Datenschutzhinweisen von Google.</p>
+  <div class="card" id="affiliate">
+    <h2>6. Partnerlinks (Amazon)</h2>
+    <p>WellANNI kann Links zu Produkten bei Amazon enthalten (Amazon-PartnerNet). Diese Links sind mit „Werbung“ bzw. als Partnerlink gekennzeichnet. Kaufst du über einen solchen Link, erhält die Anbieterin eine Provision; für dich entstehen keine Mehrkosten.</p>
+    <p>Erst wenn du auf einen Partnerlink tippst, öffnet sich die Amazon-Seite in deinem Browser bzw. der Amazon-App. Amazon (Amazon Europe Core S.à r.l., 38 avenue John F. Kennedy, L-1855 Luxemburg) kann dabei u. a. deine IP-Adresse, Geräteinformationen und eine Partner-Kennung verarbeiten und Cookies setzen, um die Provision zuzuordnen. Die App übermittelt dabei keine Gesundheitsdaten an Amazon. Weitere Informationen: <a href="https://www.amazon.de/gp/help/customer/display.html?nodeId=201909010" target="_blank" rel="noopener">Amazon-Datenschutzerklärung</a>.</p>
+    <p>Rechtsgrundlage für die Einbindung der Links ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an Provisionseinnahmen). Du kannst dem jederzeit widersprechen, indem du Partnerlinks nicht nutzt.</p>
   </div>
 
   <!-- 7 -->
-  <div class="card" id="rechte">
-    <h2>7. Deine Rechte als betroffene Person</h2>
-    <p>Nach der DSGVO stehen dir folgende Rechte zu:</p>
-
-    <h3>Recht auf Auskunft (Art. 15 DSGVO)</h3>
-    <p>Da alle deine Daten ausschließlich lokal auf deinem Gerät gespeichert werden, kannst du jederzeit direkt in der App unter Profil → Daten einsehen, welche Daten gespeichert sind.</p>
-
-    <h3>Recht auf Löschung (Art. 17 DSGVO)</h3>
-    <p>Du kannst alle deine Daten jederzeit über die Funktion „Alle Daten löschen" im Profil-Bereich der App löschen. Bei Deinstallation der App werden alle Daten automatisch gelöscht.</p>
-
-    <h3>Recht auf Berichtigung (Art. 16 DSGVO)</h3>
-    <p>Du kannst alle Einträge in der App jederzeit bearbeiten oder löschen.</p>
-
-    <h3>Recht auf Datenübertragbarkeit (Art. 20 DSGVO)</h3>
-    <p>Die Export-Funktion (geplant in einer späteren Version) ermöglicht den Export deiner Daten als maschinenlesbare Datei.</p>
-
-    <h3>Recht auf Beschwerde bei einer Aufsichtsbehörde (Art. 77 DSGVO)</h3>
-    <p>Du hast das Recht, dich bei einer Datenschutz-Aufsichtsbehörde zu beschweren. In Deutschland sind die Datenschutzbeauftragten der Bundesländer zuständig. Eine Übersicht findest du unter <a href="https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html" target="_blank" rel="noopener">bfdi.bund.de</a>.</p>
+  <div class="card" id="teilen">
+    <h2>7. Export, PDF-Bericht und Teilen</h2>
+    <p>Über Profil → „Meine Daten exportieren“ erstellst du eine Datei mit all deinen Daten; mit dem PDF-Bericht eine Übersicht deiner Werte. Beide Dateien werden lokal erzeugt und über die Teilen-Funktion von Android an ein Ziel deiner Wahl übergeben (z. B. Dateien-App, E-Mail, Cloud-Speicher). Die Anbieterin erhält diese Dateien nicht. Für die weitere Verarbeitung ist der von dir gewählte Dienst verantwortlich. Bitte beachte, dass die Dateien Gesundheitsdaten enthalten, und bewahre sie sorgfältig auf.</p>
   </div>
 
   <!-- 8 -->
-  <div class="card" id="kinder">
-    <h2>8. Kinder und Jugendliche</h2>
-    <p>WellANNI richtet sich an Personen ab 18 Jahren. Wir erheben wissentlich keine Daten von Personen unter 18 Jahren. Wenn du als Erziehungsberechtigter feststellst, dass ein Kind unter 18 Jahren die App verwendet und Daten eingegeben hat, bitten wir dich, diese Daten über die App-Funktion „Alle Daten löschen" zu entfernen.</p>
+  <div class="card" id="feedback">
+    <h2>8. Feedback und App-Bewertung</h2>
+    <p>Tippst du auf „Feedback senden“, öffnet sich dein E-Mail-Programm mit einer vorausgefüllten Nachricht an die Anbieterin. Sie enthält die App-Version und technische Geräteangaben (Browser-Kennung/User-Agent), die du vor dem Versand ändern oder löschen kannst. Die Anbieterin verarbeitet deine E-Mail-Adresse, den Inhalt und diese Angaben ausschließlich zur Bearbeitung deines Anliegens (Art. 6 Abs. 1 lit. f DSGVO) und löscht sie, sobald das Anliegen erledigt ist und keine gesetzlichen Aufbewahrungspflichten entgegenstehen. Für den E-Mail-Versand nutzt die Anbieterin Gmail (Google Ireland Limited).</p>
+    <p>„App bewerten“ öffnet den Google Play Store; dort gelten die Datenschutzbestimmungen von Google.</p>
   </div>
 
   <!-- 9 -->
-  <div class="card" id="aenderungen">
-    <h2>9. Änderungen dieser Datenschutzerklärung</h2>
-    <p>Wir behalten uns vor, diese Datenschutzerklärung anzupassen, um sie stets den aktuellen rechtlichen Anforderungen zu entsprechen oder um Änderungen unserer Leistungen in der Datenschutzerklärung umzusetzen. Bei deinem nächsten Besuch dieser Seite gilt dann die neue Datenschutzerklärung.</p>
-    <p>Das aktuelle Datum der letzten Änderung ist oben auf dieser Seite angegeben.</p>
+  <div class="card" id="website">
+    <h2>9. Rechtstext-Seiten (GitHub Pages)</h2>
+    <p>Impressum, AGB und diese Datenschutzerklärung werden über GitHub Pages bereitgestellt (GitHub B.V., Amsterdam, Niederlande, bzw. GitHub Inc., San Francisco, USA). Beim Aufruf verarbeitet GitHub technisch notwendige Daten, insbesondere deine IP-Adresse, in Server-Logfiles zur sicheren Bereitstellung der Seiten (Art. 6 Abs. 1 lit. f DSGVO). Die Seiten verwenden keine Cookies und keine Tracking-Tools. Weitere Informationen: <a href="https://docs.github.com/de/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">GitHub-Datenschutzerklärung</a>.</p>
   </div>
 
   <!-- 10 -->
+  <div class="card" id="drittanbieter">
+    <h2>10. Google Play Store und Android</h2>
+    <p>Beim Herunterladen der App über Google Play werden Daten wie dein Google-Konto, der Zeitpunkt des Downloads und ggf. Zahlungsinformationen an Google übertragen. Darauf hat die Anbieterin keinen Einfluss; Google verarbeitet diese Daten in eigener Verantwortung. Die Google Play Console stellt der Anbieterin außerdem zusammengefasste, anonymisierte Statistiken (z. B. Installationszahlen, Absturzberichte ohne Gesundheitsdaten) zur Verfügung, sofern du der Weitergabe von Diagnosedaten in deinen Android-Einstellungen zugestimmt hast.</p>
+  </div>
+
+  <!-- 11 -->
+  <div class="card" id="drittland">
+    <h2>11. Übermittlung in Drittländer</h2>
+    <p>Bei Google, GitHub und Amazon ist nicht ausgeschlossen, dass Daten auch in die USA übermittelt werden. Diese Anbieter sind unter dem EU-US Data Privacy Framework zertifiziert, für das ein Angemessenheitsbeschluss der EU-Kommission besteht (Art. 45 DSGVO); ergänzend werden Standardvertragsklauseln (Art. 46 DSGVO) eingesetzt. Gesundheitsdaten aus der App werden nicht übermittelt.</p>
+  </div>
+
+  <!-- 12 -->
+  <div class="card" id="rechte">
+    <h2>12. Deine Rechte</h2>
+    <p>Du hast nach der DSGVO folgende Rechte. Da deine App-Daten nur auf deinem Gerät liegen, kannst du die meisten davon direkt in der App ausüben; für alles andere genügt eine formlose Nachricht an die in Ziffer 1 genannte Adresse.</p>
+    <ul>
+      <li><strong>Auskunft (Art. 15)</strong> – alle gespeicherten Daten siehst du in der App; mit „Meine Daten exportieren“ erhältst du eine vollständige Kopie.</li>
+      <li><strong>Berichtigung (Art. 16)</strong> – Einträge kannst du jederzeit bearbeiten oder löschen.</li>
+      <li><strong>Löschung (Art. 17)</strong> – über Profil → „Alle Daten löschen“ oder durch Deinstallation.</li>
+      <li><strong>Einschränkung der Verarbeitung (Art. 18)</strong></li>
+      <li><strong>Datenübertragbarkeit (Art. 20)</strong> – der Export erfolgt als maschinenlesbare JSON-Datei.</li>
+      <li><strong>Widerspruch (Art. 21)</strong> – gegen Verarbeitungen auf Grundlage berechtigter Interessen (Art. 6 Abs. 1 lit. f DSGVO) aus Gründen, die sich aus deiner besonderen Situation ergeben.</li>
+      <li><strong>Widerruf von Einwilligungen (Art. 7 Abs. 3)</strong> – jederzeit mit Wirkung für die Zukunft, siehe Ziffer 3.</li>
+      <li><strong>Beschwerde bei einer Aufsichtsbehörde (Art. 77)</strong> – zuständig für die Anbieterin ist das Unabhängige Landeszentrum für Datenschutz Schleswig-Holstein (ULD), Holstenstraße 98, 24103 Kiel, <a href="https://www.datenschutzzentrum.de" target="_blank" rel="noopener">www.datenschutzzentrum.de</a>. Du kannst dich auch an die Aufsichtsbehörde deines Wohnorts wenden.</li>
+    </ul>
+  </div>
+
+  <!-- 13 -->
+  <div class="card" id="profiling">
+    <h2>13. Kein Tracking, kein Profiling</h2>
+    <p>WellANNI enthält keine Analyse-, Werbe- oder Tracking-Tools und keine Werbe-ID-Nutzung. Auswertungen (z. B. Ampelfarben oder Hinweise) werden ausschließlich lokal auf deinem Gerät aus deinen eigenen Eingaben berechnet. Es findet keine automatisierte Entscheidungsfindung im Sinne von Art. 22 DSGVO statt.</p>
+  </div>
+
+  <!-- 14 -->
+  <div class="card" id="kinder">
+    <h2>14. Mindestalter</h2>
+    <p>WellANNI richtet sich ausschließlich an Personen ab 18 Jahren. Wenn du als Erziehungsberechtigte/r feststellst, dass eine minderjährige Person die App nutzt, können die Daten über „Alle Daten löschen“ bzw. durch Deinstallation vollständig entfernt werden.</p>
+  </div>
+
+  <!-- 15 -->
+  <div class="card" id="aenderungen">
+    <h2>15. Änderungen dieser Datenschutzerklärung</h2>
+    <p>Wir passen diese Datenschutzerklärung an, wenn sich die App oder die rechtlichen Anforderungen ändern. Das Datum der letzten Änderung steht oben auf dieser Seite. Ändert sich der Umfang der Verarbeitung von Gesundheitsdaten, holen wir deine Einwilligung in der App erneut ein.</p>
+  </div>
+
+  <!-- 16 -->
   <div class="card" id="kontakt">
-    <h2>10. Kontakt bei Datenschutzfragen</h2>
-    <p>Bei Fragen zum Datenschutz kannst du dich jederzeit direkt an uns wenden:</p>
+    <h2>16. Kontakt bei Datenschutzfragen</h2>
     <p>
-      Nicole Doehring<br>
-      E-Mail: <a href="mailto:doehring.nicole@gmail.com">doehring.nicole@gmail.com</a>
+      <strong>Nicole Doehring</strong><br>
+      E-Mail: <a href="mailto:doehring.nicole@gmail.com">doehring.nicole@gmail.com</a><br>
+      Telefon: <a href="tel:+4915679790921">+49 1567 9790921</a>
     </p>
-    <p>Wir werden deine Anfrage so schnell wie möglich, spätestens jedoch innerhalb von 30 Tagen, beantworten.</p>
+    <p>Wir beantworten deine Anfrage unverzüglich, spätestens innerhalb eines Monats.</p>
   </div>
 
 </main>
@@ -209,7 +254,7 @@
   &copy; 2026 Nicole Doehring · WellANNI ·
   <a href="impressum.html">Impressum</a> ·
   <a href="agb.html">AGB</a> ·
-  Stand: Juli 2026
+  Stand: September 2026
 </footer>
 
 </body>

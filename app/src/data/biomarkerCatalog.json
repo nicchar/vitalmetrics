@@ -1344,122 +1344,6 @@
       "accessTier": "lab_common"
     },
     {
-      "id": "hscrp",
-      "name": "hsCRP (hochsensitiv)",
-      "category": "longevity",
-      "unit": "mg/L",
-      "lowerIsBetter": true,
-      "refMin": 0,
-      "refMax": 1.0,
-      "premium": true,
-      "selfTestAvailable": true,
-      "selfTestNote": "Heimtest verfügbar (Bluttropfen-Test, Apotheke/Drogerie) · Empfehlung: 1× jährlich",
-      "description": "Hochsensitives C-reaktives Protein ist der empfindlichste Marker für stille, systemische Entzündungen.",
-      "function": "Entzündungsmarker – stille Entzündungen erkennen",
-      "foods": [
-        "Fetthaltiger Fisch (Omega-3)",
-        "Olivenöl (extra vergine)",
-        "Kurkuma",
-        "Ingwer",
-        "Dunkle Beeren",
-        "Grünes Blattgemüse",
-        "Walnüsse",
-        "Tomaten"
-      ],
-      "deficiencySymptoms": [],
-      "highSymptoms": [
-        "Stille Entzündung (erhöhtes Herzerkrankungsrisiko)",
-        "Beschleunigtes Zellaltern",
-        "Müdigkeit & Energiemangel",
-        "Erhöhtes Risiko für Diabetes Typ 2"
-      ],
-      "tips": [
-        "<1 mg/L = niedriges Risiko · 1–3 mg/L = mittleres Risiko · >3 mg/L = hohes Risiko.",
-        "Entzündungsarme Ernährung (mediterran) senkt hsCRP nachweislich.",
-        "Akute Infekte können hsCRP kurzfristig stark erhöhen – erst nach Erholung messen.",
-        "Regelmäßige moderate Bewegung senkt chronische Entzündungsmarker."
-      ],
-      "accessTier": "selftest"
-    },
-    {
-      "id": "hba1c",
-      "name": "HbA1c (Langzeitblutzucker)",
-      "category": "longevity",
-      "unit": "%",
-      "lowerIsBetter": true,
-      "refMin": 4.5,
-      "refMax": 5.6,
-      "premium": true,
-      "selfTestAvailable": true,
-      "selfTestNote": "HbA1c-Selbsttest verfügbar (Bluttropfen-Test, Apotheke) · Empfehlung: 1–2× jährlich",
-      "description": "HbA1c spiegelt den durchschnittlichen Blutzucker der letzten 2–3 Monate wider.",
-      "function": "Langzeitblutzucker – Insulinresistenz & Stoffwechselgesundheit",
-      "foods": [
-        "Blattgemüse (Spinat, Kohl)",
-        "Hülsenfrüchte",
-        "Beeren",
-        "Nüsse & Samen",
-        "Vollkornprodukte",
-        "Fettarmer Fisch",
-        "Zimt",
-        "Apfelessig"
-      ],
-      "deficiencySymptoms": [],
-      "highSymptoms": [
-        "Erhöhtes Diabetesrisiko (>6,5% = Diabetes)",
-        "Beschleunigtes Altern durch Glykierung",
-        "Erhöhtes Herzerkrankungsrisiko",
-        "Kognitive Einschränkungen"
-      ],
-      "tips": [
-        "Unter 5,6% = optimal · 5,7–6,4% = Prä-Diabetes · ≥6,5% = Diabetes.",
-        "Jeder Prozentpunkt Senkung reduziert Komplikationsrisiko um ~30%.",
-        "Regelmäßige Bewegung nach dem Essen senkt den Langzeitblutzucker.",
-        "Ballaststoffreiche Ernährung stabilisiert den Blutzucker langfristig."
-      ],
-      "accessTier": "selftest"
-    },
-    {
-      "id": "glucose",
-      "name": "Nüchternblutzucker",
-      "category": "longevity",
-      "unit": "mmol/L",
-      "lowerIsBetter": true,
-      "refMin": 3.9,
-      "refMax": 5.6,
-      "premium": true,
-      "selfTestAvailable": true,
-      "selfTestNote": "Blutzucker-Messgeräte und Teststreifen in jeder Apotheke erhältlich",
-      "description": "Nüchternblutzucker gemessen nach 8 Stunden Nahrungspause. Zeigt die Fähigkeit des Körpers, Blutzucker zu regulieren.",
-      "function": "Insulinsensitivität & Stoffwechselgesundheit",
-      "foods": [
-        "Nicht-stärkehaltiges Gemüse",
-        "Hülsenfrüchte",
-        "Nüsse",
-        "Beeren",
-        "Griechischer Joghurt",
-        "Lachs",
-        "Avocado",
-        "Eier"
-      ],
-      "deficiencySymptoms": [
-        "Hypoglykämie-Symptome: Zittern, Schwitzen, Herzrasen (bei sehr niedrigen Werten)"
-      ],
-      "highSymptoms": [
-        "Insulinresistenz",
-        "Erhöhtes Diabetesrisiko",
-        "Energieschwankungen",
-        "Erhöhtes Entzündungsrisiko"
-      ],
-      "tips": [
-        "3,9–5,6 mmol/L nüchtern = optimal · 5,6–7,0 = Prä-Diabetes · ≥7,0 = Diabetes.",
-        "Messung morgens nach mind. 8 Stunden Fasten.",
-        "Kaffee (auch schwarz) kann Nüchternblutzucker kurzfristig erhöhen – Messung davor.",
-        "Regelmäßige Bewegung verbessert die Insulinsensitivität nachhaltig."
-      ],
-      "accessTier": "selftest"
-    },
-    {
       "id": "testosteron",
       "name": "Testosteron (Gesamt)",
       "category": "longevity",
@@ -1618,7 +1502,7 @@
         "Löchriger Darm (Leaky Gut)",
         "Chronische Darmentzündung",
         "Schlechte Nährstoffaufnahme",
-        "Erhöhter hsCRP"
+        "Erhöhte Entzündungswerte"
       ],
       "tips": [
         "30 g Ballaststoffe täglich sind die Basis für SCFA-Produktion.",

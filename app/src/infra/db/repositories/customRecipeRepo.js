@@ -27,4 +27,9 @@ export const customRecipeRepo = {
     const all = this.getAll().filter(r => r.id !== id);
     storage.setVersioned(KEY, all, SCHEMA_VERSION);
   },
+
+  /** Ersetzt die komplette Sammlung (Backup-Import, siehe dataExportService.js). */
+  replaceAll(list) {
+    storage.setVersioned(KEY, Array.isArray(list) ? list : [], SCHEMA_VERSION);
+  },
 };

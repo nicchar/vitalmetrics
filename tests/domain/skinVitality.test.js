@@ -5,12 +5,11 @@ import { buildSkinVitalityView, SKIN_VITALITY_CLUSTERS, EVIDENCE } from '../../a
 const fakeCatalog = {
   biomarkers: [
     { id: 'vitamin_b7', unit: 'µg' },
-    { id: 'hba1c', unit: '%' },
   ],
 };
 
-test('SKIN_VITALITY_CLUSTERS: genau 4 Cluster, alle mit id/title/items', () => {
-  assert.equal(SKIN_VITALITY_CLUSTERS.length, 4);
+test('SKIN_VITALITY_CLUSTERS: genau 3 Cluster, alle mit id/title/items', () => {
+  assert.equal(SKIN_VITALITY_CLUSTERS.length, 3);
   for (const c of SKIN_VITALITY_CLUSTERS) {
     assert.ok(c.id);
     assert.ok(c.title);
@@ -58,15 +57,15 @@ test('buildSkinVitalityView: intake-Item mit Daten -> berechnet Prozent', () => 
 
 test('buildSkinVitalityView: biomarker-Item mit Messwert -> zeigt letzten Wert', () => {
   const view = buildSkinVitalityView({
-    latestAll: { hba1c: { value: 5.2, date: '2026-07-01' } },
+    latestAll: { vitamin_b7: { value: 45, date: '2026-07-01' } },
     dayTotals: {},
     dgeRef: {},
     catalog: fakeCatalog,
   });
-  const glykCluster = view.find(c => c.id === 'glykation');
-  const hba1c = glykCluster.items.find(i => i.id === 'hba1c');
-  assert.equal(hba1c.status.tracked, true);
-  assert.match(hba1c.status.text, /5\.2/);
+  const hautCluster = view.find(c => c.id === 'haut_haare_naegel');
+  const vitaminB7 = hautCluster.items.find(i => i.id === 'vitamin_b7');
+  assert.equal(vitaminB7.status.tracked, true);
+  assert.match(vitaminB7.status.text, /45/);
 });
 
 test('buildSkinVitalityView: info-Item (rauchen) ist immer infoOnly, nie tracked', () => {

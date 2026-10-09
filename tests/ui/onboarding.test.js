@@ -100,18 +100,22 @@ test('onboarding.js: Einführungs-Karte nennt konkrete Beispiel-Nährstoffe stat
 /**
  * Nutzer-Korrektur (31.07.2026): Kernidee der App war in Marketing-/Onboarding-
  * Texten unklar - es geht nicht ums Eintragen von Vitaminwerten, sondern ums
- * Tracken der Ernährung, woraus die App die Nährstoffzufuhr berechnet. Ziel:
- * verstehen, ob man genug bekommt, ob Supplements sinnvoll wären, und was die
- * Nährstoffe im Körper bewirken.
+ * Tracken der Ernährung, woraus die App die Nährstoffzufuhr berechnet.
+ *
+ * Bugfix 09.09.2026 (Google-Play-Compliance): Die explizite Supplement-
+ * Erwähnung ("ob ein Supplement sinnvoll sein könnte") wurde bewusst entfernt
+ * - las sich zu sehr nach individueller Behandlungsempfehlung. Die Karte
+ * erklärt weiterhin den Ernährungs-Tracking-Mechanismus, ohne Supplements
+ * ins Spiel zu bringen.
  */
-test('onboarding.js: Einführungs-Karte stellt Ernährungs-Tracking (nicht Werte-Eingabe) als Mechanismus dar und erwähnt Supplements', () => {
+test('onboarding.js: Einführungs-Karte stellt Ernährungs-Tracking (nicht Werte-Eingabe) als Mechanismus dar, ohne Supplement-Empfehlung', () => {
   const src = readFileSync(path.resolve(__dirname, '../../app/src/ui/screens/onboarding.js'), 'utf-8');
   const idxIntro = src.indexOf('Was ist WellANNI?');
   const idxConsentCard = src.indexOf('Bevor es losgeht');
   const introBlock = src.slice(idxIntro, idxConsentCard);
   assert.ok(/trackt nicht die Nährstoffe direkt, sondern\s*\n?\s*deine Ernährung/.test(introBlock),
     'Sollte klarstellen, dass Ernährung (nicht Nährstoffwerte direkt) getrackt wird');
-  assert.ok(/Supplement/i.test(introBlock), 'Sollte Supplements als möglichen Alltagstipp erwähnen');
+  assert.ok(!/Supplement/i.test(introBlock), 'Sollte keine Supplement-Empfehlung mehr enthalten (Compliance-Grund)');
 });
 
 /**
@@ -159,4 +163,19 @@ test('onboarding.js: btn-done speichert height (geparst) und activityLevel im Pr
   assert.match(block, /activityLevel:\s*selectedActivity\s*\|\|\s*''/);
   assert.ok(block.includes('sex: selectedSex'), 'sex sollte weiterhin gespeichert werden');
   assert.ok(block.includes('ageGroup: selectedAge'), 'ageGroup sollte weiterhin gespeichert werden');
+});
+
+/**
+ * Datenschutz-Gap-Analyse 28.09.2026: Gesundheitsdaten-Einwilligung (Art. 9
+ * DSGVO) ist eine EIGENE Checkbox, getrennt von AGB/Datenschutzerklärung, und
+ * ist Pflicht für den "Los geht's"-Button.
+ */
+test('onboarding.js: separate Pflicht-Checkbox für Gesundheitsdaten, gespeichert mit Version', () => {
+  const src = readFileSync(path.resolve(__dirname, '../../app/src/ui/screens/onboarding.js'), 'utf-8');
+  assert.ok(src.includes('id="consent-check"'), 'AGB-Checkbox fehlt');
+  assert.ok(src.includes('id="health-consent-check"'), 'Gesundheitsdaten-Checkbox fehlt');
+  const fnMatch = src.match(/function updateDoneButton\(\)[\s\S]*?\n  \}/);
+  assert.ok(fnMatch[0].includes('#health-consent-check'), 'Button muss auch von der Gesundheits-Einwilligung abhängen');
+  assert.ok(src.includes('...healthConsentFields()'), 'Einwilligung (Zeitpunkt/Version) muss gespeichert werden');
+  assert.ok(src.includes('mindestens 18 Jahre'), 'Altersbestätigung fehlt');
 });

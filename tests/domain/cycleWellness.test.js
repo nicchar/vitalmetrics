@@ -1,9 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 
 import {
-  CYCLE_WELLNESS_CLUSTERS, TRADITIONAL_PHYTO_NOTE, PMDS_LEARNING_CONTENT, EVIDENCE,
+  CYCLE_WELLNESS_CLUSTERS, EVIDENCE,
 } from '../../app/src/domain/cycleWellness.js';
+import * as cycleWellnessDomain from '../../app/src/domain/cycleWellness.js';
 import { TRADITIONAL_DISCLAIMER } from '../../app/src/domain/traditionalPerspectives.js';
 
 test('CYCLE_WELLNESS_CLUSTERS: jedes Item hat gueltige Evidenz und nicht-leeren Text', () => {
@@ -24,21 +26,26 @@ test('CYCLE_WELLNESS_CLUSTERS: deckt PMS, Praemenopause und Menopause ab', () =>
   assert.ok(ids.includes('menopause'));
 });
 
-test('TRADITIONAL_PHYTO_NOTE: erwaehnt Vitex/Cimicifuga nur generisch ohne Wirkversprechen, verweist auf aerztliche/apothekerliche Beratung', () => {
-  assert.match(TRADITIONAL_PHYTO_NOTE, /Mönchspfeffer/);
-  assert.match(TRADITIONAL_PHYTO_NOTE, /Traubensilberkerze/);
-  assert.match(TRADITIONAL_PHYTO_NOTE, /ärztliche.*Beratung|apothekerliche Beratung/);
-  // Darf keine Dosierungsangabe enthalten (Regulatory-Affairs-Vorgabe)
-  assert.doesNotMatch(TRADITIONAL_PHYTO_NOTE, /\d+\s*mg/);
+/**
+ * Entscheidung 11.09.2026 (nach wiederholten Google-Play-Ablehnungen
+ * "Diseases and Conditions Management"): TRADITIONAL_PHYTO_NOTE (nannte
+ * Moenchspfeffer/Traubensilberkerze als "Wirkstoffe zugelassener
+ * Arzneimittel", warnte vor "Wechselwirkungen mit anderen Medikamenten")
+ * und PMDS_LEARNING_CONTENT (benannte psychische Diagnose,
+ * "behandlungsbeduerftig", "depressive Verstimmungen") wurden ersatzlos
+ * entfernt - wir sind keine Aerzte/Mediziner und geben keine Ratschlaege,
+ * nur allgemeingueltige Informationen im Ton eines Frauenmagazins.
+ */
+test('TRADITIONAL_PHYTO_NOTE und PMDS_LEARNING_CONTENT wurden entfernt (Compliance-Entscheidung 11.09.2026)', () => {
+  assert.equal(cycleWellnessDomain.TRADITIONAL_PHYTO_NOTE, undefined);
+  assert.equal(cycleWellnessDomain.PMDS_LEARNING_CONTENT, undefined);
 });
 
-test('PMDS_LEARNING_CONTENT: enthaelt expliziten Hinweis, dass keine eigenen Trackingdaten bewertet werden', () => {
-  assert.match(PMDS_LEARNING_CONTENT.hint, /keine eigenen Trackingdaten|bewertet keine/);
-  assert.match(PMDS_LEARNING_CONTENT.hint, /ärztliche|therapeutische/);
-});
-
-test('PMDS_LEARNING_CONTENT: Text selbst nennt keinen Bezug zu "deine" Symptome/Eintraege (reiner Lerninhalt, nicht personalisiert)', () => {
-  assert.doesNotMatch(PMDS_LEARNING_CONTENT.text, /dein(e)?\s+(symptom|eintrag|tracking)/i);
+test('cycleWellness.js: keine Arzneimittel-/Medikamenten-/Diagnose-Sprache mehr im Modul (Regressionsschutz)', () => {
+  const src = readFileSync(new URL('../../app/src/domain/cycleWellness.js', import.meta.url), 'utf-8');
+  for (const term of ['Arzneimittel', 'Medikament', 'PMDS', 'behandlungsbedürftig', 'depressive Verstimmung']) {
+    assert.ok(!src.includes(term), `Modul sollte "${term}" nicht mehr enthalten`);
+  }
 });
 
 test('TRADITIONAL_DISCLAIMER (wiederverwendet aus traditionalPerspectives.js) ist vorhanden und enthaelt die Pflichtformulierung', () => {

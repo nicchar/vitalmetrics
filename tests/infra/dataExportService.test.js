@@ -83,3 +83,58 @@ test('importData: übernimmt ein gültiges Backup', () => {
   assert.equal(result.ok, true);
   assert.equal(profileRepo.get().name, 'Aus Backup');
 });
+
+// ─── Datenschutz-Gap-Analyse 28.09.2026 ─────────────────────────────────────
+const { deleteAllUserData, USER_DATA_KEYS } =
+  await import('../../app/src/infra/data/dataExportService.js');
+const { customRecipeRepo } = await import('../../app/src/infra/db/repositories/customRecipeRepo.js');
+const { cycleSymptomsRepo } = await import('../../app/src/infra/db/repositories/cycleSymptomsRepo.js');
+const { readdirSync, readFileSync } = await import('node:fs');
+const nodePath = await import('node:path');
+const { fileURLToPath: toPath } = await import('node:url');
+
+test('gatherAllData/applyAllData: eigene Rezepte und Zyklus-Symptome sind im Backup enthalten', () => {
+  customRecipeRepo.save({ id: 'r1', name: 'Mein Porridge' });
+  cycleSymptomsRepo.addEntry({ date: '2026-09-01', tags: ['kraempfe'] });
+
+  const exported = gatherAllData();
+  assert.equal(exported.customRecipes.length, 1);
+  assert.equal(exported.cycleSymptoms.length, 1);
+
+  globalThis.localStorage.clear();
+  applyAllData(exported);
+
+  assert.equal(customRecipeRepo.getAll()[0].name, 'Mein Porridge');
+  assert.deepEqual(cycleSymptomsRepo.getAll()[0].tags, ['kraempfe']);
+});
+
+test('deleteAllUserData: löscht wirklich alle Nutzerdaten, Premium-Cache bleibt', () => {
+  profileRepo.save({ name: 'Nicole', onboardingDone: true });
+  measurementRepo.add({ biomarkerId: 'vitamin_d', value: 45, date: '2026-07-01' });
+  hydrationRepo.setDay('2026-07-01', 1500);
+  cravingsRepo.saveAll([{ date: '2026-07-01', mood: 'gestresst' }]);
+  customRecipeRepo.save({ id: 'r1', name: 'X' });
+  cycleSymptomsRepo.addEntry({ date: '2026-09-01', tags: ['kraempfe'] });
+  globalThis.localStorage.setItem('vm_premium', JSON.stringify(true));
+
+  deleteAllUserData();
+
+  for (const key of USER_DATA_KEYS) {
+    assert.equal(globalThis.localStorage.getItem(key), null, `Schlüssel ${key} wurde nicht gelöscht`);
+  }
+  assert.ok(!profileRepo.get().onboardingDone, 'Nach dem Löschen muss das Onboarding erneut laufen');
+  assert.equal(measurementRepo.getAll().length, 0);
+  assert.equal(customRecipeRepo.getAll().length, 0);
+  assert.equal(cycleSymptomsRepo.getAll().length, 0);
+  assert.equal(globalThis.localStorage.getItem('vm_premium'), 'true', 'Premium-Cache sollte erhalten bleiben');
+});
+
+test('USER_DATA_KEYS: jedes Repository ist erfasst (Schutz gegen vergessene neue Datenbereiche)', () => {
+  const repoDir = nodePath.resolve(nodePath.dirname(toPath(import.meta.url)), '../../app/src/infra/db/repositories');
+  for (const file of readdirSync(repoDir)) {
+    const src = readFileSync(nodePath.join(repoDir, file), 'utf-8');
+    const m = src.match(/const KEY = '([^']+)'/);
+    if (!m) continue;
+    assert.ok(USER_DATA_KEYS.includes(m[1]), `${file}: Schlüssel "${m[1]}" fehlt in USER_DATA_KEYS`);
+  }
+});

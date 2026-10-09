@@ -54,10 +54,9 @@ export function renderPremium(container) {
           <div class="feature-item"><span class="feature-check">✅</span><span>Verlaufs-Charts über die Zeit für alle Biomarker</span></div>
           <div class="feature-item"><span class="feature-check">✅</span><span>Farbliche Einordnung (optimal/niedrig/erhöht) gegen deinen Referenzbereich</span></div>
           <div class="feature-item"><span class="feature-check">✅</span><span>Geschlechtsspezifische DGE-Referenzwerte in der Einordnung</span></div>
-          <div class="feature-item"><span class="feature-check">✅</span><span>Hautgesundheit & Vitalität – eigener Auswertungs-Screen</span></div>
+          <div class="feature-item"><span class="feature-check">✅</span><span>Beauty-Nährstoffe – Vitamin C, Zink, Biotin & Co. für Haut, Haare & Nägel</span></div>
           <div class="feature-item"><span class="feature-check">✅</span><span>Ernährungsverlauf über 12 Wochen für alle 15 Mikronährstoffe (Free: die 5 wichtigsten)</span></div>
           <div class="feature-item"><span class="feature-check">✅</span><span>Intervallfasten-Tracker mit Autophagie-Phasen & Streak</span></div>
-          <div class="feature-item"><span class="feature-check">✅</span><span>Blutzucker-Tagesgang zur Insulinresistenz-Erkennung</span></div>
           <div class="feature-item"><span class="feature-check">✅</span><span>Wochenrückblick – Bewegung, Ernährung & Fasten der letzten 7 Tage</span></div>
         </div>
       </div>
@@ -66,8 +65,8 @@ export function renderPremium(container) {
         <h3>Gratis immer verfügbar</h3>
         <div class="feature-list">
           <div class="feature-item"><span class="feature-check">🆓</span><span>Alle ${totalCount} Biomarker eintragen & aktuellen Wert einsehen</span></div>
-          <div class="feature-item"><span class="feature-check">🆓</span><span>Supplement-Empfehlungen zu jedem Marker</span></div>
-          <div class="feature-item"><span class="feature-check">🆓</span><span>Lebensmittelquellen, Tipps & passende Rezepte bei Mängeln</span></div>
+          <div class="feature-item"><span class="feature-check">🆓</span><span>Lebensmittel-Tipps zu jedem Marker</span></div>
+          <div class="feature-item"><span class="feature-check">🆓</span><span>Lebensmittelquellen, Tipps & passende Rezepte bei niedriger dokumentierter Zufuhr</span></div>
           <div class="feature-item"><span class="feature-check">🆓</span><span>Heimtest-Hinweise zu jedem Biomarker</span></div>
           <div class="feature-item"><span class="feature-check">🆓</span><span>PDF-Bericht exportieren</span></div>
           <div class="feature-item"><span class="feature-check">🆓</span><span>Heißhunger-Journal, Wochenplan & Einkaufsliste</span></div>
@@ -141,10 +140,12 @@ export function renderPremium(container) {
   });
 }
 
-// Schätzt den monatlichen Preis aus dem Jahrespreis-String (z.B. "14,99 €" → "1,25 €")
+// Schätzt den monatlichen Preis aus dem Jahrespreis-String (z.B. "19,50 €" → "1,63 €").
+// Ist der Preis nicht lesbar, lieber nichts schätzen als einen veralteten
+// Festwert anzeigen (vorher '~1,25 €' aus dem alten Preis 14,99 €).
 function _monthlyEstimate(yearlyPriceStr) {
   const match = yearlyPriceStr?.match(/[\d,.]+/);
-  if (!match) return '~1,25 €';
+  if (!match) return '–';
   const yearly = parseFloat(match[0].replace(',', '.'));
   const monthly = (yearly / 12).toFixed(2).replace('.', ',');
   return `${monthly} €`;

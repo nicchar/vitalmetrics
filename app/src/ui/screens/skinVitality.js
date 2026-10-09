@@ -17,16 +17,16 @@ export function renderSkinVitality(container) {
     container.innerHTML = `
       <div class="screen skin-vitality-screen">
         <div class="screen-header">
-          <h1 class="screen-title">✨ Hautgesundheit & Vitalität</h1>
+          <h1 class="screen-title">✨ Beauty-Nährstoffe</h1>
         </div>
         <p class="hint-text" style="padding:0 16px">
           Vitamin C, Zink, Biotin & Co. neu betrachtet: welche bereits getrackten Werte
-          eine belegte Rolle für Haut, Haare und Nägel spielen - inklusive Blutzucker/
-          Glykation, Lifestyle-Faktoren und Darm-Haut-Achse. Kein Score, keine Diagnose -
+          eine belegte Rolle für Haut, Haare und Nägel spielen - inklusive Lifestyle-
+          Faktoren und Darm-Haut-Achse. Kein Score, keine Diagnose -
           nur ehrlich eingeordnete Bausteine mit Evidenz-Angabe.
         </p>
         <div class="analysis-upsell-card" style="margin:16px">
-          <p>✨ "Hautgesundheit & Vitalität" ist Teil von Premium.</p>
+          <p>✨ "Beauty-Nährstoffe" ist Teil von Premium.</p>
           <button class="btn-secondary btn-upgrade-inline" id="btn-upgrade-skin">⭐ Premium ansehen</button>
         </div>
       </div>`;
@@ -47,7 +47,7 @@ export function renderSkinVitality(container) {
 
   let html = `<div class="screen skin-vitality-screen">
     <div class="screen-header">
-      <h1 class="screen-title">✨ Hautgesundheit & Vitalität</h1>
+      <h1 class="screen-title">✨ Beauty-Nährstoffe</h1>
       <p class="app-subtitle">Bereits getrackte Werte neu betrachtet - kein Score, keine Diagnose.</p>
     </div>
 
@@ -94,7 +94,7 @@ export function renderSkinVitality(container) {
     html += `</div></div>`;
   }
 
-  html += `<div class="disclaimer"><p>ℹ️ Diese Übersicht ordnet bereits getrackte Werte ein, ersetzt aber keine dermatologische Beratung. Angaben zu Nährstoffen folgen den zugelassenen EFSA-Health-Claims.</p></div></div>`;
+  html += `<div class="disclaimer"><p>ℹ️ Diese Übersicht ordnet bereits getrackte Werte ein, ersetzt aber keine professionelle Ernährungsberatung. Angaben zu Nährstoffen folgen den zugelassenen EFSA-Health-Claims.</p></div></div>`;
 
   container.innerHTML = html;
 

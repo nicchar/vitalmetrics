@@ -88,8 +88,8 @@ after(() => {
 test('SCREEN_NAMES enthält alle bekannten Screens (Regressionsschutz gegen fehlendes Router-Wiring)', () => {
   const expected = [
     'dashboard', 'entry', 'trend', 'profile', 'premium', 'onboarding',
-    'activity', 'cycle', 'nutrition', 'tools', 'fasting', 'glucose_day',
-    'cravings', 'mealplan', 'weekly_review', 'skin_vitality', 'my_recipes',
+    'activity', 'cycle', 'nutrition', 'tools', 'fasting',
+    'cravings', 'mealplan', 'weekly_review', 'skin_vitality', 'my_recipes', 'health_consent',
   ];
   for (const name of expected) {
     assert.ok(SCREEN_NAMES.includes(name), `Screen "${name}" fehlt in SCREEN_NAMES`);
@@ -158,25 +158,22 @@ test('navigate: onboarding blendet die Bottom-Nav aus', () => {
 test('navigate: Fasten/Blutzucker/Wochenrückblick sind ohne Premium komplett gesperrt (nur Teaser + Upgrade-Button)', () => {
   profileRepo.save({ onboardingDone: true, sex: 'f' });
   entitlements.setPremium(false);
-  for (const screen of ['fasting', 'glucose_day', 'weekly_review']) {
+  for (const screen of ['fasting', 'weekly_review']) {
     navigate(screen);
     const container = document.getElementById('screen-container');
     assert.ok(/Premium/.test(container.innerHTML), `Screen "${screen}" sollte ohne Premium einen Premium-Hinweis zeigen`);
     assert.ok(container.querySelector('.btn-upgrade-inline'), `Screen "${screen}" sollte einen Upgrade-Button zeigen`);
     // Kein echter Tracker-Inhalt sichtbar (Stichprobe je Screen):
     assert.equal(container.querySelector('#btn-fasting-toggle'), null);
-    assert.equal(container.querySelector('#btn-glu-prev'), null);
     assert.equal(container.querySelector('.review-stat-grid'), null);
   }
 });
 
-test('navigate: Fasten/Blutzucker/Wochenrückblick zeigen mit Premium den vollen Inhalt', () => {
+test('navigate: Fasten/Wochenrückblick zeigen mit Premium den vollen Inhalt', () => {
   profileRepo.save({ onboardingDone: true, sex: 'f' });
   entitlements.setPremium(true);
   navigate('fasting');
   assert.ok(document.getElementById('screen-container').querySelector('#btn-fasting-toggle'));
-  navigate('glucose_day');
-  assert.ok(document.getElementById('screen-container').querySelector('#btn-glu-prev'));
   navigate('weekly_review');
   assert.ok(document.getElementById('screen-container').querySelector('.review-stat-grid'));
   entitlements.setPremium(false);
@@ -190,4 +187,14 @@ test('navigate: Zyklustracker, Heißhunger, Wochenplan und PMS/Menopause bleiben
     const container = document.getElementById('screen-container');
     assert.ok(!/ist Teil von Premium/.test(container.innerHTML), `Screen "${screen}" sollte ohne Premium NICHT gesperrt sein`);
   }
+});
+
+test('Tools-Hub: Zyklus-Tracker auch bei "Keine Angabe" erreichbar (Google-Play-Ablehnung 29.09.2026)', () => {
+  profileRepo.save({ onboardingDone: true, sex: '' });
+  navigate('tools');
+  const card = document.querySelector('#tool-cycle');
+  assert.ok(card, 'Zyklus-Karte fehlt im Tools-Hub');
+  card.dispatchEvent(new window.Event('click'));
+  assert.ok(document.getElementById('screen-container').innerHTML.trim().length > 0);
+  assert.equal(document.querySelector('.nav-cycle').style.display, 'none', 'Bottom-Nav-Tab bleibt bei nicht-weiblich ausgeblendet');
 });

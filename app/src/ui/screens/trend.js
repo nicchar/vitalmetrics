@@ -12,7 +12,6 @@ import { getInteractionsFor } from '../../domain/nutrientInteractions.js';
 import { getInsightsFor, EVIDENCE } from '../../domain/nutrientInsights.js';
 import { getTimingHintFor } from '../../domain/nutrientTiming.js';
 import { getTraditionalPerspectiveFor, TRADITIONAL_GENERAL_NOTE, TRADITIONAL_DISCLAIMER } from '../../domain/traditionalPerspectives.js';
-import { getMedicationWarnings, MEDICATION_CATEGORIES, MEDICATION_SOURCE_NOTE } from '../../domain/medicationInteractions.js';
 import { getAccessTierBadge, ACCESS_TIER_DESCRIPTIONS } from '../../domain/biomarkerAccess.js';
 import { recipeLogButtonHtml, wireRecipeLogButtons } from '../components/recipeLogControl.js';
 import { navigate } from '../../router.js';
@@ -129,7 +128,6 @@ export function renderTrend(container) {
       ${chartOrHistoryHtml}
       ${intakeChartHtml}
 
-      ${renderMedicationWarnings(bm, profile)}
       ${bm.category !== 'body' ? renderFoodsSection(bm, status) : ''}
       ${bm.category !== 'body' ? renderInteractionsSection(bm) : ''}
       ${bm.category !== 'body' ? renderInsightsSection(bm) : ''}
@@ -163,22 +161,6 @@ function partnerLabel(id) {
   if (LIFESTYLE_LABELS[id]) return LIFESTYLE_LABELS[id];
   const catalog = state.get('catalog');
   return catalog?.biomarkers?.find(b => b.id === id)?.name || id;
-}
-
-function renderMedicationWarnings(bm, profile) {
-  const warnings = getMedicationWarnings(profile.medications, bm.id);
-  if (!warnings.length) return '';
-  return `<div class="info-section medication-warning-box">
-    <h3>💊 Hinweis für deine Medikamente</h3>
-    <ul class="interactions-list">
-      ${warnings.map(w => `<li class="interaction-item interaction-hemmt">
-        <span class="interaction-icon">⚠️</span>
-        <span><strong>${MEDICATION_CATEGORIES[w.med] || w.med}:</strong> ${w.text}</span>
-      </li>`).join('')}
-    </ul>
-    <p style="font-size:11px;color:var(--text-secondary);margin-top:6px">Allgemeiner Hinweis, keine individuelle Bewertung – bei Fragen bitte Arzt oder Apotheke ansprechen.</p>
-    <p style="font-size:11px;color:var(--text-hint);margin-top:2px">${MEDICATION_SOURCE_NOTE}</p>
-  </div>`;
 }
 
 function renderInteractionsSection(bm) {
@@ -304,7 +286,7 @@ function renderFoodsSection(bm, status) {
     ${affiliateHtml}
     ${status === 'low' && bm.deficiencySymptoms?.length ? `
       <div class="symptoms-box">
-        <h4>⚠️ Typische Mangelsymptome</h4>
+        <h4>⚠️ Kann bei niedriger Zufuhr eine Rolle spielen</h4>
         <ul>${bm.deficiencySymptoms.map(s => `<li>${s}</li>`).join('')}</ul>
       </div>` : ''}
     ${status === 'high' && bm.highSymptoms?.length ? `
@@ -415,7 +397,6 @@ function renderInfoOnlyTrend(container, catalog, bm, profile) {
         </p>
       </div>
 
-      ${renderMedicationWarnings(bm, profile)}
       ${renderFoodsSection(bm, 'unknown')}
       ${renderInteractionsSection(bm)}
       ${renderInsightsSection(bm)}

@@ -2,6 +2,7 @@ import { state }         from './appState.js';
 import { navigate }       from './router.js';
 import { profileRepo }    from './infra/db/repositories/profileRepo.js';
 import { billingService } from './infra/billing/billingService.js';
+import { needsHealthConsent } from './domain/consent.js';
 
 async function init() {
   // ── Biomarker-Katalog laden ───────────────────────────────────────────────
@@ -40,6 +41,8 @@ async function init() {
   const profile = profileRepo.get();
   if (!profile.onboardingDone) {
     navigate('onboarding');
+  } else if (needsHealthConsent(profile)) {
+    navigate('health_consent');
   } else {
     navigate('dashboard');
   }

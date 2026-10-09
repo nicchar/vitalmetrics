@@ -36,13 +36,17 @@ async function walk(dir) {
 }
 
 async function copyTree(src, dest) {
-  // WICHTIG: Keine Nutzung von fs.rm/fs.cp(force) - beide loesen intern
-  // unlink() aus, um Zieldateien vor dem Kopieren zu entfernen. In diesem
-  // Projektordner ist das Loeschen bestehender Dateien nicht erlaubt (siehe
-  // wiederkehrende EPERM-Fehler). Stattdessen wird jede Datei einzeln
-  // gelesen und per writeFile (truncate+overwrite, kein unlink) in das Ziel
-  // geschrieben - das funktioniert sowohl beim ersten Build als auch beim
-  // Ueberschreiben bei spaeteren Builds.
+  // Bugfix 09.09.2026: Vorher wurde dest NIE bereinigt (siehe Git-Historie) -
+  // in app/src geloeschte Dateien (z.B. glucose.js, medicationInteractions.js)
+  // blieben dadurch für immer in dist-release/app/ liegen und wurden bei jedem
+  // Release stillschweigend mitgebaut, obwohl sie im Quellcode laengst weg
+  // waren. Das fuehrte zu wiederholten Google-Play-Ablehnungen ("Medikations-
+  // und Behandlungsmanagement"/"Krankheits- und Beschwerdemanagement"), weil
+  // die tatsaechlich hochgeladene AAB die alten Dateien noch als lesbaren
+  // JS-Quelltext enthielt. Ziel-Ordner wird deshalb jetzt vor jedem Release-
+  // Build komplett neu aufgebaut (rm + mkdir), damit dist-release/ IMMER exakt
+  // dem aktuellen app/-Stand entspricht, nie mehr Karteileichen enthaelt.
+  await fs.rm(dest, { recursive: true, force: true });
   await fs.mkdir(dest, { recursive: true });
   const entries = await fs.readdir(src, { withFileTypes: true });
   for (const entry of entries) {
@@ -137,6 +141,10 @@ async function main() {
   for (const file of files) {
     const ext = path.extname(file);
     try {
+      // Bereits minifizierte Fremdbibliotheken (app/vendor/*.min.js, lokal
+      // eingebunden statt CDN - Datenschutz-Gap-Analyse 28.09.2026) nicht
+      // erneut durch terser schicken.
+      if (file.endsWith('.min.js')) continue;
       if (ext === '.js') { await minifyJsFile(file); jsCount++; }
       else if (ext === '.html') { await minifyHtmlFile(file); htmlCount++; }
       else if (ext === '.css') { await minifyCssFile(file); cssCount++; }

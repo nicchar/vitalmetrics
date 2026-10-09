@@ -32,6 +32,9 @@ import { cravingsRepo } from '../db/repositories/cravingsRepo.js';
 import { mealPlanRepo } from '../db/repositories/mealPlanRepo.js';
 import { hydrationRepo } from '../db/repositories/hydrationRepo.js';
 import { sleepRepo } from '../db/repositories/sleepRepo.js';
+import { customRecipeRepo } from '../db/repositories/customRecipeRepo.js';
+import { cycleSymptomsRepo } from '../db/repositories/cycleSymptomsRepo.js';
+import { storage } from '../db/sqlite.js';
 
 export const EXPORT_FORMAT_VERSION = 1;
 
@@ -55,6 +58,11 @@ export function gatherAllData() {
     mealPlan: mealPlanRepo.get(),
     hydration: hydrationRepo.getAll(),
     sleep: sleepRepo.getAll(),
+    // Ergänzt 28.09.2026 (Datenschutz-Gap-Analyse): fehlten bisher im Export
+    // -> Lücke beim Auskunfts-/Übertragbarkeitsrecht (Art. 15/20 DSGVO) und
+    // Datenverlust beim Gerätewechsel.
+    customRecipes: customRecipeRepo.getAll(),
+    cycleSymptoms: cycleSymptomsRepo.getAll(),
   };
 }
 
@@ -71,6 +79,44 @@ export function applyAllData(data) {
   if (data.mealPlan) mealPlanRepo.save(data.mealPlan); else mealPlanRepo.clear();
   if (data.hydration) hydrationRepo.replaceAll(data.hydration);
   if (data.sleep) sleepRepo.replaceAll(data.sleep);
+  if (data.customRecipes) customRecipeRepo.replaceAll(data.customRecipes);
+  if (data.cycleSymptoms) cycleSymptomsRepo.saveAll(data.cycleSymptoms);
+}
+
+/**
+ * Alle Speicherschlüssel mit Nutzerdaten (Gesundheits-, Tagebuch- und
+ * Nutzungsdaten). Grundlage für "Alle Daten löschen" (Art. 17 DSGVO).
+ *
+ * BEWUSST NICHT enthalten: 'vm_premium' - reiner Cache des Kaufstatus, der
+ * ohnehin bei jedem App-Start von Google Play neu verifiziert wird (siehe
+ * domain/entitlements.js). Ein bezahltes Abo soll durch das Löschen der
+ * Gesundheitsdaten nicht offline "verschwinden".
+ *
+ * WICHTIG: Kommt ein neues Repository hinzu, muss sein Schlüssel hier UND in
+ * gatherAllData()/applyAllData() ergänzt werden (abgesichert durch
+ * tests/infra/dataExportService.test.js).
+ */
+export const USER_DATA_KEYS = [
+  'vm_profile',
+  'vm_measurements',
+  'vm_nutrition',
+  'vm_activity',
+  'vm_cycle',
+  'vm_cycle_symptoms',
+  'vitalmetrics_fasting',
+  'vitalmetrics_cravings',
+  'vm_mealplan',
+  'vm_hydration',
+  'vm_sleep',
+  'vm_custom_recipes',
+  'vm_install_date',
+  'vm_entry_count',
+  'vm_review_requested',
+];
+
+/** Löscht sämtliche lokal gespeicherten Nutzerdaten unwiderruflich. */
+export function deleteAllUserData() {
+  for (const key of USER_DATA_KEYS) storage.remove(key);
 }
 
 function buildFileName() {

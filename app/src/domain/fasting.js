@@ -8,8 +8,8 @@
 export const FASTING_STAGES = [
   { h: 4,  emoji: '🍬', name: 'Zuckerverdauung', desc: 'Insulin sinkt, Glykogen wird verbraucht.' },
   { h: 8,  emoji: '🔥', name: 'Fettverbrennung', desc: 'Körper wechselt auf Fettverbrennung.' },
-  { h: 12, emoji: '🧹', name: 'Tiefe Reinigung', desc: 'Erste Autophagie-Prozesse starten.' },
-  { h: 16, emoji: '♻️', name: 'Autophagie aktiv', desc: 'Zellreinigung läuft — optimale Erneuerung.' },
+  { h: 12, emoji: '🧹', name: 'Umstellung', desc: 'Der Stoffwechsel stellt sich weiter um.' },
+  { h: 16, emoji: '♻️', name: 'Tiefere Fastenphase', desc: 'Viele berichten hier von mehr Energie und Klarheit.' },
   { h: 20, emoji: '⚡', name: 'Ketose & Fokus', desc: 'Ketone steigen — mentale Klarheit.' },
 ];
 

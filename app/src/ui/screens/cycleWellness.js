@@ -1,5 +1,4 @@
-import { CYCLE_WELLNESS_CLUSTERS, TRADITIONAL_PHYTO_NOTE, PMDS_LEARNING_CONTENT } from '../../domain/cycleWellness.js';
-import { TRADITIONAL_DISCLAIMER } from '../../domain/traditionalPerspectives.js';
+import { CYCLE_WELLNESS_CLUSTERS } from '../../domain/cycleWellness.js';
 import { navigate } from '../../router.js';
 
 export function renderCycleWellness(container) {
@@ -29,18 +28,6 @@ export function renderCycleWellness(container) {
     }
     html += `</div></div>`;
   }
-
-  html += `<div class="category-section traditional-section" style="padding:14px;border-radius:10px">
-    <h2 class="category-title">🌿 Traditionelle/pflanzliche Perspektive</h2>
-    <p class="card-info-desc">${TRADITIONAL_PHYTO_NOTE}</p>
-    <p class="traditional-disclaimer" style="margin-top:8px">${TRADITIONAL_DISCLAIMER}</p>
-  </div>`;
-
-  html += `<div class="category-section">
-    <h2 class="category-title">ℹ️ ${PMDS_LEARNING_CONTENT.title}</h2>
-    <p class="card-info-desc">${PMDS_LEARNING_CONTENT.text}</p>
-    <p class="hint-text" style="margin-top:8px">${PMDS_LEARNING_CONTENT.hint}</p>
-  </div>`;
 
   html += `<div class="disclaimer"><p>ℹ️ Perimenopause und Menopause sind ein natürlicher Übergang, kein Krankheitszustand. Diese Übersicht ersetzt keine ärztliche Beratung. Nährstoff-Angaben folgen den zugelassenen EFSA-Health-Claims.</p></div></div>`;
 

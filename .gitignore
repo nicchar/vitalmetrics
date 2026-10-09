@@ -48,3 +48,4 @@ npm-debug.log*
 # ── Cowork (Claude Desktop) ───────────────────────────────────────────────────
 .skills/
 *.skill
+_to_delete/

@@ -16,15 +16,17 @@ const defaults = {
   // zu raten).
   height: null,        // cm
   activityLevel: '',   // '' | 'sitzend' | 'leicht_aktiv' | 'aktiv' | 'sehr_aktiv' (siehe domain/energyNeeds.js ACTIVITY_LEVELS)
-  // Block E: feste Auswahlliste (KEIN Freitext-Diagnosefeld) für allgemeine
-  // Medikamenten-/Supplement-Wechselwirkungshinweise, siehe medicationInteractions.js
-  medications: [],
   // Block D: lokale, tägliche Erinnerung (kein Server, kein Push-Dienst).
   reminderEnabled: false,
   reminderTime: '19:00',
   // Block C: Einwilligung zu Datenschutzerklärung + AGB im Onboarding.
   consentGiven: false,
   consentDate: null,
+  // Datenschutz-Gap-Analyse 28.09.2026: separate, ausdrückliche Einwilligung
+  // in die Verarbeitung von Gesundheitsdaten (Art. 9 DSGVO), siehe domain/consent.js.
+  healthConsentGiven: false,
+  healthConsentDate: null,
+  healthConsentVersion: 0,
   // Alltagsreibung-Review Juli 2026: Unverträglichkeiten für den Wochenplan-
   // Filter (siehe domain/mealPlan.js, filterByIntolerances). Feste Auswahlliste,
   // kein Freitext - gleiches Muster wie medications.
