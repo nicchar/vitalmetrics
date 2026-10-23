@@ -27,7 +27,7 @@ test('mapOFFFood: mappt Kernfelder korrekt und rundet sinnvoll', () => {
       proteins_100g: 5.55,
       fat_100g: 2.222,
       carbohydrates_100g: 60,
-      iron_100g: 1.2,
+      iron_100g: 0.0012, // OFF: *_100g immer in Gramm -> 1,2 mg
     },
   };
   const food = mapOFFFood(product);
@@ -48,7 +48,7 @@ test('mapOFFFood: Niacin/Vitamin B3 wird ueber den OFF-Schluessel "vitamin-pp_10
   // b3 war dadurch bei Scans/Suche praktisch immer 0.
   const food = mapOFFFood({
     product_name: 'Testprodukt',
-    nutriments: { 'vitamin-pp_100g': 3.4 },
+    nutriments: { 'vitamin-pp_100g': 0.0034 },
   });
   assert.equal(food.b3, 3.4);
 });
@@ -56,9 +56,31 @@ test('mapOFFFood: Niacin/Vitamin B3 wird ueber den OFF-Schluessel "vitamin-pp_10
 test('mapOFFFood: "niacin_100g" bleibt als Fallback nutzbar, falls OFF den Wert doch mal so liefert', () => {
   const food = mapOFFFood({
     product_name: 'Testprodukt',
-    nutriments: { niacin_100g: 2.1 },
+    nutriments: { niacin_100g: 0.0021 },
   });
   assert.equal(food.b3, 2.1);
+});
+
+test('mapOFFFood (2.2): rechnet OFF-Grammwerte in mg/µg um, liest Ballaststoffe und Jod', () => {
+  // OFF-Schema: "g for all nutrients that are measured by weight" - vorher
+  // wurden diese Werte ungerechnet übernommen (Faktor 1.000 bzw. 1.000.000 zu klein).
+  const food = mapOFFFood({
+    product_name: 'Sojadrink',
+    nutriments: {
+      'calcium_100g': 0.12,          // 120 mg
+      'vitamin-d_100g': 0.00000075,  // 0,75 µg
+      'vitamin-b12_100g': 0.00000038,// 0,38 µg
+      'vitamin-c_100g': 0.0182,      // 18,2 mg
+      fiber_100g: 0.64,              // 0,6 g
+      iodine_100g: 0.0000225,        // 22,5 µg
+    },
+  });
+  assert.equal(food.cal, 120);
+  assert.equal(food.vit_d, 0.75);
+  assert.equal(food.b12, 0.38);
+  assert.equal(food.vit_c, 18.2);
+  assert.equal(food.fiber, 0.6);
+  assert.equal(food.jod, 22.5);
 });
 
 test('mapOFFFood: fehlender Name faellt auf "Unbekannt" zurueck, keine Exceptions bei leeren nutriments', () => {

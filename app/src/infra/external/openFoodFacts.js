@@ -22,6 +22,12 @@ function offEmoji(product) {
   return '🍽️';
 }
 
+const round2 = v => Math.round(v * 100) / 100;
+/** g -> mg (OFF-Normierung, siehe mapOFFFood) */
+const mg = g => round2((Number(g) || 0) * 1000);
+/** g -> µg */
+const ug = g => round2((Number(g) || 0) * 1000000);
+
 export function mapOFFFood(product) {
   const n = product.nutriments || {};
   const rawName = (product.product_name || '').trim() || 'Unbekannt';
@@ -34,26 +40,29 @@ export function mapOFFFood(product) {
     protein: Math.round((n['proteins_100g'] || 0) * 10) / 10,
     fat: Math.round((n['fat_100g'] || 0) * 10) / 10,
     carbs: Math.round((n['carbohydrates_100g'] || 0) * 10) / 10,
-    // Mikronährstoffe wie von OFF geliefert (Einheiten variieren, Best-Effort)
-    vit_a: n['vitamin-a_100g'] || 0,
-    vit_d: n['vitamin-d_100g'] || 0,
-    vit_e: n['vitamin-e_100g'] || 0,
-    vit_k: n['vitamin-k_100g'] || 0,
-    vit_c: n['vitamin-c_100g'] || 0,
-    b1: n['vitamin-b1_100g'] || 0,
-    b2: n['vitamin-b2_100g'] || 0,
+    // 2.2: Open Food Facts speichert alle *_100g-Werte normiert in GRAMM
+    // (z. B. vitamin-c_100g = 0.0182 für 18,2 mg). Vorher wurden die Werte
+    // ungerechnet übernommen - Mikronährstoffe aus Suche/Scan waren dadurch
+    // um Faktor 1.000 (mg) bzw. 1.000.000 (µg) zu klein.
+    vit_a: ug(n['vitamin-a_100g']),
+    vit_d: ug(n['vitamin-d_100g']),
+    vit_e: mg(n['vitamin-e_100g']),
+    vit_k: ug(n['vitamin-k_100g']),
+    vit_c: mg(n['vitamin-c_100g']),
+    b1: mg(n['vitamin-b1_100g']),
+    b2: mg(n['vitamin-b2_100g']),
     // OFF führt Niacin/Vitamin B3 intern unter 'vitamin-pp_100g' (historischer
-    // Name "Vitamine PP"), nicht unter 'niacin_100g' - dadurch war B3 bei
-    // Scans/Suche praktisch immer 0 (Fund 18.08.2026). 'niacin_100g' bleibt
-    // als Fallback, falls OFF den Wert doch mal unter diesem Namen liefert.
-    b3: n['vitamin-pp_100g'] || n['niacin_100g'] || 0,
-    b6: n['vitamin-b6_100g'] || 0,
-    b12: n['vitamin-b12_100g'] || 0,
-    folat: n['folates_100g'] || 0,
-    eisen: n['iron_100g'] || 0,
-    zink: n['zinc_100g'] || 0,
-    mag: n['magnesium_100g'] || 0,
-    cal: n['calcium_100g'] || 0,
+    // Name "Vitamine PP"), 'niacin_100g' bleibt als Fallback.
+    b3: mg(n['vitamin-pp_100g'] || n['niacin_100g']),
+    b6: mg(n['vitamin-b6_100g']),
+    b12: ug(n['vitamin-b12_100g']),
+    folat: ug(n['folates_100g'] || n['vitamin-b9_100g']),
+    eisen: mg(n['iron_100g']),
+    zink: mg(n['zinc_100g']),
+    mag: mg(n['magnesium_100g']),
+    cal: mg(n['calcium_100g']),
+    fiber: Math.round((n['fiber_100g'] || 0) * 10) / 10,
+    jod: ug(n['iodine_100g']),
     source: 'openfoodfacts',
   };
 }

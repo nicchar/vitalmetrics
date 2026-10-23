@@ -85,3 +85,11 @@ test('buildCustomRecipe: Ergebnis ist mit computeLoggedNutrition() aus recipeLog
   assert.equal(n.protein, 15); // 10 * 1.5
   assert.equal(n.vit_d, 0);
 });
+
+test('2.2: buildCustomRecipe übernimmt optionale Ballaststoffe', async () => {
+  const { buildCustomRecipe } = await import('../../app/src/domain/customRecipe.js');
+  const res = buildCustomRecipe({ title: 'Linsensuppe', servings: '2', ingredientsText: 'Linsen', kal: '320', fiber: '9.5' });
+  assert.equal(res.recipe.nutritionPerServing.fiber, 9.5);
+  const ohne = buildCustomRecipe({ title: 'X', ingredientsText: 'Y' });
+  assert.equal(ohne.recipe.nutritionPerServing.fiber, 0);
+});

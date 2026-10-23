@@ -30,5 +30,9 @@ export function getDGERef(ageGroup, sex) {
     zink:   { label: 'Zink',        unit: 'mg', ref: isF ? 8 : 11 },
     mag:    { label: 'Magnesium',   unit: 'mg', ref: isF ? 300 : 350 },
     cal:    { label: 'Calcium',     unit: 'mg', ref: is70 ? 1200 : 1000 },
+    // 2.2: DGE-Richtwert Ballaststoffe mind. 30 g/Tag; DGE/ÖGE-Referenzwert
+    // Jod seit 2025: 150 µg/Tag für Erwachsene (vorher 200 bzw. 180 µg).
+    fiber:  { label: 'Ballaststoffe', unit: 'g', ref: 30 },
+    jod:    { label: 'Jod',         unit: 'µg', ref: 150 },
   };
 }

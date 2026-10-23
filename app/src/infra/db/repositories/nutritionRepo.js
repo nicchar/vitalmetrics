@@ -17,6 +17,13 @@ const SCHEMA_VERSION = 2;
 // prüfen kann, ob ein Open-Food-Facts-Produkt komplett ohne
 // Mikronährstoff-Angaben ist - statt die 15 Keys ein zweites Mal zu pflegen.
 export const MICRO_KEYS = ['vit_a', 'vit_d', 'vit_e', 'vit_k', 'vit_c', 'b1', 'b2', 'b3', 'b6', 'b12', 'folat', 'eisen', 'zink', 'mag', 'cal'];
+// Version 2.2 (Okt. 2026): Ballaststoffe (g) und Jod (µg) aus BLS 4.0 (Spalten
+// FIBT/ID). Bewusst getrennt von MICRO_KEYS, weil Ballaststoffe kein
+// Mikronährstoff sind und die "OFF-Produkt ohne Mikronährstoffe"-Prüfung in
+// nutrition.js unverändert bleiben soll. Alte Tagebucheinträge haben diese
+// Felder nicht -> zählen als 0.
+export const EXTRA_KEYS = ['fiber', 'jod'];
+export const TOTAL_KEYS = [...MICRO_KEYS, ...EXTRA_KEYS];
 
 function migrate(oldData) {
   if (!oldData || typeof oldData !== 'object') return {};
@@ -50,7 +57,7 @@ export const nutritionRepo = {
 
   getDayTotals(dateStr) {
     const entries = this.getDay(dateStr);
-    const totals = Object.fromEntries(MICRO_KEYS.map(k => [k, 0]));
+    const totals = Object.fromEntries(TOTAL_KEYS.map(k => [k, 0]));
     totals.kcal = 0;
     totals.protein = 0;
     totals.fat = 0;
@@ -63,7 +70,7 @@ export const nutritionRepo = {
       totals.protein = Math.round((totals.protein + (food.protein || 0) * factor) * 10) / 10;
       totals.fat = Math.round((totals.fat + (food.fat || 0) * factor) * 10) / 10;
       totals.carbs = Math.round((totals.carbs + (food.carbs || 0) * factor) * 10) / 10;
-      for (const k of MICRO_KEYS) totals[k] = Math.round((totals[k] + (food[k] || 0) * factor) * 10) / 10;
+      for (const k of TOTAL_KEYS) totals[k] = Math.round((totals[k] + (food[k] || 0) * factor) * 10) / 10;
     }
     return totals;
   },
@@ -143,7 +150,7 @@ export const nutritionRepo = {
         avgFat: avg('fat'),
         avgCarbs: avg('carbs'),
       };
-      for (const k of MICRO_KEYS) week[k] = avg(k);
+      for (const k of TOTAL_KEYS) week[k] = avg(k);
       weeks.push(week);
     }
     return weeks;

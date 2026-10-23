@@ -61,3 +61,9 @@ test('recipeToFoodEntry: grams = 100 * portionFactor, damit nutritionRepo (kal *
 test('recipeToFoodEntry: gibt null zurueck ohne nutritionPerServing (kein Absturz beim Rendern)', () => {
   assert.equal(recipeToFoodEntry({ id: 'x', title: 'Y' }, 1), null);
 });
+
+test('2.2: computeLoggedNutrition übernimmt Ballaststoffe und Jod', () => {
+  const n = computeLoggedNutrition({ nutritionPerServing: { kal: 300, fiber: 8, jod: 40 } }, 1.5);
+  assert.equal(n.fiber, 12);
+  assert.equal(n.jod, 60);
+});

@@ -206,3 +206,18 @@ test('getWeeklyTotals: ein Eintrag genau 8 Tage zurueck landet in der VORHERIGEN
   assert.equal(previous.loggedDays, 1);
   assert.equal(previous.avgKcal, 500);
 });
+
+test('2.2: getDayTotals summiert Ballaststoffe und Jod; alte Einträge ohne Felder zählen als 0', () => {
+  const today = isoDaysAgo(0);
+  nutritionRepo.addEntry(today, { food: { name: 'Haferflocken', kal: 370, fiber: 10, jod: 4 }, grams: 50 });
+  nutritionRepo.addEntry(today, { food: { name: 'Alteintrag ohne Felder', kal: 100 }, grams: 100 });
+  nutritionRepo.addEntry(today, { food: { name: 'Jod unbekannt', kal: 50, fiber: 2, jod: null }, grams: 100 });
+  const totals = nutritionRepo.getDayTotals(today);
+  assert.equal(totals.fiber, 7);
+  assert.equal(totals.jod, 2);
+});
+
+test('2.2: getWeeklyTotals enthält fiber und jod', () => {
+  const week = nutritionRepo.getWeeklyTotals(1)[0];
+  assert.ok('fiber' in week && 'jod' in week);
+});

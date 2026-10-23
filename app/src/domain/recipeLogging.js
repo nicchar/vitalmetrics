@@ -25,6 +25,7 @@ export const PORTION_FACTORS = [0.5, 1, 1.5, 2];
 const NUTRIENT_KEYS = [
   'kal', 'protein', 'fat', 'carbs', 'vit_a', 'vit_d', 'vit_e', 'vit_k', 'vit_c',
   'b1', 'b2', 'b3', 'b6', 'b12', 'folat', 'eisen', 'zink', 'mag', 'cal',
+  'fiber', 'jod',
 ];
 
 /**

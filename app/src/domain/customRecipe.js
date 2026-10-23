@@ -20,6 +20,7 @@
 const NUTRIENT_KEYS = [
   'kal', 'protein', 'fat', 'carbs', 'vit_a', 'vit_d', 'vit_e', 'vit_k', 'vit_c',
   'b1', 'b2', 'b3', 'b6', 'b12', 'folat', 'eisen', 'zink', 'mag', 'cal',
+  'fiber', 'jod',
 ];
 
 function parseLines(text) {
@@ -34,7 +35,7 @@ function parseLines(text) {
  *
  * @returns {{ok:true, recipe:object} | {ok:false, reason:'title'|'ingredients'}}
  */
-export function buildCustomRecipe({ title, servings, ingredientsText, stepsText, kal, protein, fat, carbs }) {
+export function buildCustomRecipe({ title, servings, ingredientsText, stepsText, kal, protein, fat, carbs, fiber }) {
   const cleanTitle = (title || '').trim();
   if (!cleanTitle) return { ok: false, reason: 'title' };
 
@@ -49,6 +50,8 @@ export function buildCustomRecipe({ title, servings, ingredientsText, stepsText,
   nutritionPerServing.protein = parseFloat(protein) || 0;
   nutritionPerServing.fat = parseFloat(fat) || 0;
   nutritionPerServing.carbs = parseFloat(carbs) || 0;
+  // 2.2: optionales Feld (Ballaststoffe sind auf jeder Nährwerttabelle angegeben).
+  nutritionPerServing.fiber = parseFloat(fiber) || 0;
 
   return {
     ok: true,
