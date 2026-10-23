@@ -6,19 +6,25 @@ import { getDGERef } from '../../domain/nutrition.js';
 import {
   generatePlan, resolvePlan, buildShoppingList, scaleIngredients,
   getUnderCoveredTags, getDayTagCoverage, INTOLERANCE_LABELS,
-  getEligiblePool, setDaySlot, setPin,
+  getEligiblePool, setDaySlot, setPin, repairPlan,
 } from '../../domain/mealPlan.js';
 import { recipeLogButtonHtml, wireRecipeLogButtons } from '../components/recipeLogControl.js';
 import { showToast } from '../components/toast.js';
 import { mondayOf } from '../../domain/dateUtils.js';
 
-const CATEGORY_LABEL = { vegetarisch: '🥬 Vegetarisch', fleisch_fisch: '🍗 Fleisch/Fisch', keto: '🥑 Keto', gemischt: '🍽️ Gemischt' };
+const CATEGORY_LABEL = { vegetarisch: '🥬 Vegetarisch', fleisch_fisch: '🍗 Fleisch/Fisch', keto: '🥑 Low Carb', gemischt: '🍽️ Gemischt' };
 const MEAL_LABEL = { breakfast: 'Frühstück', lunch: 'Mittag', dinner: 'Abend' };
 
 export function renderMealPlan(container) {
   const recipes = state.get('recipes') || [];
   let plan = mealPlanRepo.get();
   const thisMonday = mondayOf(new Date());
+
+  // 2.2: Rezepte, die es nach der Konsolidierung nicht mehr gibt, still ersetzen.
+  if (plan) {
+    const { plan: repaired, changed } = repairPlan(plan, recipes, profileRepo.get().intolerances || []);
+    if (changed) { plan = repaired; mealPlanRepo.save(plan); }
+  }
 
   // Plan ist veraltet (andere Woche) -> UI zeigt Hinweis, generiert aber nicht
   // automatisch neu (der Nutzer soll das bewusst per Klick anstoßen).

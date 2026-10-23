@@ -79,10 +79,22 @@ const INTOLERANCE_KEYWORDS = {
   nuesse: ['nuss', 'nüsse', 'nuesse', 'mandel', 'walnuss', 'haselnuss', 'cashew', 'pistazie', 'erdnuss', 'pekannuss', 'macadamia'],
 };
 
-/** Prüft, ob die Freitext-Zutaten eines Rezepts ein Trigger-Keyword enthalten. */
+// 2.2: Rezepte haben jetzt strukturierte Allergen-Angaben (recipes.json
+// "allergens", aus den Zutaten abgeleitet). Die Freitext-Suche bleibt als
+// Fallback für eigene Rezepte ohne Allergen-Daten.
+const INTOLERANCE_ALLERGENS = {
+  laktose: ['milk'],
+  gluten: ['gluten'],
+  nuesse: ['tree_nuts', 'peanut'],
+};
+
+/** Prüft, ob ein Rezept zu einer Unverträglichkeit passt (Allergen-Daten, sonst Freitext-Keywords). */
 export function recipeMatchesIntolerance(recipe, intoleranceId) {
   const keywords = INTOLERANCE_KEYWORDS[intoleranceId];
   if (!keywords) return false;
+  if (Array.isArray(recipe.allergens)) {
+    return recipe.allergens.some(a => (INTOLERANCE_ALLERGENS[intoleranceId] || []).includes(a));
+  }
   const text = (recipe.ingredients || []).join(' ').toLowerCase();
   return keywords.some(kw => text.includes(kw));
 }
@@ -119,19 +131,54 @@ export function filterByIntolerances(recipes, activeIntolerances = []) {
  */
 export function getEligiblePool(recipes, category, activeIntolerances = []) {
   const withoutIntolerances = filterByIntolerances(recipes, activeIntolerances);
+  // 2.2 (Fund aus der Gesamtprüfung Okt. 2026): Bei "Vegetarisch" kamen zum
+  // Frühstück Rezepte wie "Rührei mit Rindfleisch", weil das Frühstück seit
+  // Review 12 komplett von der Kategorie entkoppelt war. Die Ernährungsform
+  // gilt jetzt für ALLE Mahlzeiten; entkoppelt bleibt nur die Kategorie-
+  // Präferenz "Fleisch/Fisch" (Frühstück darf dort auch Porridge sein).
+  const fitsDiet = r => matchesDiet(r, category);
 
-  const breakfast = withoutIntolerances.filter(r => r.mealType === 'breakfast');
-
-  const allLunch = withoutIntolerances.filter(r => r.mealType === 'lunch');
-  const lunch = (category === 'gemischt' || category === 'fleisch_fisch')
-    ? allLunch
-    : allLunch.filter(r => r.category === category);
+  const breakfast = withoutIntolerances.filter(r => r.mealType === 'breakfast' && fitsDiet(r));
+  const lunch = withoutIntolerances.filter(r => r.mealType === 'lunch' && fitsDiet(r));
 
   return {
     breakfast,
     lunch,
     dinner: lunch, // Abendessen nutzt denselben Pool wie Mittag
   };
+}
+
+/** true, wenn ein Rezept zur gewählten Ernährungsform passt (2.2: über Rezept-Flags). */
+export function matchesDiet(recipe, category) {
+  if (category === 'gemischt' || category === 'fleisch_fisch') return true;
+  if (category === 'vegetarisch') {
+    return typeof recipe.vegetarian === 'boolean' ? recipe.vegetarian : recipe.category === 'vegetarisch';
+  }
+  if (category === 'keto') {
+    return typeof recipe.lowCarb === 'boolean' ? recipe.lowCarb : recipe.category === 'keto';
+  }
+  return recipe.category === category;
+}
+
+/** true, wenn ein Rezept Fleisch oder Fisch enthält. */
+function hasMeatOrFish(recipe) {
+  return typeof recipe.vegetarian === 'boolean' ? !recipe.vegetarian : recipe.category === 'fleisch_fisch';
+}
+
+// 2.2: Saison des Wochenstarts (f/s/h/w). Rezepte tragen "seasons" wie
+// ["h","w"] oder ["g"] (ganzjährig). Beim Würfeln werden Rezepte der
+// aktuellen Saison bevorzugt (kein Spargel im Oktober), solange genug da sind.
+export function seasonOf(isoDate) {
+  const m = new Date(isoDate).getMonth() + 1;
+  if (m >= 3 && m <= 5) return 'f';
+  if (m >= 6 && m <= 8) return 's';
+  if (m >= 9 && m <= 11) return 'h';
+  return 'w';
+}
+
+export function isInSeason(recipe, season) {
+  if (!Array.isArray(recipe.seasons) || !recipe.seasons.length) return true;
+  return recipe.seasons.includes('g') || recipe.seasons.includes(season);
 }
 
 /**
@@ -199,8 +246,9 @@ export function generatePlan(recipes, category, weekStartIso, underCoveredTags =
   // auch mal vegetarisch").
   const FLEISCH_FISCH_WEIGHT = 0.65;
   const preferredIds = category === 'fleisch_fisch'
-    ? new Set(recipes.filter(r => r.category === 'fleisch_fisch').map(r => r.id))
+    ? new Set(recipes.filter(hasMeatOrFish).map(r => r.id))
     : null;
+  const season = seasonOf(weekStartIso);
 
   function pick(mealType, sameDayExcludeId = null) {
     const trackKey = mealType === 'breakfast' ? 'breakfast' : 'lunchDinner';
@@ -210,6 +258,10 @@ export function generatePlan(recipes, category, weekStartIso, underCoveredTags =
 
     let candidates = options.filter(r => !used.has(r.id));
     if (!candidates.length) candidates = options; // Pool zu klein fuer volle Wochen-Einzigartigkeit - Fallback
+
+    // 2.2: Saisonale Rezepte bevorzugen - nur wenn danach noch Auswahl bleibt.
+    const inSeason = candidates.filter(r => isInSeason(r, season));
+    if (inSeason.length) candidates = inSeason;
 
     // Selbst-Duplikat-Schutz: der Wochen-Fallback oben (und der Tag-Boost
     // gleich danach) koennten sonst in kleinen Pools genau das Rezept
@@ -322,6 +374,45 @@ export function getDayTagCoverage(resolvedDay) {
 }
 
 /**
+ * 2.2: Rezept-Datenbank wurde von 310 auf gut 200 Rezepte konsolidiert. Ein
+ * gespeicherter Plan kann daher IDs enthalten, die es nicht mehr gibt. Diese
+ * Slots werden durch ein passendes Rezept (gleiche Mahlzeit, Ernährungsform,
+ * Unverträglichkeiten) ersetzt, das in dieser Woche noch nicht vorkommt.
+ * Pins auf gelöschte Rezepte werden entfernt. Gibt { plan, changed } zurück.
+ */
+export function repairPlan(plan, recipes, activeIntolerances = []) {
+  if (!plan?.days) return { plan, changed: false };
+  const ids = new Set(recipes.map(r => r.id));
+  const pool = getEligiblePool(recipes, plan.category, activeIntolerances);
+  const used = new Set(plan.days.flatMap(d => [d.breakfast, d.lunch, d.dinner]).filter(id => ids.has(id)));
+  let changed = false;
+  const pickFor = mealType => {
+    const options = pool[mealType] || [];
+    const fresh = options.filter(r => !used.has(r.id));
+    const list = fresh.length ? fresh : options;
+    if (!list.length) return null;
+    const choice = list[Math.floor(Math.random() * list.length)];
+    used.add(choice.id);
+    return choice.id;
+  };
+  const days = plan.days.map(day => {
+    const next = { ...day };
+    for (const mealType of ['breakfast', 'lunch', 'dinner']) {
+      if (next[mealType] && !ids.has(next[mealType])) {
+        next[mealType] = pickFor(mealType);
+        changed = true;
+      }
+    }
+    return next;
+  });
+  const pins = { ...(plan.pins || {}) };
+  for (const [mealType, id] of Object.entries(pins)) {
+    if (!ids.has(id)) { delete pins[mealType]; changed = true; }
+  }
+  return { plan: changed ? { ...plan, days, pins } : plan, changed };
+}
+
+/**
  * Loest die Rezept-IDs im Plan zu vollen Rezept-Objekten auf (fuer die UI).
  */
 export function resolvePlan(plan, recipes) {
@@ -381,6 +472,26 @@ function parseIngredientLine(line) {
  * unabhängig davon wie viele Portionen das Rezept eigentlich ergibt (Bugfix,
  * Nutzer-Feedback: "30 Eier, 1000g Lachs" für eine Person).
  */
+/** "Kidneybohnen (240 g abgetropft)" -> "Kidneybohnen"; Staples vereinheitlichen. */
+function cleanIngredientName(name) {
+  const base = String(name || '').replace(/\s*\([^)]*\)/g, '').trim();
+  const staple = STAPLE_ITEMS[base.toLowerCase()];
+  if (staple) return staple;
+  if (/^salz\b/i.test(base)) return 'Salz und Gewürze';
+  return base;
+}
+
+function addShoppingItem(items, mapKey, scaledQty, unit, name) {
+  if (items.has(mapKey)) {
+    const existing = items.get(mapKey);
+    if (scaledQty != null && existing.qty != null) existing.qty += scaledQty;
+    else if (scaledQty == null && existing.qty == null) { /* schon gelistet */ }
+    else existing.qty = existing.qty ?? scaledQty;
+  } else {
+    items.set(mapKey, { qty: scaledQty, unit, name });
+  }
+}
+
 export function buildShoppingList(resolvedPlan, targetServings = 1) {
   const items = new Map(); // key: `${unit}::${name.toLowerCase()}` -> { qty, unit, name }
 
@@ -389,6 +500,18 @@ export function buildShoppingList(resolvedPlan, targetServings = 1) {
       const recipe = day[key];
       if (!recipe) continue;
       const factor = targetServings / (recipe.servings || 1);
+      // 2.2: strukturierte Zutaten (Menge, Einheit, Name) statt Freitext-Parsing.
+      if (Array.isArray(recipe.ingredientsData) && recipe.ingredientsData.length) {
+        for (const ing of recipe.ingredientsData) {
+          const name = cleanIngredientName(ing.name);
+          if (!name || /^wasser\b/i.test(name)) continue;
+          const unit = ing.qty != null ? (ing.unit || '') : '';
+          const scaledQty = ing.qty != null ? ing.qty * factor : null;
+          const mapKey = `${unit.toLowerCase()}::${name.toLowerCase()}`;
+          addShoppingItem(items, mapKey, scaledQty, unit, name);
+        }
+        continue;
+      }
       for (const line of recipe.ingredients || []) {
         for (const part of line.split(',').map(s => s.trim()).filter(Boolean)) {
           const { qty, unit, name } = parseIngredientLine(part);

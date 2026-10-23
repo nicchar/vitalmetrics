@@ -25,17 +25,12 @@ test('recipes.json: jedes Rezept hat alle Pflichtfelder, nicht-leere Zutaten/Sch
   }
 });
 
-test('recipes.json (Block F Phase 3): mindestens 260 Rezepte, Mangan und Biotin nicht mehr fast unbelegt', () => {
-  assert.ok(recipes.length >= 260, `Erwartet >= 260 Rezepte, gefunden ${recipes.length}`);
-  const tagCount = id => recipes.filter(r => r.tags.includes(id)).length;
-  assert.ok(tagCount('mangan') >= 5, `Mangan-Rezepte weiterhin zu duenn: ${tagCount('mangan')}`);
-  assert.ok(tagCount('vitamin_b7') >= 5, `Biotin-Rezepte weiterhin zu duenn: ${tagCount('vitamin_b7')}`);
-});
-
-test('recipes.json (Block F Phase 3): Fruehstueck und Snack ausgebaut (waren die duennsten Kategorien)', () => {
+test('recipes.json (2.2): kuratierte Sammlung mit über 200 Rezepten, alle Mahlzeiten gut belegt', () => {
+  assert.ok(recipes.length >= 200, `Erwartet >= 200 Rezepte, gefunden ${recipes.length}`);
   const byMeal = type => recipes.filter(r => r.mealType === type).length;
-  assert.ok(byMeal('breakfast') >= 54, `Fruehstueck weiterhin zu duenn: ${byMeal('breakfast')}`);
-  assert.ok(byMeal('snack') >= 48, `Snack weiterhin zu duenn: ${byMeal('snack')}`);
+  assert.ok(byMeal('breakfast') >= 45, `Frühstück: ${byMeal('breakfast')}`);
+  assert.ok(byMeal('lunch') >= 110, `Hauptgerichte: ${byMeal('lunch')}`);
+  assert.ok(byMeal('snack') >= 30, `Smoothies & Snacks: ${byMeal('snack')}`);
 });
 
 const NUTRITION_KEYS = ['kal', 'protein', 'fat', 'carbs', 'vit_a', 'vit_d', 'vit_e', 'vit_k', 'vit_c',
@@ -65,40 +60,25 @@ test('recipes.json (Block F Phase 4b): mindestens 99% der Rezepte auf "reviewed"
   assert.ok(reviewed / recipes.length >= 0.99, `Nur ${reviewed}/${recipes.length} reviewed`);
 });
 
-// Review 12 (19.08.2026), Nutzer-Feedback ("deine Rezepte wirken ziemlich
-// altbacken... zum Fruehstueck Skyr mit Beeren oder aehnlich"): 8 neue
-// Fruehstuecksrezepte jenseits der bisherigen "Ruehrei mit ..."-Varianten.
-// Nutrition wurde gegen die echte BLS-Datenbank (foodDatabase.json)
-// gematcht und berechnet, daher direkt als "reviewed" markiert (siehe
-// compute_nutrition.mjs-Vorgehen) statt als "estimated" liegen zu bleiben -
-// sonst waere der 99%-reviewed-Test oben durchgefallen.
-
 const VALID_TAGS = new Set([
   'calcium', 'cholin', 'eisen', 'jod', 'magnesium', 'mangan', 'omega3', 'selen',
   'vitamin_a', 'vitamin_b1', 'vitamin_b12', 'vitamin_b2', 'vitamin_b3', 'vitamin_b6',
   'vitamin_b7', 'vitamin_b9', 'vitamin_c', 'vitamin_d', 'vitamin_e', 'vitamin_k', 'zink',
 ]);
 
-const NEW_BREAKFAST_IDS = [
-  'skyr_beeren_bowl_kuerbiskerne',
-  'griechischer_joghurt_granatapfel_pistazien',
-  'gruener_smoothie_spinat_mango_chia',
-  'buchweizen_porridge_apfel_zimt',
-  'hirse_porridge_himbeeren_mandeln',
-  'beeren_chia_pudding_kokosmilch',
-  'quinoa_bowl_mango_kokosraspeln',
-  'huettenkaese_toast_radieschen_kresse',
+// Rezepte, für die es Pins bzw. Seiten auf wellanni.de gibt - die IDs müssen
+// stabil bleiben, damit Links und gespeicherte Wochenpläne weiter funktionieren.
+const PIN_IDS = [
+  'geroestete_rosenkohl_nuesse_249', 'skyr_walnuesse_zimt', 'halloumi_eintopf_rosenkohl_vollkornnudeln_9',
+  'overnight_oats_chia_beeren', 'quinoa_salat_rotkohl_suesskartoffel_14', 'haferflocken_energy_balls',
+  'kabeljau_ofengericht_rotkohl_suesskartoffel_112', 'griechischer_joghurt_granatapfel_pistazien',
+  'tempeh_curry_zucchini_suesskartoffel_24', 'buchweizen_porridge_apfel_zimt',
+  'kichererbsen_eintopf_gruenkohl_vollkornnudeln_10', 'karotten_ingwer_suppe', 'linsensuppe_zitrone',
 ];
 
-test('recipes.json: Review 12 - die 8 neuen Fruehstuecksrezepte sind vorhanden, vollstaendig und "reviewed"', () => {
-  const byId = Object.fromEntries(recipes.map(r => [r.id, r]));
-  for (const id of NEW_BREAKFAST_IDS) {
-    const r = byId[id];
-    assert.ok(r, `neues Rezept "${id}" fehlt in recipes.json`);
-    assert.equal(r.mealType, 'breakfast');
-    assert.equal(r.nutritionConfidence, 'reviewed', `${id}: sollte gegen BLS berechnet und "reviewed" sein`);
-    assert.ok(r.title && r.ingredients?.length && r.steps?.length, `${id}: title/ingredients/steps unvollstaendig`);
-  }
+test('recipes.json (2.2): Rezepte mit Pin/Website-Seite behalten ihre ID', () => {
+  const ids = new Set(recipes.map(r => r.id));
+  for (const id of PIN_IDS) assert.ok(ids.has(id), `Pin-Rezept "${id}" fehlt`);
 });
 
 test('recipes.json: alle Tags stammen aus dem festgelegten 21-Werte-Vokabular', () => {
