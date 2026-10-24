@@ -107,16 +107,16 @@
       "name": "Vitamin E",
       "category": "fat_soluble",
       "unit": "mg",
-      "refMin": 8,
-      "refMax": 10,
+      "refMin": 12,
+      "refMax": 17,
       "refByGender": {
         "m": {
-          "min": 8,
-          "max": 10
+          "min": 14,
+          "max": 17
         },
         "f": {
-          "min": 8,
-          "max": 10
+          "min": 12,
+          "max": 15
         }
       },
       "premium": true,
@@ -584,8 +584,8 @@
       "refMax": 16,
       "refByGender": {
         "m": {
-          "min": 10,
-          "max": 12
+          "min": 11,
+          "max": 13
         },
         "f": {
           "min": 14,
@@ -628,11 +628,11 @@
       "category": "trace_elements",
       "unit": "mg",
       "refMin": 8,
-      "refMax": 14,
+      "refMax": 16,
       "refByGender": {
         "m": {
           "min": 14,
-          "max": 18
+          "max": 16
         },
         "f": {
           "min": 8,
@@ -844,8 +844,8 @@
       "refMax": 400,
       "refByGender": {
         "m": {
-          "min": 400,
-          "max": 450
+          "min": 350,
+          "max": 400
         },
         "f": {
           "min": 300,

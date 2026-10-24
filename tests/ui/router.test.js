@@ -37,12 +37,11 @@ const dom = new JSDOM(`<!DOCTYPE html><html><body>
   <div id="app">
     <main id="screen-container"></main>
     <nav class="bottom-nav">
-      <button class="nav-item active" data-screen="dashboard"><span class="nav-label">Übersicht</span></button>
-      <button class="nav-item" data-screen="activity"><span class="nav-label">Bewegung</span></button>
-      <button class="nav-item" data-screen="nutrition"><span class="nav-label">Ernährung</span></button>
+      <button class="nav-item active" data-screen="dashboard"><span class="nav-label">Heute</span></button>
+      <button class="nav-item" data-screen="recipes"><span class="nav-label">Rezepte</span></button>
+      <button class="nav-item" data-screen="nutrition"><span class="nav-label">Tagebuch</span></button>
       <button class="nav-item nav-cycle" data-screen="cycle" style="display:none"><span class="nav-label">Zyklus</span></button>
-      <button class="nav-item" data-screen="tools"><span class="nav-label">Tools</span></button>
-      <button class="nav-item" data-screen="profile"><span class="nav-label">Profil</span></button>
+      <button class="nav-item" data-screen="tools"><span class="nav-label">Mehr</span></button>
     </nav>
   </div>
 </body></html>`, { url: 'http://localhost/' });
@@ -59,7 +58,7 @@ globalThis.HTMLElement = dom.window.HTMLElement;
 // ein `typeof Chart` im Screen-Code nicht crasht, falls doch mal referenziert.
 globalThis.Chart = function Chart() { return { destroy() {} }; };
 
-let navigate, SCREEN_NAMES, TOOLS_SUBSCREEN_NAMES, DASHBOARD_SUBSCREEN_NAMES, profileRepo, state, entitlements;
+let navigate, SCREEN_NAMES, TOOLS_SUBSCREEN_NAMES, DASHBOARD_SUBSCREEN_NAMES, RECIPES_SUBSCREEN_NAMES, profileRepo, state, entitlements;
 
 before(async () => {
   const router = await import('../../app/src/router.js');
@@ -67,6 +66,7 @@ before(async () => {
   SCREEN_NAMES = router.SCREEN_NAMES;
   TOOLS_SUBSCREEN_NAMES = router.TOOLS_SUBSCREEN_NAMES;
   DASHBOARD_SUBSCREEN_NAMES = router.DASHBOARD_SUBSCREEN_NAMES;
+  RECIPES_SUBSCREEN_NAMES = router.RECIPES_SUBSCREEN_NAMES;
   ({ profileRepo } = await import('../../app/src/infra/db/repositories/profileRepo.js'));
   ({ state } = await import('../../app/src/appState.js'));
   ({ entitlements } = await import('../../app/src/domain/entitlements.js'));
@@ -75,6 +75,10 @@ before(async () => {
   // Fallback auf catalog.biomarkers zu - ohne das crasht das Rendern).
   const catalog = JSON.parse(readFileSync(path.join(APP_ROOT, 'src/data/biomarkerCatalog.json'), 'utf-8'));
   state.set('catalog', catalog);
+  // 2.2: Startseite, Rezepte und Rezeptseite brauchen die Rezeptdaten.
+  const recipes = JSON.parse(readFileSync(path.join(APP_ROOT, 'src/data/recipes.json'), 'utf-8'));
+  state.set('recipes', recipes);
+  state.set('currentRecipeId', recipes[0].id);
 });
 
 beforeEach(() => {
@@ -90,6 +94,7 @@ test('SCREEN_NAMES enthält alle bekannten Screens (Regressionsschutz gegen fehl
     'dashboard', 'entry', 'trend', 'profile', 'premium', 'onboarding',
     'activity', 'cycle', 'nutrition', 'tools', 'fasting',
     'cravings', 'mealplan', 'weekly_review', 'skin_vitality', 'my_recipes', 'health_consent',
+    'recipes', 'recipe', 'values',
   ];
   for (const name of expected) {
     assert.ok(SCREEN_NAMES.includes(name), `Screen "${name}" fehlt in SCREEN_NAMES`);
@@ -197,4 +202,24 @@ test('Tools-Hub: Zyklus-Tracker auch bei "Keine Angabe" erreichbar (Google-Play-
   card.dispatchEvent(new window.Event('click'));
   assert.ok(document.getElementById('screen-container').innerHTML.trim().length > 0);
   assert.equal(document.querySelector('.nav-cycle').style.display, 'none', 'Bottom-Nav-Tab bleibt bei nicht-weiblich ausgeblendet');
+});
+
+test('2.2: Rezeptseite markiert den Tab "Rezepte", "Alle Werte" den Tab "Heute"', () => {
+  profileRepo.save({ onboardingDone: true, sex: 'm' });
+  for (const sub of RECIPES_SUBSCREEN_NAMES) {
+    navigate(sub);
+    assert.equal(document.querySelector('.nav-item.active')?.dataset.screen, 'recipes');
+  }
+  navigate('values');
+  assert.equal(document.querySelector('.nav-item.active')?.dataset.screen, 'dashboard');
+});
+
+test('2.2: Bewegung, Profil und Premium gehören zu "Mehr" und haben keinen eigenen Tab', () => {
+  profileRepo.save({ onboardingDone: true, sex: 'm' });
+  for (const sub of ['activity', 'profile', 'premium']) {
+    assert.ok(TOOLS_SUBSCREEN_NAMES.includes(sub));
+    navigate(sub);
+    assert.equal(document.querySelector('.nav-item.active')?.dataset.screen, 'tools');
+    assert.equal(document.querySelector(`.bottom-nav [data-screen="${sub}"]`), null);
+  }
 });

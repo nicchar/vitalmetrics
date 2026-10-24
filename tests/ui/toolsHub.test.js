@@ -34,8 +34,22 @@ test('toolsHub.js: Karte zeigt die Anzahl gespeicherter eigener Rezepte an', () 
  */
 test('toolsHub.js: Zyklus-Tracker und Menopause-Karte sind unabhängig vom Geschlecht sichtbar', () => {
   assert.ok(!src.includes('showCycleWellness ?'), 'Karten dürfen nicht mehr hinter einer Geschlechts-Bedingung stehen');
-  assert.ok(src.includes('id="tool-cycle"'), 'Zyklus-Tracker-Karte fehlt');
-  assert.ok(src.includes('id="tool-cycle-wellness"'), 'Menopause-Karte fehlt');
+  assert.ok(src.includes("item('tool-cycle',"), 'Zyklus-Tracker-Karte fehlt');
+  assert.ok(src.includes("item('tool-cycle-wellness',"), 'Menopause-Karte fehlt');
   assert.ok(src.includes("querySelector('#tool-cycle').addEventListener('click', () => navigate('cycle'))"));
   assert.ok(src.includes("querySelector('#tool-cycle-wellness').addEventListener('click', () => navigate('cycle_wellness'))"));
+});
+
+/**
+ * 2.2: "Mehr" ersetzt "Tools"; Bewegung und Profil haben keinen eigenen Tab
+ * mehr und sind hier erreichbar. Keine Anglizismen wie "Health Tools".
+ */
+test('toolsHub.js (Mehr): Bewegung und Profil sind erreichbar', () => {
+  assert.ok(src.includes("querySelector('#tool-activity').addEventListener('click', () => navigate('activity'))"));
+  assert.ok(src.includes("querySelector('#tool-profile').addEventListener('click', () => navigate('profile'))"));
+});
+
+test('toolsHub.js (Mehr): warme, deutsche Texte ohne "Health Tools", "Toolkit" oder "Autophagie"', () => {
+  assert.ok(!/Health Tools|Toolkit|Autophagie|Streak|Prämenopause/.test(src));
+  assert.ok(src.includes('Perimenopause'));
 });

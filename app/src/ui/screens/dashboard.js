@@ -1,95 +1,150 @@
+/**
+ * dashboard.js – Startseite "Heute" (WellANNI 2.2)
+ *
+ * Aufbau von oben nach unten:
+ * 1. Begrüßung
+ * 2. "Wie geht's dir heute?" – Check-in mit vier Bereichen (Energie, Schlaf,
+ *    Bauchgefühl, Stimmung), 5-stufig, mit Wochenstreifen
+ * 3. "Heute auf deinem Teller" – Kalorien, Makros und die 8 Kernwerte in
+ *    freundlichen Worten statt Ampel-Prozenten, dazu EIN Rezeptvorschlag für
+ *    den Kernwert mit der größten Lücke
+ * 4. Wochenrückblick (Premium, nur montags-neu)
+ * 5. Rezept des Tages
+ * 6. Tipp des Tages (Saison-Tipp und Wildkraut des Monats im Wechsel)
+ * 7. Körperwerte in einer Zeile + "Alle Werte ansehen"
+ *
+ * Die Detailkarten aller Vitalstoffe sind auf die Seite "Alle Werte"
+ * (values.js) umgezogen. Bewusst ohne Ampelfarben, ohne Diät-Sprache:
+ * Kalorien als "Orientierung, kein Ziel" (siehe energyNeeds.js).
+ */
 import { state } from '../../appState.js';
 import { measurementRepo } from '../../infra/db/repositories/measurementRepo.js';
 import { profileRepo } from '../../infra/db/repositories/profileRepo.js';
 import { nutritionRepo } from '../../infra/db/repositories/nutritionRepo.js';
+import { hydrationRepo } from '../../infra/db/repositories/hydrationRepo.js';
+import { checkinRepo } from '../../infra/db/repositories/checkinRepo.js';
+import { mealPlanRepo } from '../../infra/db/repositories/mealPlanRepo.js';
 import { getDGERef } from '../../domain/nutrition.js';
-import { getStatus, getStatusColor } from '../../domain/status.js';
-import { getRefRangeLabel } from '../../domain/ranges.js';
 import { entitlements } from '../../domain/entitlements.js';
 import { getSeasonalTip, getWildHerbTip, WILDHERB_SAFETY_NOTE } from '../../domain/seasonalTips.js';
-import { getUnderCoveredTags } from '../../domain/mealPlan.js';
-import { getAccessTierBadge } from '../../domain/biomarkerAccess.js';
-import { DISCLAIMER_SHORT, REFERENCE_VALUES_NOTE } from '../../domain/healthClaims.js';
 import { calcTDEERange, getProteinRefRange, calcWHR, getWHRRefLabel, estimateAge } from '../../domain/energyNeeds.js';
 import { mondayOf, previousMonday } from '../../domain/dateUtils.js';
 import { buildWeeklyRecommendations } from '../../domain/weeklyReview.js';
+import { CHECKIN_AREAS, dayAverage, isComplete } from '../../domain/checkin.js';
+import { coreStatus, STATUS_TEXT, defaultProteinRef } from '../../domain/coreNutrients.js';
+import { recipeOfTheDay, recipeForNutrient, personalPool } from '../../domain/dailyPicks.js';
 import { navigate } from '../../router.js';
-import { exportService } from '../../infra/pdf/exportService.js';
-import { showToast } from '../components/toast.js';
+import { recipePictureHtml } from '../components/recipeArt.js';
+import { totalMinutes, fmtNum, escapeHtml } from '../components/recipeFormat.js';
+
+const WEEKDAY_SHORT = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+
+function greeting(name, now = new Date()) {
+  const h = now.getHours();
+  const base = h < 11 ? 'Guten Morgen' : h < 17 ? 'Schön, dass du da bist' : 'Guten Abend';
+  return name ? `${base}, ${escapeHtml(name)}` : base;
+}
+
+function openRecipe(id) {
+  state.set('currentRecipeId', id);
+  state.set('recipeBackTo', 'dashboard');
+  navigate('recipe');
+}
+
+function renderCheckin(today) {
+  const day = checkinRepo.getDay(today);
+  const rows = CHECKIN_AREAS.map(a => `
+    <div class="w-checkin-row"><b>${a.label}</b>
+      <div class="w-pebbles" role="group" aria-label="${a.label}">${a.faces.map((face, i) =>
+        `<button type="button" class="w-pebble" data-area="${a.key}" data-value="${i + 1}" aria-pressed="${day[a.key] === i + 1}" aria-label="${a.label}: ${i + 1} von 5">${face}</button>`).join('')}
+      </div>
+    </div>`).join('');
+  const week = checkinRepo.getRecent(7).map(d => {
+    const avg = dayAverage(d);
+    const wd = WEEKDAY_SHORT[new Date(d.date + 'T12:00:00').getDay()];
+    return avg == null
+      ? `<div><i class="w-week-empty"></i>${wd}</div>`
+      : `<div><i style="opacity:${(0.25 + (avg - 1) / 4 * 0.75).toFixed(2)}" title="${fmtNum(avg)} von 5"></i>${wd}</div>`;
+  }).join('');
+  return `<section class="w-block">
+    <div class="w-block-title">Wie geht's dir heute?</div>
+    <div class="w-card" id="checkin-card">
+      ${rows}
+      <p class="w-small" id="checkin-done" ${isComplete(day) ? '' : 'hidden'}>Danke dir! Hier unten siehst du, wie deine Woche bisher war.</p>
+      <div class="w-week" aria-label="Deine letzten 7 Tage">${week}</div>
+    </div>
+  </section>`;
+}
 
 /**
- * "Heute"-Bereich (Review 11, 19.08.2026): fasst Kalorien/Makros aus dem
- * Ernährungstagebuch UND die Körperwerte (Gewicht/Taille/Hüfte/WHR) an EINER
- * Stelle oben auf der Startseite zusammen - Nicoles ausdrücklicher Wunsch,
- * Protein nicht isoliert von den übrigen Makros zu zeigen ("ich möchte
- * protein nicht eigenständig ohne kalorien und kohlenhydrate und fett
- * behandeln"). Bewusst rein deskriptiv wie der Zyklus-Bereich: Kalorien-
- * Spanne als "Orientierung, kein Ziel" (siehe energyNeeds.js), kein Score,
- * keine Ampel, keine Diät-Sprache - dieselbe Zurückhaltung wie status.js.
+ * "Heute auf deinem Teller" – Kalorien, alle drei Makros gemeinsam (Nicole:
+ * Eiweiß nicht isoliert betrachten), Ballaststoffe und die 8 Kernwerte.
  */
-function renderHeuteCard({ dayTotals, tdee, proteinRef, weightEntry, waistEntry, hipEntry, whr, profile }) {
-  const hasAnyBodyValue = weightEntry || waistEntry || hipEntry;
-
-  let kcalLine;
-  if (tdee) {
-    kcalLine = `<div class="heute-kcal-value">${dayTotals.kcal} <span class="heute-kcal-unit">kcal heute</span></div>
-      <div class="heute-kcal-ref">Orientierung: ca. ${tdee.min}–${tdee.max} kcal/Tag · grobe Schätzung, kein Ziel zum Unter- oder Überschreiten</div>`;
-  } else {
-    kcalLine = `<div class="heute-kcal-value">${dayTotals.kcal} <span class="heute-kcal-unit">kcal heute</span></div>
-      <div class="heute-kcal-ref heute-hint">Trage Gewicht, Körpergröße und Aktivitätslevel ein (Profil) für eine grobe Tagesbedarfs-Einschätzung.</div>`;
-  }
-
-  const proteinRefText = proteinRef
-    ? ` <span class="heute-macro-ref">/ ${proteinRef.min === proteinRef.max ? proteinRef.min : `${proteinRef.min}–${proteinRef.max}`} g Referenz</span>`
+function renderTeller({ dayTotals, tdee, core, hint }) {
+  const hasEntries = (dayTotals.kcal || 0) > 0;
+  const kcalRef = tdee
+    ? `<p class="w-small" style="margin-top:2px">Orientierung: ca. ${tdee.min}–${tdee.max} kcal am Tag · grobe Schätzung, kein Ziel</p>`
     : '';
-
-  const macrosHtml = `<div class="heute-macros">
-    <div class="heute-macro"><span class="heute-macro-label">Protein</span><span class="heute-macro-value">${dayTotals.protein} g${proteinRefText}</span></div>
-    <div class="heute-macro"><span class="heute-macro-label">Kohlenhydrate</span><span class="heute-macro-value">${dayTotals.carbs} g</span></div>
-    <div class="heute-macro"><span class="heute-macro-label">Fett</span><span class="heute-macro-value">${dayTotals.fat} g</span></div>
-  </div>`;
-
-  let bodyHtml;
-  if (hasAnyBodyValue) {
-    const rows = [];
-    if (weightEntry) rows.push(`<div class="heute-body-item"><span class="heute-body-label">⚖️ Gewicht</span><span class="heute-body-value">${weightEntry.value} kg</span></div>`);
-    if (waistEntry) rows.push(`<div class="heute-body-item"><span class="heute-body-label">📏 Taille</span><span class="heute-body-value">${waistEntry.value} cm</span></div>`);
-    if (hipEntry) rows.push(`<div class="heute-body-item"><span class="heute-body-label">📏 Hüfte</span><span class="heute-body-value">${hipEntry.value} cm</span></div>`);
-    if (whr != null) rows.push(`<div class="heute-body-item"><span class="heute-body-label">Taille-Hüft-Verhältnis</span><span class="heute-body-value">${whr}</span></div>`);
-    bodyHtml = `<div class="heute-body">${rows.join('')}${whr != null ? `<div class="heute-body-note">${getWHRRefLabel(profile.sex)} – rein informativ, keine automatische Bewertung durch die App.</div>` : ''}</div>`;
-  } else {
-    bodyHtml = `<div class="heute-body heute-hint">Noch kein Gewicht, keine Taille oder Hüfte erfasst. Trage sie unten unter "Meine Werte im Detail" ein, um sie hier zu sehen.</div>`;
-  }
-
-  return `<div class="heute-card" id="heute-card">
-    <h2 class="heute-title">📅 Heute</h2>
-    ${kcalLine}
-    ${macrosHtml}
-    <div class="heute-divider"></div>
-    ${bodyHtml}
-    <div class="heute-actions">
-      <button class="btn-card btn-heute-nutrition" id="btn-heute-nutrition">🍽️ Essen eintragen</button>
-      <button class="btn-card btn-heute-weight" id="btn-heute-weight">⚖️ Gewicht/Maße eintragen</button>
+  const coreHtml = !hasEntries ? '' : core.map(c =>
+    `<div class="${c.status === 'more' ? 'more' : 'ok'}"><b>${c.label}</b><small>${STATUS_TEXT[c.status]}</small></div>`).join('');
+  const hintHtml = hint
+    ? `<button type="button" class="w-hint" data-open="${hint.recipe.id}">
+        <span class="w-thumb">${recipePictureHtml(hint.recipe)}</span>
+        <p><b>Für mehr ${hint.label}</b>Wie wär's mit ${escapeHtml(hint.recipe.title)}?</p>
+      </button>`
+    : '';
+  return `<section class="w-block" id="heute-card">
+    <div class="w-block-title">Heute auf deinem Teller</div>
+    <div class="w-card">
+      ${hasEntries ? `
+        <div class="w-kcal"><div><strong>${Math.round(dayTotals.kcal)}</strong> <span class="w-kcal-unit">kcal</span></div>
+          <div class="w-macros">
+            <span><b>${fmtNum(dayTotals.protein)} g</b> Eiweiß</span>
+            <span><b>${fmtNum(dayTotals.carbs)} g</b> Kohlenhydrate</span>
+            <span><b>${fmtNum(dayTotals.fat)} g</b> Fett</span>
+            <span><b>${fmtNum(dayTotals.fiber || 0)} g</b> Ballaststoffe</span>
+          </div>
+        </div>
+        ${kcalRef}` : `
+        <p class="w-muted">Noch nichts eingetragen. Sobald du etwas einträgst, siehst du hier, was dein Teller schon geliefert hat – an Eiweiß, Ballaststoffen, Eisen, Calcium, Magnesium, Vitamin D, Folat und Vitamin B12.</p>`}
+      ${coreHtml ? `<div class="w-core">${coreHtml}</div>` : ''}
+      ${hintHtml}
+      <div class="w-btn-row"><button type="button" class="w-btn w-btn-ghost" id="btn-heute-nutrition">Essen eintragen</button></div>
     </div>
-  </div>`;
+  </section>`;
+}
+
+function renderBody({ weightEntry, waistEntry, hipEntry, whr, waterMl, profile }) {
+  const items = [];
+  if (weightEntry) items.push(`<span>Gewicht <b>${fmtNum(weightEntry.value)} kg</b></span>`);
+  if (waistEntry) items.push(`<span>Taille <b>${fmtNum(waistEntry.value)} cm</b></span>`);
+  if (hipEntry) items.push(`<span>Hüfte <b>${fmtNum(hipEntry.value)} cm</b></span>`);
+  if (whr != null) items.push(`<span>Taille/Hüfte <b>${fmtNum(whr)}</b></span>`);
+  if (waterMl > 0) items.push(`<span>Getrunken <b>${fmtNum(waterMl / 1000)} l</b></span>`);
+  return `<section class="w-block">
+    <div class="w-block-title">Dein Körper</div>
+    <div class="w-card">
+      ${items.length ? `<div class="w-body-row">${items.join('')}</div>` : '<p class="w-muted">Noch keine Körperwerte eingetragen.</p>'}
+      ${whr != null ? `<p class="w-small">${getWHRRefLabel(profile.sex)} – rein informativ, keine automatische Bewertung durch die App.</p>` : ''}
+      <div class="w-btn-row"><button type="button" class="w-btn w-btn-ghost" id="btn-heute-weight">Gewicht oder Maße eintragen</button></div>
+    </div>
+    <button type="button" class="w-outline-btn" id="btn-all-values">Alle Werte ansehen</button>
+  </section>`;
 }
 
 export function renderDashboard(container) {
   const catalog = state.get('catalog');
+  const recipes = state.get('recipes') || [];
   const profile = profileRepo.get();
-  const latestAll = measurementRepo.getLatestAll();
   const isPremium = entitlements.isPremium();
-
-  // Entscheidung 7 (Zufuhr-Reframing): für Biomarker mit intakeTracking
-  // zusätzlich die heutige Zufuhr-Deckung aus dem Ernährungstagebuch zeigen.
-  const today = new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const today = now.toISOString().slice(0, 10);
   const dgeRef = getDGERef(profile.ageGroup, profile.sex);
   const dayTotals = nutritionRepo.getDayTotals(today);
 
-  // "Heute"-Bereich (Review 11): Grundumsatz/TDEE + Protein-Referenz brauchen
-  // das zuletzt eingetragene Gewicht; ohne Gewicht keine Schätzung (siehe
-  // energyNeeds.js - bewusst kein Rateergebnis auf Basis eines angenommenen
-  // Durchschnittsgewichts).
+  // Kalorien-Orientierung und Eiweiß-Referenz brauchen das zuletzt
+  // eingetragene Gewicht; ohne Gewicht keine Kalorien-Schätzung (kein
+  // Rateergebnis auf Basis eines angenommenen Durchschnittsgewichts).
   const weightHistory = measurementRepo.getByBiomarker('gewicht');
   const weightEntry = weightHistory[weightHistory.length - 1] || null;
   const waistHistory = measurementRepo.getByBiomarker('taillenumfang');
@@ -100,271 +155,105 @@ export function renderDashboard(container) {
   const tdee = weightEntry
     ? calcTDEERange(weightEntry.value, profile.height, age, profile.sex, profile.activityLevel)
     : null;
-  const proteinRef = weightEntry
+  const proteinRange = weightEntry
     ? getProteinRefRange(weightEntry.value, profile.activityLevel, profile.ageGroup === '70+')
     : null;
   const whr = (waistEntry && hipEntry) ? calcWHR(waistEntry.value, hipEntry.value) : null;
 
-  // Group biomarkers by category
-  const grouped = {};
-  for (const bm of catalog.biomarkers) {
-    if (!grouped[bm.category]) grouped[bm.category] = [];
-    grouped[bm.category].push(bm);
+  const core = coreStatus(dayTotals, dgeRef, proteinRange ? proteinRange.min : defaultProteinRef(profile.sex));
+
+  // Rezepte passend zu Ernährungsform (aus dem Wochenplan) und Unverträglichkeiten
+  const pool = personalPool(recipes, mealPlanRepo.get()?.category || null, profile.intolerances || []);
+  const rdt = recipeOfTheDay(pool, today);
+
+  // Ein einziger Vorschlag für die größte Lücke – nur, wenn schon etwas
+  // eingetragen ist (sonst wäre "Lücke" nur fehlendes Tracking).
+  let hint = null;
+  const gaps = core.filter(c => c.status === 'more').sort((a, b) => a.share - b.share);
+  for (const gap of gaps) {
+    const recipe = recipeForNutrient(pool, gap.key, today, rdt?.id);
+    if (recipe) { hint = { label: gap.label, recipe }; break; }
   }
 
-  // Summary (Status-Einordnung ist seit Entscheidung 2 Premium)
-  const trackedBms = catalog.biomarkers.filter(bm => latestAll[bm.id]);
-  const statuses = trackedBms.map(bm => getStatus(latestAll[bm.id]?.value, bm, profile));
-  const okCount = statuses.filter(s => s === 'ok').length;
-  const lowCount = statuses.filter(s => s === 'low').length;
-  const highCount = statuses.filter(s => s === 'high').length;
-
-  let html = `<div class="screen dashboard-screen">
-    <div class="screen-header">
-      <div class="screen-header-row">
-        <div>
-          <h1 class="app-title">WellANNI</h1>
-          <p class="app-subtitle">${profile.name ? `Hallo ${profile.name} · ` : ''}Deine Übersicht</p>
-        </div>
-        <button class="btn-pdf-export" id="btn-pdf-export" title="Bericht als PDF exportieren">📄 PDF</button>
-      </div>
-    </div>
-    ${renderHeuteCard({ dayTotals, tdee, proteinRef, weightEntry, waistEntry, hipEntry, whr, profile })}`;
-
-  // Saisonaler Hinweis (Block E) - rein informativ, keine individuelle Bewertung.
-  const seasonalTip = getSeasonalTip();
-  if (seasonalTip) {
-    html += `<div class="seasonal-tip-banner"><span>${seasonalTip.icon}</span><span>${seasonalTip.text}</span></div>`;
-  }
-
-  // Wildkräuter des Monats (Review 11) - eigener Banner, bewusst mit
-  // Sicherheitshinweis zur Verwechslungsgefahr (Heilpraktikerin-Feedback).
-  const wildHerbTip = getWildHerbTip();
-  if (wildHerbTip) {
-    html += `<div class="wildherb-banner">
-      <div class="wildherb-banner-head"><span>${wildHerbTip.icon}</span><span>Wildkraut des Monats: ${wildHerbTip.name}</span></div>
-      <div class="wildherb-banner-text">${wildHerbTip.text}</div>
-      <div class="wildherb-banner-safety">⚠️ ${WILDHERB_SAFETY_NOTE}</div>
-    </div>`;
-  }
-
-  // Premium banner (if not premium)
-  if (!isPremium) {
-    html += `<div class="premium-banner" id="premium-banner">
-      <span>⭐ Alle Werte gratis eintragen · <strong>Verlauf & Einordnung mit Premium</strong></span>
-      <button class="btn-upgrade-sm" id="btn-upgrade-banner">Upgrade</button>
-    </div>`;
-  }
-
-  // Automatischer Wochenrückblick (Feature-Wunsch 03.08.2026): sobald eine
-  // neue Kalenderwoche begonnen hat, taucht - bewusst als dezenter Banner,
-  // kein Interstitial (siehe Review 10: "Popup-Müdigkeit bewusst vermeiden")
-  // - ein Hinweis auf die abgelaufene Woche auf, inkl. der ersten konkreten
-  // Lebensmittel-Empfehlung. Bleibt sichtbar, bis der Banner angeklickt wird
-  // (dann als "gesehen" markiert) - Teil des Premium-Wochenrückblicks.
-  const thisMonday = mondayOf(new Date());
+  // Automatischer Wochenrückblick (Premium): dezenter Hinweis statt Pop-up,
+  // sobald eine neue Kalenderwoche begonnen hat und letzte Woche etwas
+  // eingetragen wurde. Bleibt, bis er angetippt wird.
+  const thisMonday = mondayOf(now);
   let weeklyRecap = null;
   if (isPremium && profile.lastWeeklyRecapShown !== thisMonday) {
     const weekTotals = nutritionRepo.getTotalsForWeek(previousMonday(thisMonday));
     const recap = buildWeeklyRecommendations(weekTotals, dgeRef, catalog.biomarkers);
     if (recap.loggedDays > 0) weeklyRecap = recap;
   }
+  let recapHtml = '';
   if (weeklyRecap) {
     const top = weeklyRecap.recommendations.slice(0, 2);
-    html += `<div class="focus-card" id="weekly-recap-banner">
-      <div class="focus-card-icon">🗓️</div>
-      <div class="focus-card-body">
-        <div class="focus-card-title">Dein Wochenrückblick ist da</div>
-        <div class="focus-card-desc">${top.length
-          ? `Niedrigere Zufuhr letzte Woche bei: <strong>${top.map(r => r.label).join(', ')}</strong>${top[0].foods.length ? ` – z. B. ${top[0].foods.join(', ')}` : ''}.`
-          : 'Deine Zufuhr lag letzte Woche bei allen getrackten Nährstoffen im grünen Bereich.'}</div>
-      </div>
-      <div class="tool-card-arrow">›</div>
-    </div>`;
+    recapHtml = `<section class="w-block"><button type="button" class="w-card w-tip" id="weekly-recap-banner" style="width:100%;text-align:left;color:inherit">
+      <span class="w-tip-icon">🗓️</span>
+      <p><b>Dein Wochenrückblick ist da</b><br>${top.length
+        ? `Letzte Woche war weniger dabei von: ${top.map(r => r.label).join(', ')}${top[0].foods.length ? ` – zum Beispiel in ${top[0].foods.join(', ')}` : ''}.`
+        : 'Letzte Woche lag alles, was du eingetragen hast, im grünen Bereich. Schön!'}</p>
+    </button></section>`;
   }
 
-  // Die Status-Zusammenfassung (ok/niedrig/hoch) ist Teil der Premium-Analyse.
-  if (isPremium && trackedBms.length > 0) {
-    html += `<div class="summary-bar">
-      <div class="summary-item ok"><span class="summary-count">${okCount}</span><span class="summary-label">Im Bereich</span></div>
-      <div class="summary-item low"><span class="summary-count">${lowCount}</span><span class="summary-label">Unterhalb</span></div>
-      <div class="summary-item high"><span class="summary-count">${highCount}</span><span class="summary-label">Oberhalb</span></div>
-    </div>`;
+  // Tipp des Tages: Saison-Tipp und Wildkraut des Monats im Wechsel
+  const dayNo = Math.floor(now.getTime() / 86400000);
+  const wild = getWildHerbTip(now);
+  const seasonal = getSeasonalTip(now);
+  let tipHtml = '';
+  if (wild && (dayNo % 2 === 1 || !seasonal)) {
+    tipHtml = `<div class="w-card w-tip" id="wildherb-banner"><span class="w-tip-icon">${wild.icon}</span>
+      <p><b>Wildkraut des Monats: ${wild.name}</b><br>${wild.text}<small>${WILDHERB_SAFETY_NOTE}</small></p></div>`;
+  } else if (seasonal) {
+    tipHtml = `<div class="w-card w-tip" id="seasonal-tip-banner"><span class="w-tip-icon">${seasonal.icon}</span><p>${seasonal.text}</p></div>`;
   }
 
-  // Erstnutzer-Führung (UX-Review Juli 2026): dieselbe Unterversorgungs-
-  // Berechnung, die schon den Wochenplan mit beeinflusst, hier zusätzlich
-  // proaktiv sichtbar machen - genau der Punkt, den Prof. Marchetti bemängelt
-  // hatte ("die App berechnet das schon, zeigt es aber nirgends von selbst").
-  const underCoveredTags = getUnderCoveredTags(nutritionRepo.getLast7DaysTotals(), dgeRef);
-  if (underCoveredTags.length > 0) {
-    const names = underCoveredTags
-      .map(tag => catalog.biomarkers.find(b => b.id === tag)?.name || tag)
-      .join(', ');
-    html += `<div class="focus-card" id="focus-card">
-      <div class="focus-card-icon">🎯</div>
-      <div class="focus-card-body">
-        <div class="focus-card-title">Diese Woche im Blick behalten</div>
-        <div class="focus-card-desc">Deine Zufuhr lag laut Ernährungstagebuch zuletzt niedriger bei: <strong>${names}</strong>. Der Wochenplan berücksichtigt das bereits bei der Rezeptauswahl.</div>
-      </div>
-      <div class="tool-card-arrow">›</div>
-    </div>`;
-  }
+  const dateLine = now.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
 
-  // Startseiten-Umbau (Review 11): die Detailkarten aller Vitalstoffe stehen
-  // seitdem als eigener, sekundärer Bereich UNTER dem "Heute"-Überblick statt
-  // ihn zu dominieren ("wirkt schon zu sehr in der App" war Nicoles zentraler
-  // Kritikpunkt). Die Suche gehört inhaltlich zu diesem Detailbereich, daher
-  // jetzt direkt darüber statt ganz oben auf der Seite.
-  html += `<h2 class="category-title" style="margin-top:18px">📊 Meine Werte im Detail</h2>
-    <div style="margin-bottom:4px">
-      <input type="text" id="dash-search" class="sport-select"
-        style="width:100%"
-        placeholder="🔍 Wert suchen (z. B. Vitamin D, Eisen) …">
-    </div>`;
-
-  for (const [catKey, biomarkers] of Object.entries(grouped)) {
-    html += `<div class="category-section">
-      <h2 class="category-title">${catalog.categories[catKey]}</h2>
-      <div class="biomarker-grid">`;
-
-    for (const bm of biomarkers) {
-      // Entscheidung 7: die 9 Nährstoffe ohne BLS-Lebensmitteldaten (Jod,
-      // Selen, Kupfer, Mangan, Chrom, Molybdän, Pantothensäure, Biotin,
-      // Fluorid) werden zu reinen Info-Karten - kein Eintrag, kein Status,
-      // da wir dafür keine seriöse Referenz-/Zufuhrbasis haben.
-      if (bm.infoOnly) {
-        html += `<div class="biomarker-card biomarker-card-info" data-id="${bm.id}">
-          <div class="card-header">
-            <span class="card-name">${bm.name}</span>
-            <span class="access-badge access-${bm.accessTier}">${getAccessTierBadge(bm.accessTier) || ''}</span>
-          </div>
-          <div class="card-info-desc">${bm.description || ''}</div>
-          <div class="card-actions">
-            <button class="btn-card btn-info" data-id="${bm.id}">ℹ️ Mehr erfahren</button>
-          </div>
-        </div>`;
-        continue;
-      }
-
-      const latest = latestAll[bm.id];
-      const status = latest ? getStatus(latest.value, bm, profile) : 'unknown';
-      // Seit Entscheidung 2 (20.07.2026): Wert eintragen/sehen ist für ALLE
-      // Biomarker frei. Die farbliche Einordnung bleibt Premium.
-      const color = isPremium ? getStatusColor(status) : '#BDBDBD';
-      const valueLabel = latest ? `${latest.value} ${bm.unit}` : '– –';
-      const refLabel = getRefRangeLabel(bm, profile);
-
-      // Entscheidung 7: bei intakeTracking-Nährstoffen zusätzlich zeigen,
-      // wie viel vom DGE-Tagesbedarf schon über das Ernährungstagebuch
-      // gedeckt ist (unabhängig vom manuell eingetragenen Messwert oben).
-      let intakeHtml = '';
-      if (bm.intakeTracking && dgeRef[bm.intakeKey]) {
-        const info = dgeRef[bm.intakeKey];
-        const amount = dayTotals[bm.intakeKey] || 0;
-        const pct = Math.min(150, Math.round((amount / info.ref) * 100));
-        const intakeColor = pct >= 100 ? '#43A047' : pct >= 60 ? '#f59e0b' : '#ef4444';
-        intakeHtml = `<div class="card-intake" style="color:${intakeColor}">🥗 ${pct}% der Zufuhr heute (Ernährung)</div>`;
-      }
-
-      html += `<div class="biomarker-card" data-id="${bm.id}" style="border-left: 4px solid ${color}">
-        <div class="card-header">
-          <span class="card-name">${bm.name}</span>
-          ${bm.description ? `<button class="btn-card-info-toggle" data-id="${bm.id}" type="button" title="Mehr erfahren"
-            style="border:none;background:none;color:var(--text-secondary);font-size:13px;cursor:pointer;padding:0 2px">ℹ️</button>` : ''}
-          <span class="access-badge access-${bm.accessTier}">${getAccessTierBadge(bm.accessTier) || ''}</span>
-          ${isPremium ? `<span class="status-dot" style="background:${color}"></span>` : ''}
+  container.innerHTML = `<div class="w-screen" id="dashboard-screen">
+    <h1 class="w-h1">${greeting(profile.name, now)}</h1>
+    <p class="w-sub">${dateLine}</p>
+    ${renderCheckin(today)}
+    ${renderTeller({ dayTotals, tdee, core, hint })}
+    ${recapHtml}
+    ${rdt ? `<section class="w-block">
+      <div class="w-block-title">Rezept des Tages <button type="button" class="w-link" id="btn-all-recipes">Alle Rezepte</button></div>
+      <button type="button" class="w-feature" data-open="${rdt.id}">
+        <div class="w-pic">${recipePictureHtml(rdt)}</div>
+        <div class="w-feature-body"><h3>${escapeHtml(rdt.title)}</h3>
+          ${rdt.highlight ? `<p>${escapeHtml(rdt.highlight)}</p>` : ''}
+          <div class="w-meta"><span>${totalMinutes(rdt)} Min.</span><span>${Math.round(rdt.nutritionPerServing?.kal || 0)} kcal</span><span>${rdt.servings} Portion${rdt.servings > 1 ? 'en' : ''}</span></div>
         </div>
-        ${bm.description ? `<div class="card-info-desc" id="card-desc-${bm.id}" style="display:none;font-size:11px;color:var(--text-secondary);margin:2px 0 6px">${bm.description}</div>` : ''}
-        <div class="card-value">${valueLabel}</div>
-        <div class="card-ref">Ref: ${refLabel}</div>
-        ${intakeHtml}
-        ${!isPremium ? `<div class="analysis-upsell-badge">🔒 Verlauf & Einordnung mit Premium</div>` : ''}
-        <div class="card-actions">
-          <button class="btn-card btn-entry" data-id="${bm.id}">+ Eintragen</button>
-          ${latest ? `<button class="btn-card btn-trend" data-id="${bm.id}">📈 Verlauf</button>` : ''}
-        </div>
-      </div>`;
-    }
-    html += `</div></div>`;
-  }
+      </button>
+    </section>` : ''}
+    ${tipHtml ? `<section class="w-block"><div class="w-block-title">Tipp des Tages</div>${tipHtml}</section>` : ''}
+    ${renderBody({ weightEntry, waistEntry, hipEntry, whr, waterMl: hydrationRepo.getDay(today) || 0, profile })}
+  </div>`;
 
-  html += `<div class="disclaimer"><p>ℹ️ <strong>${DISCLAIMER_SHORT}</strong> ${REFERENCE_VALUES_NOTE}${profile.sex ? ` (${profile.sex === 'f' ? 'weiblich' : 'männlich'})` : ''}</p></div></div>`;
-
-  container.innerHTML = html;
-
-  // Suche (Review 9, Persona-Fund: 47 Biomarker-Karten ohne Filter waren
-  // schwer zu durchsuchen) - rein clientseitig, filtert nach Kartenname.
-  const dashSearch = container.querySelector('#dash-search');
-  dashSearch?.addEventListener('input', () => {
-    const q = dashSearch.value.trim().toLowerCase();
-    container.querySelectorAll('.category-section').forEach(section => {
-      let sectionHasMatch = false;
-      section.querySelectorAll('.biomarker-card').forEach(card => {
-        const name = card.querySelector('.card-name')?.textContent.toLowerCase() || '';
-        const match = !q || name.includes(q);
-        card.style.display = match ? '' : 'none';
-        if (match) sectionHasMatch = true;
-      });
-      section.style.display = sectionHasMatch ? '' : 'none';
+  // Check-in
+  const done = container.querySelector('#checkin-done');
+  container.querySelectorAll('.w-pebble').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const area = btn.dataset.area;
+      checkinRepo.setValue(today, area, Number(btn.dataset.value));
+      container.querySelectorAll(`.w-pebble[data-area="${area}"]`).forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+      if (isComplete(checkinRepo.getDay(today))) {
+        // Wochenstreifen aktualisieren
+        const fresh = document.createElement('div');
+        fresh.innerHTML = renderCheckin(today);
+        container.querySelector('.w-week').replaceWith(fresh.querySelector('.w-week'));
+        done.hidden = false;
+      }
     });
   });
 
+  container.querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => openRecipe(b.dataset.open)));
+  container.querySelector('#btn-all-recipes')?.addEventListener('click', () => navigate('recipes'));
   container.querySelector('#btn-heute-nutrition')?.addEventListener('click', () => navigate('nutrition'));
   container.querySelector('#btn-heute-weight')?.addEventListener('click', () => navigate('entry', 'gewicht'));
-
-  // Events
-  container.querySelectorAll('.btn-entry').forEach(btn => {
-    btn.addEventListener('click', e => { e.stopPropagation(); navigate('entry', btn.dataset.id); });
-  });
-  container.querySelectorAll('.btn-trend').forEach(btn => {
-    btn.addEventListener('click', e => { e.stopPropagation(); navigate('trend', btn.dataset.id); });
-  });
-  container.querySelectorAll('.btn-info').forEach(btn => {
-    btn.addEventListener('click', e => { e.stopPropagation(); navigate('trend', btn.dataset.id); });
-  });
-  container.querySelectorAll('.btn-card-info-toggle').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      const desc = container.querySelector(`#card-desc-${btn.dataset.id}`);
-      if (desc) desc.style.display = desc.style.display === 'none' ? 'block' : 'none';
-    });
-  });
-  container.querySelectorAll('.biomarker-card').forEach(card => {
-    card.addEventListener('click', () => navigate('trend', card.dataset.id));
-  });
-  container.querySelectorAll('#btn-upgrade-banner').forEach(btn => {
-    btn.addEventListener('click', e => { e.stopPropagation(); navigate('premium'); });
-  });
-  container.querySelector('#focus-card')?.addEventListener('click', () => navigate('mealplan'));
+  container.querySelector('#btn-all-values')?.addEventListener('click', () => navigate('values'));
   container.querySelector('#weekly-recap-banner')?.addEventListener('click', () => {
     profileRepo.save({ lastWeeklyRecapShown: thisMonday });
     navigate('weekly_review');
   });
-
-  const pdfBtn = container.querySelector('#btn-pdf-export');
-  if (pdfBtn) {
-    pdfBtn.addEventListener('click', async () => {
-      pdfBtn.disabled = true;
-      const originalLabel = pdfBtn.textContent;
-      pdfBtn.textContent = '⏳ …';
-      try {
-        const result = await exportService.exportReport();
-        if (result.ok) {
-          showToast(result.mode === 'share' ? '✅ Bericht bereit zum Teilen' : '✅ Bericht heruntergeladen');
-        } else if (result.reason === 'no-data') {
-          showToast('Keine Messwerte vorhanden. Trage zuerst einige Werte ein.');
-        } else {
-          showToast('PDF-Export fehlgeschlagen. Bitte erneut versuchen.');
-          console.error('[Dashboard] PDF-Export fehlgeschlagen:', result);
-        }
-      } catch (err) {
-        showToast('PDF-Export fehlgeschlagen. Bitte erneut versuchen.');
-        console.error('[Dashboard] PDF-Export Fehler:', err);
-      } finally {
-        pdfBtn.disabled = false;
-        pdfBtn.textContent = originalLabel;
-      }
-    });
-  }
 }

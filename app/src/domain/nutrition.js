@@ -9,6 +9,13 @@
  * Referenzwerte für '51-70'/'70+' hinterlegt waren (andere B6-/Calcium-Werte)
  * - für eine große, plausible Nutzergruppe griffen die nie. Onboarding wurde
  * seitdem um beide Gruppen ergänzt (siehe onboarding.js).
+ *
+ * 2.2-Prüfung (Okt. 2026) gegen die aktuellen D-A-CH-Referenzwerte:
+ * - Vitamin C Frauen 95 mg (vorher pauschal 110 mg)
+ * - Vitamin E Schätzwerte Frauen 12 mg, Männer 14 mg (ab 51: 13 mg), vorher 8 mg
+ * - Eisen Frauen 16 mg bis 50 Jahre, danach 14 mg (DGE 2025)
+ * - Zink Männer 14 mg wie bei Frauen bei mittlerer Phytatzufuhr (vorher 11 mg = niedrige)
+ * Vitamin D: 20 µg/Tag ist der Schätzwert OHNE eigene Bildung in der Haut.
  */
 export function getDGERef(ageGroup, sex) {
   const isF = sex === 'f';
@@ -17,17 +24,17 @@ export function getDGERef(ageGroup, sex) {
   return {
     vit_a:  { label: 'Vitamin A',   unit: 'µg', ref: isF ? 700 : 850 },
     vit_d:  { label: 'Vitamin D',   unit: 'µg', ref: 20 },
-    vit_e:  { label: 'Vitamin E',   unit: 'mg', ref: 8 },
+    vit_e:  { label: 'Vitamin E',   unit: 'mg', ref: isF ? 12 : (is51 ? 13 : 14) },
     vit_k:  { label: 'Vitamin K',   unit: 'µg', ref: isF ? 60 : 70 },
-    vit_c:  { label: 'Vitamin C',   unit: 'mg', ref: 110 },
+    vit_c:  { label: 'Vitamin C',   unit: 'mg', ref: isF ? 95 : 110 },
     b1:     { label: 'Vitamin B1',  unit: 'mg', ref: isF ? 1.0 : 1.3 },
     b2:     { label: 'Vitamin B2',  unit: 'mg', ref: isF ? 1.1 : 1.4 },
     b3:     { label: 'Vitamin B3',  unit: 'mg', ref: isF ? 13 : 16 },
     b6:     { label: 'Vitamin B6',  unit: 'mg', ref: is51 ? (isF ? 1.5 : 1.7) : (isF ? 1.4 : 1.6) },
     b12:    { label: 'Vitamin B12', unit: 'µg', ref: 4.0 },
     folat:  { label: 'Folat',       unit: 'µg', ref: 300 },
-    eisen:  { label: 'Eisen',       unit: 'mg', ref: isF ? 14 : 11 },
-    zink:   { label: 'Zink',        unit: 'mg', ref: isF ? 8 : 11 },
+    eisen:  { label: 'Eisen',       unit: 'mg', ref: isF ? (is51 ? 14 : 16) : 11 },
+    zink:   { label: 'Zink',        unit: 'mg', ref: isF ? 8 : 14 },
     mag:    { label: 'Magnesium',   unit: 'mg', ref: isF ? 300 : 350 },
     cal:    { label: 'Calcium',     unit: 'mg', ref: is70 ? 1200 : 1000 },
     // 2.2: DGE-Richtwert Ballaststoffe mind. 30 g/Tag; DGE/ÖGE-Referenzwert

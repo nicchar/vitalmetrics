@@ -15,11 +15,12 @@
  * App-Start erneut abgefragt (siehe main.js / needsHealthConsent()).
  */
 
-export const HEALTH_CONSENT_VERSION = 1;
+// Version 2 (WellANNI 2.2): neue Kategorie „tägliches Befinden“ (Check-in)
+export const HEALTH_CONSENT_VERSION = 2;
 
 export const HEALTH_CONSENT_TEXT =
   'Ich willige ausdrücklich ein, dass WellANNI meine Gesundheitsdaten – z. B. Messwerte, '
-  + 'Gewicht, Ernährungstagebuch, Zyklus- und Symptomangaben, Schlaf und Fastenzeiten – '
+  + 'Gewicht, Ernährungstagebuch, Zyklus- und Symptomangaben, Schlaf, Fastenzeiten und dein tägliches Befinden (Energie, Schlaf, Bauchgefühl, Stimmung) – '
   + 'ausschließlich lokal auf meinem Gerät verarbeitet, um mir Auswertungen und Hinweise '
   + 'anzuzeigen (Art. 9 Abs. 2 lit. a DSGVO). Ich kann diese Einwilligung jederzeit '
   + 'widerrufen, indem ich im Profil „Alle Daten löschen“ wähle oder die App deinstalliere.';
