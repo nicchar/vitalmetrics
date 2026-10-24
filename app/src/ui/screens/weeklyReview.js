@@ -25,7 +25,7 @@ export function renderWeeklyReview(container) {
   if (!entitlements.isPremium()) {
     container.innerHTML = `<div class="screen weeklyreview-screen">
       <div class="screen-header">
-        <h1 class="screen-title">🗓️ Wochenrückblick</h1>
+        <h1 class="screen-title">Wochenrückblick</h1>
       </div>
       <p class="hint-text" style="padding:0 16px">
         Bewegung, Ernährung und Fasten der letzten 7 Tage auf einen Blick -
@@ -66,7 +66,7 @@ export function renderWeeklyReview(container) {
   }
 
   container.innerHTML = `<div class="screen weeklyreview-screen">
-    <div class="screen-header"><h1 class="screen-title">🗓️ Wochenrückblick</h1></div>
+    <div class="screen-header"><h1 class="screen-title">Wochenrückblick</h1></div>
     <p style="font-size:12px;color:var(--text-secondary);padding:0 16px 8px">Die letzten 7 Tage auf einen Blick.</p>
 
     ${renderRecommendations(weeklyRecap)}
@@ -110,12 +110,12 @@ export function renderWeeklyReview(container) {
         ${stat(review.fasting.sessions, 'Sessions diese Woche')}
         ${stat(review.fasting.completed, 'abgeschlossen')}
         ${stat(review.fasting.avgFastMinutes ? formatMinutes(review.fasting.avgFastMinutes) : '–', 'Ø Dauer')}
-        ${stat(`🔥 ${review.fasting.streak}`, 'Tage Streak')}
+        ${stat(`🔥 ${review.fasting.streak}`, 'Tage in Folge')}
       </div>
     </div>
 
     <div class="activity-section" style="text-align:center">
-      <button class="btn-secondary" id="btn-back-tools">← Zurück zu den Tools</button>
+      <button class="btn-secondary" id="btn-back-tools">← Zurück zu Mehr</button>
     </div>
   </div>`;
 

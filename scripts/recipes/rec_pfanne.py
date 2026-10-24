@@ -349,8 +349,8 @@ R('haehnchen_fajitas','Hähnchen-Fajitas mit Paprika und Avocado','lunch','pfann
 """+S%4,["Hähnchen und Paprika in Streifen, Zwiebel in Spalten schneiden. Hähnchen mit Gewürzen, 1 EL Öl und Salz mischen.",
 "Eine große Pfanne stark erhitzen und das Hähnchen 5 Minuten braten, bis es durch ist, herausnehmen. Paprika und Zwiebel im restlichen Öl 5 Minuten braten.",
 "Avocado mit Limettensaft und Salz zerdrücken. Tortillas kurz in der trockenen Pfanne erwärmen.",
-"Alles auf den Tisch stellen – jede füllt ihre Fajitas mit Hähnchen, Gemüse, Avocado, Joghurt und Koriander."],
-"Mitten auf den Tisch, jede rollt selbst: brutzelndes Hähnchen, bunte Paprika und Guacamole.",
+"Alles auf den Tisch stellen – alle füllen ihre Fajitas selbst mit Hähnchen, Gemüse, Avocado, Joghurt und Koriander."],
+"Mitten auf den Tisch, alle rollen selbst: brutzelndes Hähnchen, bunte Paprika und Guacamole.",
 occ='familie,gaeste',kid=True,tip="Für Low Carb statt Tortillas große Salatblätter nehmen.")
 CH['haehnchen_fajitas']='Neu.'
 

@@ -1,7 +1,7 @@
 /**
  * cycleSymptoms.js
  *
- * Referenzdaten für das Zyklus-Symptom-Tagebuch (PMS/Prämenopause/Menopause,
+ * Referenzdaten für das Zyklus-Symptom-Tagebuch (PMS/Perimenopause/Menopause,
  * Experten-Review 5 + Ergänzung, 25.07.2026).
  *
  * WICHTIG (Nicole, 25.07.2026): "Im Zyklustagebuch soll nur getrackt werden,

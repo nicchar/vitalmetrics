@@ -56,19 +56,19 @@ test('onboarding.js: Einführungs-Karte hat keine eigenen Pflichtfelder (darf de
  */
 test('onboarding.js: Fortschrittsanzeige "Schritt X von 5" für alle 5 Datenerfassungs-Schritte vorhanden', () => {
   const src = readFileSync(path.resolve(__dirname, '../../app/src/ui/screens/onboarding.js'), 'utf-8');
-  for (const step of ['SCHRITT 1 VON 5', 'SCHRITT 2 VON 5', 'SCHRITT 3 VON 5', 'SCHRITT 4 VON 5', 'SCHRITT 5 VON 5']) {
+  for (const step of ['Schritt 1 von 5', 'Schritt 2 von 5', 'Schritt 3 von 5', 'Schritt 4 von 5', 'Schritt 5 von 5']) {
     assert.ok(src.includes(step), `Fortschrittsanzeige "${step}" fehlt`);
   }
   // Reihenfolge: Datenschutz -> Geschlecht -> Alter -> Größe -> Aktivitätslevel.
-  const idx1 = src.indexOf('SCHRITT 1 VON 5');
-  const idx2 = src.indexOf('SCHRITT 2 VON 5');
-  const idx3 = src.indexOf('SCHRITT 3 VON 5');
-  const idx4 = src.indexOf('SCHRITT 4 VON 5');
-  const idx5 = src.indexOf('SCHRITT 5 VON 5');
+  const idx1 = src.indexOf('Schritt 1 von 5');
+  const idx2 = src.indexOf('Schritt 2 von 5');
+  const idx3 = src.indexOf('Schritt 3 von 5');
+  const idx4 = src.indexOf('Schritt 4 von 5');
+  const idx5 = src.indexOf('Schritt 5 von 5');
   const idxConsent = src.indexOf('Bevor es losgeht');
   const idxSex     = src.indexOf('Dein Geschlecht');
   const idxAge     = src.indexOf('Deine Altersgruppe');
-  const idxHeight  = src.indexOf('Deine Körpergröße');
+  const idxHeight  = src.indexOf('Deine Körpergröße und dein Gewicht');
   const idxActivity = src.indexOf('Wie aktiv bist du im Alltag?');
   assert.ok(idx1 < idxConsent && idx1 > src.indexOf('Was ist WellANNI?'));
   assert.ok(idx2 < idxSex);
@@ -130,8 +130,8 @@ test('onboarding.js: Körpergröße/Aktivitätslevel sind optional - updateDoneB
   assert.ok(fnMatch, 'updateDoneButton() nicht gefunden');
   assert.ok(!/selectedActivity|onb-height/.test(fnMatch[0]),
     'Körpergröße/Aktivitätslevel dürfen den "Los geht\'s"-Button nicht blockieren (siehe SCHRITT 4/5 · OPTIONAL im Markup)');
-  assert.ok(src.includes('SCHRITT 4 VON 5 · OPTIONAL'));
-  assert.ok(src.includes('SCHRITT 5 VON 5 · OPTIONAL'));
+  assert.ok(src.includes('Schritt 4 von 5 · freiwillig'));
+  assert.ok(src.includes('Schritt 5 von 5 · freiwillig'));
 });
 
 test('onboarding.js: importiert ACTIVITY_LEVELS aus energyNeeds.js und rendert einen Button je Aktivitätsstufe', () => {
@@ -158,7 +158,7 @@ test('onboarding.js: .activity-btn-Klicks setzen die .selected-Klasse (analog zu
 test('onboarding.js: btn-done speichert height (geparst) und activityLevel im Profil, zusätzlich zu sex/ageGroup', () => {
   const src = readFileSync(path.resolve(__dirname, '../../app/src/ui/screens/onboarding.js'), 'utf-8');
   const idx = src.indexOf("querySelector('#btn-done').addEventListener");
-  const block = src.slice(idx, idx + 500);
+  const block = src.slice(idx, idx + 1100);
   assert.match(block, /height:\s*heightVal\s*>\s*0\s*\?\s*heightVal\s*:\s*null/);
   assert.match(block, /activityLevel:\s*selectedActivity\s*\|\|\s*''/);
   assert.ok(block.includes('sex: selectedSex'), 'sex sollte weiterhin gespeichert werden');
@@ -178,4 +178,29 @@ test('onboarding.js: separate Pflicht-Checkbox für Gesundheitsdaten, gespeicher
   assert.ok(fnMatch[0].includes('#health-consent-check'), 'Button muss auch von der Gesundheits-Einwilligung abhängen');
   assert.ok(src.includes('...healthConsentFields()'), 'Einwilligung (Zeitpunkt/Version) muss gespeichert werden');
   assert.ok(src.includes('mindestens 18 Jahre'), 'Altersbestätigung fehlt');
+});
+
+/**
+ * WellANNI 2.2: warmes, geschlechtsneutrales Onboarding ohne Pillen-Symbol,
+ * mit optionalem Gewicht (wird als erster Messwert gespeichert).
+ */
+test('onboarding.js (2.2): kein 💊, keine ♀/♂-Symbole, Genuss im Vordergrund', () => {
+  const src = readFileSync(path.resolve(__dirname, '../../app/src/ui/screens/onboarding.js'), 'utf-8');
+  assert.ok(!src.includes('💊'));
+  assert.ok(!/[♀♂]/.test(src));
+  assert.match(src, /genießen/);
+});
+
+test('onboarding.js (2.2): optionales Gewicht wird als Messwert "gewicht" gespeichert, nur bei plausiblem Wert', () => {
+  const src = readFileSync(path.resolve(__dirname, '../../app/src/ui/screens/onboarding.js'), 'utf-8');
+  assert.match(src, /<input type="number" id="onb-weight"/);
+  assert.ok(src.includes("measurementRepo.add({ biomarkerId: 'gewicht', value: weightVal"));
+  assert.ok(/if \(weightVal >= 30 && weightVal <= 300\)/.test(src));
+  const fnMatch = src.match(/function updateDoneButton\(\)[\s\S]*?\n  \}/);
+  assert.ok(!/onb-weight/.test(fnMatch[0]), 'Gewicht darf den Button nicht blockieren');
+});
+
+test('onboarding.js (2.2): zeigt, was zum Start noch fehlt', () => {
+  const src = readFileSync(path.resolve(__dirname, '../../app/src/ui/screens/onboarding.js'), 'utf-8');
+  assert.ok(src.includes('id="onb-missing"'));
 });

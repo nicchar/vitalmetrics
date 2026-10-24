@@ -6,7 +6,6 @@ import { getDGERef } from '../../domain/nutrition.js';
 import { getStatus, getStatusColor, getStatusLabel, getEscalationHint } from '../../domain/status.js';
 import { getRefRange, getRefRangeLabel } from '../../domain/ranges.js';
 import { entitlements } from '../../domain/entitlements.js';
-import { getAffiliateLink, getTestLink, AFFILIATE_LINKS_ENABLED } from '../../domain/affiliateLinks.js';
 import { getRecipesForBiomarkers } from '../../domain/recommendations.js';
 import { getInteractionsFor } from '../../domain/nutrientInteractions.js';
 import { getInsightsFor, EVIDENCE } from '../../domain/nutrientInsights.js';
@@ -255,35 +254,9 @@ function renderFoodsSection(bm, status) {
         </div>`).join('')
     : '<p style="color:#9e9e9e;font-size:13px">Keine Rezepte verfügbar.</p>';
 
-  // Amazon-Supplement-/Schnelltest-Box: seit Entscheidung 2 für ALLE Nutzer
-  // sichtbar (nicht Premium-gated), aber erst live sobald AFFILIATE_LINKS_ENABLED
-  // auf true steht (siehe affiliateLinks.js -- wartet auf Amazon-Zulassung).
-  const affLink = AFFILIATE_LINKS_ENABLED ? getAffiliateLink(bm.id) : null;
-  const testLink = AFFILIATE_LINKS_ENABLED ? getTestLink(bm.id) : null;
-  const affiliateHtml = affLink ? `
-    <div class="ernaehrung-banner">
-      <span class="ernaehrung-banner-icon">🥦</span>
-      <div>
-        <strong>Ernährung zuerst!</strong>
-        <span>Supplements sind kein Ersatz für eine ausgewogene Ernährung. Versuche deinen Bedarf immer zuerst über natürliche Lebensmittel zu decken.</span>
-      </div>
-    </div>
-    <div class="affiliate-box">
-      <div class="affiliate-box-text">
-        <strong>💊 Supplement entdecken</strong>
-        <small>Passende Nahrungsergänzung zu ${bm.name} bei Amazon.</small>
-      </div>
-      <div class="affiliate-btn-group">
-        <a href="${affLink}" target="_blank" rel="noopener sponsored" class="affiliate-btn">🛒 Supplement</a>
-        ${testLink ? `<a href="${testLink}" target="_blank" rel="noopener sponsored" class="affiliate-btn affiliate-btn-test">🧪 Schnelltest</a>` : ''}
-      </div>
-      <span class="affiliate-disclaimer">* Affiliate-Links · kleine Provision bei Kauf, ohne Mehrkosten für dich · Kein medizinischer Rat – bitte Arzt konsultieren.</span>
-    </div>` : '';
-
   return `<div class="info-section">
     <h3>🥗 Lebensmittelquellen</h3>
     <div class="foods-grid">${(bm.foods || []).map(f => `<span class="food-tag">${f}</span>`).join('')}</div>
-    ${affiliateHtml}
     ${status === 'low' && bm.deficiencySymptoms?.length ? `
       <div class="symptoms-box">
         <h4>⚠️ Kann bei niedriger Zufuhr eine Rolle spielen</h4>
@@ -391,7 +364,7 @@ function renderInfoOnlyTrend(container, catalog, bm, profile) {
         <p class="bm-description">${bm.description || ''}</p>
         <p class="bm-function"><strong>Funktion:</strong> ${bm.function || ''}</p>
         <p style="font-size:12px;color:var(--text-secondary);margin-top:8px">
-          ℹ️ Für diesen Nährstoff gibt es aktuell keinen Mess- oder Zufuhr-Tracking in WellANNI –
+          ℹ️ Für diesen Nährstoff gibt es aktuell keine Möglichkeit, Messwert oder Zufuhr in WellANNI festzuhalten –
           unsere Lebensmitteldatenbank hat dafür noch keine verlässlichen Werte hinterlegt.
           ${ACCESS_TIER_DESCRIPTIONS[bm.accessTier] ? ` ${ACCESS_TIER_DESCRIPTIONS[bm.accessTier]}` : ''}
         </p>

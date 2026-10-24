@@ -17,7 +17,7 @@ export function renderSkinVitality(container) {
     container.innerHTML = `
       <div class="screen skin-vitality-screen">
         <div class="screen-header">
-          <h1 class="screen-title">✨ Beauty-Nährstoffe</h1>
+          <h1 class="screen-title">Haut, Haare und Nägel</h1>
         </div>
         <p class="hint-text" style="padding:0 16px">
           Vitamin C, Zink, Biotin & Co. neu betrachtet: welche bereits getrackten Werte
@@ -47,8 +47,8 @@ export function renderSkinVitality(container) {
 
   let html = `<div class="screen skin-vitality-screen">
     <div class="screen-header">
-      <h1 class="screen-title">✨ Beauty-Nährstoffe</h1>
-      <p class="app-subtitle">Bereits getrackte Werte neu betrachtet - kein Score, keine Diagnose.</p>
+      <h1 class="screen-title">Haut, Haare und Nägel</h1>
+      <p class="app-subtitle">Was du schon eingetragen hast, neu betrachtet – ohne Bewertung, ohne Diagnose.</p>
     </div>
 
     <div class="profile-card">
@@ -63,7 +63,7 @@ export function renderSkinVitality(container) {
 
     <div class="profile-card">
       <h3>😴 Schlaf letzte Nacht</h3>
-      <p class="hint-text">Richtgröße: ca. ${SLEEP_REF_HOURS} Std./Nacht (allgemeine Orientierung für Erwachsene). Rein subjektives Self-Tracking, keine Schlafanalyse.</p>
+      <p class="hint-text">Richtgröße: ca. ${SLEEP_REF_HOURS} Std./Nacht (allgemeine Orientierung für Erwachsene). Deine eigene Einschätzung, keine Schlafanalyse.</p>
       <div class="form-group">
         <label for="sleep-hours">Stunden geschlafen</label>
         <input type="number" id="sleep-hours" class="form-control" min="0" max="14" step="0.5" value="${sleepToday?.hours ?? ''}">
@@ -88,13 +88,13 @@ export function renderSkinVitality(container) {
           <span class="evidence-badge evidence-${item.evidence === 'gut belegt' ? 'strong' : 'emerging'}">${item.evidence}</span>
         </div>
         <div class="card-info-desc">${item.text}</div>
-        <div class="card-intake">${item.status.tracked ? '📊 ' + item.status.text : (item.status.infoOnly ? 'ℹ️ Allgemeiner Hinweis, kein Tracker' : '– noch nicht getrackt –')}</div>
+        <div class="card-intake">${item.status.tracked ? '📊 ' + item.status.text : (item.status.infoOnly ? 'ℹ️ Allgemeiner Hinweis' : '– noch nichts eingetragen –')}</div>
       </div>`;
     }
     html += `</div></div>`;
   }
 
-  html += `<div class="disclaimer"><p>ℹ️ Diese Übersicht ordnet bereits getrackte Werte ein, ersetzt aber keine professionelle Ernährungsberatung. Angaben zu Nährstoffen folgen den zugelassenen EFSA-Health-Claims.</p></div></div>`;
+  html += `<div class="disclaimer"><p>ℹ️ Diese Übersicht ordnet deine eingetragenen Werte ein, ersetzt aber keine professionelle Ernährungsberatung. Angaben zu Nährstoffen folgen den zugelassenen EFSA-Health-Claims.</p></div></div>`;
 
   container.innerHTML = html;
 

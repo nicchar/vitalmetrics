@@ -32,3 +32,17 @@ test('Datenschutzerklärung: nennt Open Food Facts, Art. 9-Einwilligung, Art. 18
   }
   assert.ok(!/geplant in einer späteren Version/.test(s), 'Export ist nicht mehr "geplant"');
 });
+
+test('2.2: Datenschutzerklärung ohne Amazon/Partnerlinks, mit Check-in und präzisem Barcode-Scan', () => {
+  const s = read('datenschutzerklaerung.html');
+  assert.ok(!/Amazon|Partnerlink|Provision/.test(s));
+  assert.ok(s.includes('Tägliches Befinden (Check-in)'));
+  assert.ok(s.includes('Einwilligungsversion 2'));
+  assert.ok(s.includes('Google Code Scanner') && s.includes('keine Kamerabilder'));
+  const nums = [...s.matchAll(/<h2>(\d+)\. /g)].map(m => Number(m[1]));
+  assert.deepEqual(nums, nums.map((_, i) => i + 1), 'Abschnitte lückenlos nummeriert');
+});
+
+test('2.2: AGB ohne Partnerlinks', () => {
+  assert.ok(!/Amazon|Partnerlink|Provision/.test(read('agb.html')));
+});

@@ -6,9 +6,9 @@ export function renderCycleWellness(container) {
     <div class="screen-header">
       <div style="display:flex;align-items:center;gap:10px">
         <button id="btn-back-cycle-wellness" style="background:none;font-size:22px;cursor:pointer">←</button>
-        <h1 class="screen-title">🌸 PMS, Prämenopause &amp; Menopause</h1>
+        <h1 class="screen-title">PMS, Perimenopause &amp; Menopause</h1>
       </div>
-      <p class="app-subtitle">Reiner Lerninhalt - unabhängig von deinen eigenen Trackingdaten, keine Bewertung.</p>
+      <p class="app-subtitle">Reiner Lerninhalt - unabhängig von deinen eigenen Einträgen, keine Bewertung.</p>
     </div>
   `;
 

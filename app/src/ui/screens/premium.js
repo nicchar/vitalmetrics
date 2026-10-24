@@ -51,12 +51,12 @@ export function renderPremium(container) {
       <div class="features-card">
         <h3>Was ist enthalten?</h3>
         <div class="feature-list">
-          <div class="feature-item"><span class="feature-check">✅</span><span>Verlaufs-Charts über die Zeit für alle Biomarker</span></div>
+          <div class="feature-item"><span class="feature-check">✅</span><span>Verläufe über die Zeit für alle Werte</span></div>
           <div class="feature-item"><span class="feature-check">✅</span><span>Farbliche Einordnung (optimal/niedrig/erhöht) gegen deinen Referenzbereich</span></div>
           <div class="feature-item"><span class="feature-check">✅</span><span>Geschlechtsspezifische DGE-Referenzwerte in der Einordnung</span></div>
-          <div class="feature-item"><span class="feature-check">✅</span><span>Beauty-Nährstoffe – Vitamin C, Zink, Biotin & Co. für Haut, Haare & Nägel</span></div>
-          <div class="feature-item"><span class="feature-check">✅</span><span>Ernährungsverlauf über 12 Wochen für alle 15 Mikronährstoffe (Free: die 5 wichtigsten)</span></div>
-          <div class="feature-item"><span class="feature-check">✅</span><span>Intervallfasten-Tracker mit Autophagie-Phasen & Streak</span></div>
+          <div class="feature-item"><span class="feature-check">✅</span><span>Haut, Haare und Nägel – welche Nährstoffe dahinterstecken</span></div>
+          <div class="feature-item"><span class="feature-check">✅</span><span>Ernährungsverlauf über 12 Wochen für alle 15 Vitamine und Mineralstoffe (gratis: die 5 wichtigsten)</span></div>
+          <div class="feature-item"><span class="feature-check">✅</span><span>Intervallfasten mit Timer und Tagen in Folge</span></div>
           <div class="feature-item"><span class="feature-check">✅</span><span>Wochenrückblick – Bewegung, Ernährung & Fasten der letzten 7 Tage</span></div>
         </div>
       </div>
@@ -64,13 +64,13 @@ export function renderPremium(container) {
       <div class="free-card">
         <h3>Gratis immer verfügbar</h3>
         <div class="feature-list">
-          <div class="feature-item"><span class="feature-check">🆓</span><span>Alle ${totalCount} Biomarker eintragen & aktuellen Wert einsehen</span></div>
-          <div class="feature-item"><span class="feature-check">🆓</span><span>Lebensmittel-Tipps zu jedem Marker</span></div>
+          <div class="feature-item"><span class="feature-check">🆓</span><span>Über 200 geprüfte Rezepte, Wochenplan mit Einkaufsliste für deinen Haushalt</span></div>
+          <div class="feature-item"><span class="feature-check">🆓</span><span>Tägliches Befinden und Tagebuch mit „Gegessen“ und „wie gestern“</span></div>
           <div class="feature-item"><span class="feature-check">🆓</span><span>Lebensmittelquellen, Tipps & passende Rezepte bei niedriger dokumentierter Zufuhr</span></div>
           <div class="feature-item"><span class="feature-check">🆓</span><span>Heimtest-Hinweise zu jedem Biomarker</span></div>
           <div class="feature-item"><span class="feature-check">🆓</span><span>PDF-Bericht exportieren</span></div>
-          <div class="feature-item"><span class="feature-check">🆓</span><span>Heißhunger-Journal, Wochenplan & Einkaufsliste</span></div>
-          <div class="feature-item"><span class="feature-check">🆓</span><span>Zyklustracker sowie PMS, Prämenopause & Menopause</span></div>
+          <div class="feature-item"><span class="feature-check">🆓</span><span>Heißhunger-Tagebuch und alle ${totalCount} Werte eintragen</span></div>
+          <div class="feature-item"><span class="feature-check">🆓</span><span>Zyklus sowie PMS, Perimenopause & Menopause</span></div>
         </div>
       </div>
 

@@ -249,7 +249,7 @@ R('chili_sin_carne','Mildes Chili sin Carne','lunch','eintopf','g',4,15,30,"""
 """.replace('½ TL','0.5 TL'),["Reis nach Packungsangabe garen. Zwiebel und Knoblauch würfeln, Paprika klein schneiden. Bohnen und Mais abspülen und abtropfen lassen.",
 "Öl erhitzen und Zwiebel, Knoblauch und Paprika 3 Minuten anschwitzen. Gewürze kurz mitrösten, dann Tomaten, Brühe, Bohnen und Mais zugeben.",
 "Bei kleiner Hitze 20–25 Minuten köcheln lassen und gelegentlich umrühren. Mild abschmecken und mit Reis servieren."],
-"Würzig, wärmend und rein pflanzlich – Schärfe kann sich jede am Tisch selbst nachlegen.",
+"Würzig, wärmend und rein pflanzlich – Schärfe legt sich am Tisch einfach nach, wer mag.",
 occ='mealprep,familie',tip="Chili und Reis getrennt abkühlen und gekühlt lagern. Scharfe Gewürze oder Chiliflocken separat anbieten.",kid=True,photo='mildes-chili-sin-carne.webp',src=N)
 CH['chili_sin_carne']='Bohnenmenge verdoppelt (240 → 480 g), damit das Chili als Hauptgericht satt macht (vorher ca. 9 g Eiweiß pro Portion). Knoblauch ergänzt, Gewürze werden angeröstet.'
 
@@ -335,7 +335,7 @@ R('bohnen_mais_wraps','Bohnen-Mais-Wraps','lunch','brot','g',4,15,0,"""
 """.replace('½ TL','0.5 TL'),["Bohnen abspülen und mit einer Gabel grob zerdrücken. Mit Mais und Paprikapulver mischen.",
 "Tomate würfeln, Salat waschen. Joghurt mit Limetten- oder Zitronensaft glatt rühren.",
 "Wraps mit Bohnenmischung, Tomate, Salat und Käse füllen. Joghurt daraufgeben, die Seiten einschlagen und eng aufrollen."],
-"Mexikanisch, bunt und zum Selbstrollen – jede füllt ihren Wrap, wie sie mag.",
+"Mexikanisch, bunt und zum Selbstrollen – alle füllen ihren Wrap, wie sie mögen.",
 occ='mitnehmen,familie,mealprep',tip="Für die Lunchbox Füllung und Wrap getrennt transportieren, damit nichts durchweicht.",kid=True,photo='bohnen-mais-wraps.webp',src=N)
 CH['bohnen_mais_wraps']='Unverändert übernommen (Zitronensaft als feste Zutat aufgenommen).'
 

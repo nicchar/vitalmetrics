@@ -92,7 +92,7 @@ export function renderCycle(c) {
     </div>`).join('');
 
   c.innerHTML = `<div class="screen cycle-screen">
-    <div class="screen-header"><h1 class="screen-title">🌙 Zyklustracker</h1></div>
+    <div class="screen-header"><h1 class="screen-title">Zyklus</h1></div>
 
     <!-- Aktuelle Phase -->
     <div class="cycle-phase-card ${phaseKey}">
@@ -108,7 +108,7 @@ export function renderCycle(c) {
     <div class="tool-card" id="link-cycle-wellness" style="margin:0 16px 16px">
       <div class="tool-card-icon">🌸</div>
       <div class="tool-card-body">
-        <div class="tool-card-title">PMS, Prämenopause & Menopause</div>
+        <div class="tool-card-title">PMS, Perimenopause & Menopause</div>
         <div class="tool-card-desc">Mikronährstoffe je Lebensphase, traditionelle Perspektiven – reiner Lerninhalt, kostenlos</div>
       </div>
       <div class="tool-card-arrow">›</div>

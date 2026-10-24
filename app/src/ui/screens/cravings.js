@@ -106,7 +106,7 @@ export function renderCravings(c) {
       <div class="cravings-header">
         <div style="display:flex;align-items:center;gap:10px">
           <button id="btn-back-cravings" style="background:none;font-size:22px;cursor:pointer">←</button>
-          <span class="cravings-title">🍫 Heißhunger-Journal</span>
+          <span class="cravings-title">Heißhunger-Tagebuch</span>
         </div>
         <button class="btn-add-craving" id="btn-toggle-form">${formOpen ? '✕ Schließen' : '+ Eintrag'}</button>
       </div>

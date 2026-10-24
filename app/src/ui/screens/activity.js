@@ -74,7 +74,7 @@ export function renderActivity(c) {
   }).join('');
 
   c.innerHTML = `<div class="screen activity-screen">
-    <div class="screen-header"><h1 class="screen-title">🏃 Bewegung</h1></div>
+    <div class="screen-header"><h1 class="screen-title">Bewegung</h1></div>
 
     <div class="activity-hero">
       <div class="activity-hero-left">

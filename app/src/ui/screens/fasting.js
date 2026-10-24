@@ -10,14 +10,13 @@ export function renderFasting(c) {
   if (!entitlements.isPremium()) {
     c.innerHTML = `<div class="screen fasting-screen">
       <div class="screen-header">
-        <h1 class="screen-title">⏱️ Intervallfasten</h1>
+        <h1 class="screen-title">Intervallfasten</h1>
       </div>
       <p class="hint-text" style="padding:0 16px">
-        16:8 · 14:10 · 12:12 - Timer mit Autophagie-Phasen und Streak-Tracking,
-        damit du dranbleibst.
+        16:8, 14:10 oder 12:12 – mit Timer und einer Übersicht, wie viele Tage in Folge du es geschafft hast.
       </p>
       <div class="analysis-upsell-card" style="margin:16px">
-        <p>⏱️ Der Intervallfasten-Tracker ist Teil von Premium.</p>
+        <p>Intervallfasten ist Teil von Premium.</p>
         <button class="btn-secondary btn-upgrade-inline" id="btn-upgrade-fasting">⭐ Premium ansehen</button>
       </div>
     </div>`;
@@ -76,7 +75,7 @@ export function renderFasting(c) {
       </button>
       <div class="fasting-streak">
         <div class="fasting-streak-num">🔥 ${fd.streak || 0}</div>
-        <div><div style="font-weight:700">Tage Streak</div><div class="fasting-streak-label">Tage in Folge ein Fastenprotokoll abgeschlossen</div></div>
+        <div><div style="font-weight:700">Tage in Folge</div><div class="fasting-streak-label">Tage in Folge ein Fastenprotokoll abgeschlossen</div></div>
       </div>
       <div style="padding:0 16px;margin-bottom:8px;font-size:14px;font-weight:700">Phasen des Fastens</div>
       <div class="fasting-stages-list">
@@ -149,7 +148,7 @@ export function renderFasting(c) {
         fd.isActive = false;
         fd.startTime = null;
         fastingRepo.save(fd);
-        showToast(completed ? `🎉 ${fd.protocol} geschafft! Streak: ${fd.streak} 🔥` : '⏹ Fasten beendet.');
+        showToast(completed ? `${fd.protocol} geschafft – ${fd.streak} ${fd.streak === 1 ? 'Tag' : 'Tage'} in Folge!` : '⏹ Fasten beendet.');
       } else {
         fd.isActive = true;
         fd.startTime = new Date().toISOString();

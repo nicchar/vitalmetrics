@@ -129,7 +129,7 @@ export const SKIN_VITALITY_CLUSTERS = [
         kind: 'info',
         label: 'Rauchen',
         evidence: EVIDENCE.STRONG,
-        text: 'Rauchen erhöht den Vitamin-C-Bedarf spürbar und beschleunigt über oxidativen Stress und reduzierte Kollagensynthese nachweislich die Hautalterung. Aktuell ohne eigenen Tracker - allgemeiner Hinweis.',
+        text: 'Rauchen erhöht den Vitamin-C-Bedarf spürbar und beschleunigt über oxidativen Stress und reduzierte Kollagensynthese nachweislich die Hautalterung. Aktuell ohne eigene Eingabe – allgemeiner Hinweis.',
       },
       {
         id: 'koffein',

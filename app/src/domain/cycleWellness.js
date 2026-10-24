@@ -1,7 +1,7 @@
 /**
  * cycleWellness.js
  *
- * "PMS, Prämenopause & Menopause" - reiner Lerninhalt (Experten-Review 5 +
+ * "PMS, Perimenopause & Menopause" - reiner Lerninhalt (Experten-Review 5 +
  * Ergänzung, 25.07.2026: Ernährungsberaterin, Heilpraktikerin, Gynäkologin,
  * Wissenschaftlerin, danach Regulatory-Affairs-Experte, App-Entwickler,
  * UI-Expertin). Bewusst getrennt vom Zyklus-Symptom-Tagebuch
@@ -68,7 +68,7 @@ export const CYCLE_WELLNESS_CLUSTERS = [
   },
   {
     id: 'praemenopause',
-    title: 'Prämenopause (Übergangsjahre)',
+    title: 'Perimenopause (Wechseljahre beginnen)',
     icon: '🍂',
     intro: 'Zyklen können unregelmäßiger werden, Blutungen stärker oder schwächer ausfallen. Ein natürlicher Übergang, kein Krankheitszustand - diese Nährstoffe verdienen dabei besondere Aufmerksamkeit:',
     items: [

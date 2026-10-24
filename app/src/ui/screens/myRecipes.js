@@ -79,7 +79,7 @@ export function renderMyRecipes(c) {
   function build() {
     return `<div class="screen my-recipes-screen">
       <div class="screen-header">
-        <h1 class="screen-title">📖 Eigene Rezepte</h1>
+        <h1 class="screen-title">Eigene Rezepte</h1>
       </div>
       <div class="activity-section">
         <p style="font-size:12px;color:var(--text-secondary);margin-bottom:10px">Deine persönliche Rezept-Sammlung, lokal gespeichert. Unabhängig vom Wochenplan – du kannst jedes eigene Rezept trotzdem direkt ins Ernährungstagebuch eintragen.</p>

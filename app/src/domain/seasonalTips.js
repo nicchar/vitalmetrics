@@ -14,7 +14,7 @@ const TIPS_BY_MONTH = {
   7: { icon: '💧', text: 'Hochsommer: Elektrolyte (Magnesium, Kalium) bei viel Schwitzen im Blick behalten.' },
   8: { icon: '🥗', text: 'Sommergemüse und Beeren sind reich an Antioxidantien und Vitamin C.' },
   9: { icon: '🍂', text: 'Die Sonnenstunden nehmen ab – ein guter Zeitpunkt, die eigene Vitamin-D-Zufuhr im Blick zu behalten.' },
-  10: { icon: '🍂', text: 'Herbstzeit, Erkältungszeit: Vitamin C und Zink aus Obst/Gemüse können das Immunsystem unterstützen.' },
+  10: { icon: '🍂', text: 'Herbstzeit, Erkältungszeit: Vitamin C und Zink aus Obst und Gemüse können das Immunsystem unterstützen.' },
   11: { icon: '☁️', text: 'Wenig Sonnenlicht im November – Fisch, Eier und angereicherte Lebensmittel liefern etwas Vitamin D über die Nahrung.' },
   12: { icon: '☁️', text: 'Kurze Tage, wenig Sonne: ein guter Anlass, die Vitamin-D-Zufuhr über den Winter zu tracken.' },
 };

@@ -11,9 +11,8 @@ const KEY = 'vm_premium';
 /**
  * Paywall-Modell seit Entscheidung 2 (20.07.2026):
  * Werte eintragen und den aktuellen Wert sehen ist für ALLE Biomarker kostenlos.
- * Das war Voraussetzung dafür, dass WellANNI bei Amazon PartnerNet als
- * "Zugelassene Mobile Anwendung" durchgehen kann (verlangt freien Zugriff auf
- * alle Amazon-Links für alle Nutzer, siehe affiliateLinks.js).
+ * (Seit 2.2 gibt es in der App keine Partner-Links mehr; die frühere
+ * Begründung dafür ist entfallen, das Modell bleibt trotzdem.)
  * Premium schaltet stattdessen die Analyse-Tiefe frei: Verlaufs-Chart und die
  * farbliche Status-Einordnung (optimal/niedrig/erhöht) gegen den Referenzbereich.
  * Vorher war das Tracking selbst an eine feste FREE_BIOMARKER_IDS-Liste gekoppelt
