@@ -54,3 +54,22 @@ test('seasonOf/isInSeason: Oktober ist Herbst, Sommerrezepte sind nicht in Saiso
   assert.equal(isInSeason({ seasons: ['g'] }, 'h'), true);
   assert.equal(isInSeason({}, 'h'), true);
 });
+
+test('2.2 Einkaufsliste: Vorratszutaten getrennt, alphabetisch nach Zutat, einkaufstaugliche Mengen', async () => {
+  const { buildShoppingList: build } = await import('../../app/src/domain/mealPlan.js');
+  const r = { servings: 4, ingredientsData: [
+    { qty: 1, unit: 'Bund', name: 'Petersilie' }, { qty: 250, unit: 'g', name: 'Bergkäse' },
+    { qty: 1, unit: 'TL', name: 'Kreuzkümmel' }, { qty: 2, unit: 'EL', name: 'Olivenöl' },
+    { qty: null, unit: '', name: 'Salz, Pfeffer' }, { qty: 3, unit: '', name: 'Zwiebeln' },
+  ] };
+  const list = build({ days: [{ breakfastRecipe: null, lunchRecipe: r, dinnerRecipe: null }] }, 2.5);
+  const by = Object.fromEntries(list.map(i => [i.name, i]));
+  assert.equal(by['Petersilie'].label, '1 Bund Petersilie');
+  assert.equal(by['Bergkäse'].label, '160 g Bergkäse');
+  assert.equal(by['Zwiebeln'].label, '2 Zwiebeln');
+  assert.equal(by['Kreuzkümmel'].pantry, true);
+  assert.equal(by['Olivenöl'].pantry, true);
+  assert.equal(by['Bergkäse'].pantry, false);
+  const names = list.map(i => i.name);
+  assert.deepEqual(names, [...names].sort((a, b) => a.localeCompare(b, 'de')));
+});

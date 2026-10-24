@@ -54,7 +54,21 @@ test('mealPlan.js: "Neu generieren" gibt bestehende Pins an generatePlan() weite
   assert.ok(/generatePlan\([^)]*existingPins[^)]*\)/s.test(block), 'existingPins sollte an generatePlan() übergeben werden');
 });
 
-test('mealPlan.js: Rezept-Detailansicht zeigt weiterhin Zutaten/Zubereitung UND die "Rezept gekocht"-Komponente (unverändert durch Punkt 3)', () => {
-  assert.ok(src.includes('recipe-ingredients'));
-  assert.ok(src.includes('recipeLogButtonHtml('));
+test('mealPlan.js (2.2): Rezepte öffnen die Rezeptseite, Zurück führt zum Wochenplan', () => {
+  assert.ok(src.includes("state.set('recipeBackTo', 'mealplan')"));
+  assert.ok(src.includes("navigate('recipe')"));
+});
+
+test('mealPlan.js (2.2): "Gegessen" trägt eine Portion am Tag der Mahlzeit ein und lässt sich zurücknehmen', () => {
+  const idx = src.indexOf("querySelectorAll('.w-eaten')");
+  const block = src.slice(idx, idx + 1800);
+  assert.ok(block.includes('recipeToFoodEntry(recipe, 1)'));
+  assert.ok(block.includes('nutritionRepo.addEntry(date,'));
+  assert.ok(block.includes('nutritionRepo.removeEntry(date, i)'));
+  assert.ok(src.includes('day.date <= today'), 'Zukünftige Tage dürfen nicht als gegessen markiert werden');
+});
+
+test('mealPlan.js (2.2): Einkaufsliste rechnet mit dem Haushalt aus dem Profil', () => {
+  assert.ok(src.includes('householdPortions(profile, plan?.portions || 1)'));
+  assert.ok(src.includes('buildShoppingList(resolved, portions)'));
 });

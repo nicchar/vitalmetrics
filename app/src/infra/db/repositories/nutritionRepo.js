@@ -49,6 +49,19 @@ export const nutritionRepo = {
     storage.setVersioned(KEY, all, SCHEMA_VERSION);
   },
 
+  /**
+   * 2.2 "Wie gestern": kopiert alle Einträge einer Mahlzeit von einem Tag auf
+   * einen anderen. Gibt die Anzahl kopierter Einträge zurück.
+   */
+  copyMeal(fromDate, toDate, mealType) {
+    const all = this._load();
+    const items = (all[fromDate] || []).filter(e => (e.mealType || 'other') === mealType);
+    if (!items.length) return 0;
+    all[toDate] = [...(all[toDate] || []), ...items.map(e => ({ ...e }))];
+    storage.setVersioned(KEY, all, SCHEMA_VERSION);
+    return items.length;
+  },
+
   removeEntry(dateStr, idx) {
     const all = this._load();
     all[dateStr] = (all[dateStr] || []).filter((_, i) => i !== idx);

@@ -6,7 +6,7 @@ import { getDGERef } from '../../domain/nutrition.js';
 import { getProteinRefRange } from '../../domain/energyNeeds.js';
 import { searchOpenFoodFacts, fetchProductByBarcode } from '../../infra/external/openFoodFacts.js';
 import { rankFoodMatches } from '../../domain/foodSearch.js';
-import { MEAL_TYPES, guessMealTypeByTime, groupEntriesByMealType } from '../../domain/mealType.js';
+import { MEAL_TYPES, guessMealTypeByTime, groupEntriesByMealType, mealTypeMeta } from '../../domain/mealType.js';
 import { showToast } from '../components/toast.js';
 
 // Modul-Status für die Ernährungssuche (übersteht Re-Renders innerhalb des Screens).
@@ -31,6 +31,10 @@ function hasNoMicronutrients(food) {
   return MICRO_KEYS.every(k => !(food[k] > 0));
 }
 
+function likeYesterdayLabel(mealType, n) {
+  return `${mealTypeMeta(mealType).label} wie gestern (${n} ${n === 1 ? 'Eintrag' : 'Einträge'})`;
+}
+
 export function renderNutrition(c) {
   _nutrState.selectedFood = null;
   _nutrState.searchProducts = [];
@@ -45,6 +49,10 @@ export function renderNutrition(c) {
   // Alltagsreibung-Review Juli 2026: keine manuellen Favoriten noetig - die
   // App leitet "haeufig verwendet" automatisch aus den letzten 30 Tagen ab.
   const frequentFoods = nutritionRepo.getFrequentFoods(30, 8);
+  // 2.2 "Wie gestern": gleiche Mahlzeit vom Vortag mit einem Tipp übernehmen
+  const yesterdayDate = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const countYesterday = mt => nutritionRepo.getDay(yesterdayDate).filter(e => (e.mealType || 'other') === mt).length;
+  const yesterdayMealCount = countYesterday(_nutrState.mealType);
 
   // Protein-Referenz (Review 11, 19.08.2026): Nicoles Wunsch, Protein nicht
   // losgelöst von Gewicht/Aktivitätslevel zu behandeln - Referenz kommt aus
@@ -93,14 +101,14 @@ export function renderNutrition(c) {
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
       <div style="text-align:center;background:var(--bg);border-radius:8px;padding:8px">
         <div style="font-size:18px;font-weight:700;color:var(--primary)">${Math.round(totals.protein)}g</div>
-        <div style="font-size:11px;color:var(--text-secondary)">Protein</div>
+        <div style="font-size:11px;color:var(--text-secondary)">Eiweiß</div>
       </div>
       <div style="text-align:center;background:var(--bg);border-radius:8px;padding:8px">
-        <div style="font-size:18px;font-weight:700;color:#f59e0b">${Math.round(totals.fat)}g</div>
+        <div style="font-size:18px;font-weight:700;color:var(--accent-dark)">${Math.round(totals.fat)}g</div>
         <div style="font-size:11px;color:var(--text-secondary)">Fett</div>
       </div>
       <div style="text-align:center;background:var(--bg);border-radius:8px;padding:8px">
-        <div style="font-size:18px;font-weight:700;color:#3b82f6">${Math.round(totals.carbs)}g</div>
+        <div style="font-size:18px;font-weight:700;color:var(--primary-dark)">${Math.round(totals.carbs)}g</div>
         <div style="font-size:11px;color:var(--text-secondary)">Kohlenhydrate</div>
       </div>
     </div>` : '';
@@ -116,7 +124,7 @@ export function renderNutrition(c) {
     const pct = barMax ? Math.min(100, Math.round((totals.protein / barMax) * 100)) : 0;
     proteinRefHtml = `<div style="margin-bottom:14px">
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px">
-        <span style="font-weight:600">🥩 Protein-Referenz</span>
+        <span style="font-weight:600">Eiweiß-Referenz</span>
         <span style="color:var(--text-secondary)">${totals.protein} / ${refLabel} g</span>
       </div>
       <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden">
@@ -125,7 +133,7 @@ export function renderNutrition(c) {
       <div style="font-size:11px;color:var(--text-secondary);margin-top:2px">Grobe Orientierung auf Basis deines Gewichts${profile.activityLevel ? ' und Aktivitätslevels' : ''} – kein festes Ziel.</div>
     </div>`;
   } else if (entries.length && !proteinRef) {
-    proteinRefHtml = `<p style="font-size:11px;color:var(--text-secondary);margin-bottom:12px">Trage dein Gewicht ein (Profil), um hier eine grobe Protein-Referenz zu sehen.</p>`;
+    proteinRefHtml = `<p style="font-size:11px;color:var(--text-secondary);margin-bottom:12px">Trage dein Gewicht ein (Profil), dann siehst du hier eine grobe Eiweiß-Referenz.</p>`;
   }
 
   // ── Mikronährstoff-Balken ───────────────────────────────────────────────────
@@ -138,10 +146,11 @@ export function renderNutrition(c) {
   const nutrients = Object.entries(ref).map(([key, info]) => {
     const val = totals[key] || 0;
     const pct = Math.min(100, Math.round((val / info.ref) * 100));
-    const color = pct >= 100 ? 'var(--primary)' : pct >= 60 ? '#f59e0b' : '#ef4444';
+    // 2.2: keine Ampel mehr – Salbei ab 80 %, darunter warmes Honiggelb
+    const color = pct >= 80 ? 'var(--primary)' : 'var(--accent)';
     const foods = catalogByIntakeKey[key]?.foods;
     const tip = pct < 100 && foods?.length
-      ? `<div style="font-size:11px;color:var(--text-secondary);margin-top:2px">💡 z.B. ${foods.slice(0, 3).join(', ')}</div>`
+      ? `<div style="font-size:11px;color:var(--text-secondary);margin-top:2px">Steckt zum Beispiel in ${foods.slice(0, 3).join(', ')}</div>`
       : '';
     return `<div style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px">
@@ -157,7 +166,7 @@ export function renderNutrition(c) {
   }).join('');
 
   c.innerHTML = `<div class="screen">
-    <div class="screen-header"><h1 class="screen-title">🥗 Ernährung</h1></div>
+    <div class="screen-header"><h1 class="screen-title">Tagebuch</h1></div>
 
     <div class="activity-hero">
       <div class="activity-hero-left">
@@ -178,7 +187,7 @@ export function renderNutrition(c) {
       <h3>➕ Lebensmittel hinzufügen</h3>
 
       <div style="margin-bottom:12px">
-        <div style="font-size:11px;color:var(--text-secondary);margin-bottom:6px">Für welche Mahlzeit? (gilt für alle Wege unten – Suche, Quick-Add, Barcode, eigene Eingabe)</div>
+        <div style="font-size:11px;color:var(--text-secondary);margin-bottom:6px">Für welche Mahlzeit? Gilt für alles, was du unten einträgst.</div>
         <div id="mealtype-selector" style="display:flex;gap:6px;flex-wrap:wrap">
           ${MEAL_TYPES.map(mt => `
             <button type="button" class="mealtype-btn${mt.key === _nutrState.mealType ? ' active' : ''}" data-mealtype="${mt.key}"
@@ -188,6 +197,7 @@ export function renderNutrition(c) {
               ${mt.emoji} ${mt.label}
             </button>`).join('')}
         </div>
+        <button type="button" id="btn-like-yesterday" class="w-outline-btn" style="margin-top:8px;padding:10px" ${yesterdayMealCount ? '' : 'hidden'}>${likeYesterdayLabel(_nutrState.mealType, yesterdayMealCount)}</button>
       </div>
 
       ${frequentFoods.length ? `
@@ -282,7 +292,17 @@ export function renderNutrition(c) {
         b.style.background = active ? 'var(--primary)' : 'var(--surface)';
         b.style.color = active ? '#fff' : 'inherit';
       });
+      const likeBtn = c.querySelector('#btn-like-yesterday');
+      const n = countYesterday(_nutrState.mealType);
+      likeBtn.hidden = !n;
+      likeBtn.textContent = likeYesterdayLabel(_nutrState.mealType, n);
     });
+  });
+
+  c.querySelector('#btn-like-yesterday').addEventListener('click', () => {
+    const n = nutritionRepo.copyMeal(yesterdayDate, today, _nutrState.mealType);
+    if (n) showToast(`${mealTypeMeta(_nutrState.mealType).label} von gestern übernommen`);
+    renderNutrition(c);
   });
 
   function localSearch(query) {

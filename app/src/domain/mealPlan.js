@@ -529,18 +529,43 @@ export function buildShoppingList(resolvedPlan, targetServings = 1) {
     }
   }
 
+  // 2.2: alphabetisch nach Zutat statt nach Mengen-Text; Vorrats-Zutaten
+  // (Gewürze, Öl, Essig, Löffelmengen) als eigene Gruppe "pantry".
   return [...items.values()]
     .map(i => ({
+      name: i.name,
+      pantry: isPantryItem(i),
       label: i.qty != null ? `${formatQty(i.qty, i.unit)} ${i.unit} ${i.name}`.replace(/\s+/g, ' ').trim() : i.name,
     }))
-    .sort((a, b) => a.label.localeCompare(b.label, 'de'));
+    .sort((a, b) => a.name.localeCompare(b.name, 'de'));
 }
 
+const PANTRY_UNITS = new Set(['tl', 'el', 'prise', 'prisen', 'msp.', 'spritzer']);
+const PANTRY_NAMES = /(salz|pfeffer|gewürz|paprikapulver|kreuzkümmel|kurkuma|curry|zimt|muskat|oregano|thymian|chili|cayenne|öl\b|essig|senf|brühe|honig|ahornsirup|backpulver|natron|vanille|sojasauce|tomatenmark|lorbeer|kardamom)/i;
+
+function isPantryItem(i) {
+  if (i.name === 'Salz und Gewürze') return true;
+  if (PANTRY_UNITS.has(String(i.unit || '').toLowerCase())) return true;
+  return i.qty == null && PANTRY_NAMES.test(i.name);
+}
+
+const WHOLE_UNITS = new Set(['', 'bund', 'dose', 'dosen', 'stück', 'glas', 'gläser', 'becher', 'pck.', 'packung', 'kopf', 'köpfe', 'stange', 'stangen', 'knolle', 'knollen', 'beutel', 'netz', 'schale']);
+
 function formatQty(n, unit) {
-  // Zaehlbare Einheiten (Eier, Zwiebeln, Avocados ...) haben unit === '' -
-  // hier wird aufgerundet, da man keine halben Eier kauft.
-  if (unit === '') return String(Math.ceil(n));
-  return Number.isInteger(n) ? String(n) : n.toFixed(1).replace('.', ',');
+  const u = String(unit || '').toLowerCase();
+  // Zählbare Einheiten (Eier, Zwiebeln, Bund, Dose …) werden aufgerundet –
+  // man kauft keine halbe Dose.
+  if (WHOLE_UNITS.has(u)) return String(Math.max(1, Math.ceil(n - 0.05)));
+  if (u === 'g' || u === 'ml') {
+    if (n >= 100) return String(Math.round(n / 10) * 10);
+    return String(Math.max(5, Math.round(n / 5) * 5));
+  }
+  if (u === 'kg' || u === 'l') return (Math.round(n * 10) / 10).toString().replace('.', ',');
+  // Löffel, Zehen, cm, Handvoll: auf halbe aufrunden
+  const v = Math.max(0.5, Math.ceil(n * 2 - 0.05) / 2);
+  const whole = Math.floor(v);
+  if (v - whole === 0.5) return whole ? `${whole} ½` : '½';
+  return String(v);
 }
 
 /**
@@ -573,4 +598,23 @@ function _scalePart(part, factor) {
   if (qty == null) return part; // z.B. "Salz", "nach Belieben etwas Zimt" - unveraendert lassen
   const scaled = qty * factor;
   return `${formatQty(scaled, unit)}${unit ? ' ' + unit : ''} ${name}`.replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * 2.2: "Gegessen ✓" im Wochenplan. Merkt sich pro Tag und Mahlzeit, ob sie
+ * ins Tagebuch übernommen wurde (Schlüssel "YYYY-MM-DD|lunch").
+ */
+export function eatenKey(dateIso, mealType) {
+  return `${dateIso}|${mealType}`;
+}
+
+export function isEaten(plan, dateIso, mealType) {
+  return !!plan?.eaten?.[eatenKey(dateIso, mealType)];
+}
+
+export function setEaten(plan, dateIso, mealType, value) {
+  const eaten = { ...(plan.eaten || {}) };
+  if (value) eaten[eatenKey(dateIso, mealType)] = true;
+  else delete eaten[eatenKey(dateIso, mealType)];
+  return { ...plan, eaten };
 }
