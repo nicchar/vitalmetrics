@@ -57,7 +57,8 @@ export function renderPremium(container) {
           <div class="feature-item"><span class="feature-check">✅</span><span>Haut, Haare und Nägel – welche Nährstoffe dahinterstecken</span></div>
           <div class="feature-item"><span class="feature-check">✅</span><span>Ernährungsverlauf über 12 Wochen für alle 15 Vitamine und Mineralstoffe (gratis: die 5 wichtigsten)</span></div>
           <div class="feature-item"><span class="feature-check">✅</span><span>Intervallfasten mit Timer und Tagen in Folge</span></div>
-          <div class="feature-item"><span class="feature-check">✅</span><span>Wochenrückblick – Bewegung, Ernährung & Fasten der letzten 7 Tage</span></div>
+          <div class="feature-item"><span class="feature-check">✅</span><span>Persönliche Muster: was dein Befinden mit Schlaf, Bewegung und Essen zu tun haben könnte</span></div>
+          <div class="feature-item"><span class="feature-check">✅</span><span>Wochenrückblick jeden Montag: worauf du achten kannst, mit passenden Rezepten</span></div>
         </div>
       </div>
 

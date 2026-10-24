@@ -60,11 +60,11 @@ test('values.js: PDF-Export ist von der Startseite hierher umgezogen', () => {
  * Automatischer Wochenrückblick (03.08.2026): dezenter Hinweis statt Pop-up,
  * nur Premium und nur wenn in der letzten Woche etwas eingetragen wurde.
  */
-test('dashboard.js: Wochenrückblick-Hinweis erscheint nur für Premium UND wenn letzte Woche etwas eingetragen wurde', () => {
-  const idx = src.indexOf('let weeklyRecap = null');
-  const block = src.slice(idx, idx + 400);
-  assert.ok(/if\s*\(\s*isPremium\s*&&\s*profile\.lastWeeklyRecapShown\s*!==\s*thisMonday\s*\)/.test(block));
-  assert.ok(block.includes('recap.loggedDays > 0'));
+test('dashboard.js (2.2): Wochenrückblick-Hinweis nur für Premium, Gratis nur montags ein Satz', () => {
+  assert.ok(src.includes('if (profile.lastWeeklyRecapShown !== thisMonday)'));
+  assert.ok(src.includes('wf.loggedDays > 0'), 'nur wenn letzte Woche etwas eingetragen wurde');
+  assert.ok(src.includes('const freeRecapTeaser = !isPremium && !!weekFocus && now.getDay() === 1;'));
+  assert.ok(src.includes('if (isPremium && weekFocus)'));
 });
 
 test('dashboard.js: Hinweis nutzt getTotalsForWeek() für die VORHERIGE Kalenderwoche', () => {
@@ -82,12 +82,20 @@ test('dashboard.js: ohne Lücken gibt es eine freundliche Bestätigung statt nic
   assert.ok(src.includes('im grünen Bereich'));
 });
 
+test('dashboard.js (2.2): Kernwerte mit Wochensicht, Lebensmittel unter dem Rezeptvorschlag, Befindens-Hinweise', () => {
+  assert.ok(src.includes('last7Totals: nutritionRepo.getLast7DaysTotals()'));
+  assert.ok(src.includes('Schnitt der letzten 7 Tage'));
+  assert.ok(src.includes('Oder einfach zwischendurch'));
+  assert.ok(src.includes('buildCheckinHints('));
+  assert.ok(src.includes('vitaminDNote()'));
+});
+
 /**
  * "Heute auf deinem Teller": Kalorien und alle drei Makros gemeinsam (Nicole:
  * Eiweiß nicht isoliert), Kernwerte in Worten statt Ampel.
  */
 test('dashboard.js: Reihenfolge Check-in → Teller → Rezept des Tages → Tipp → Körperwerte', () => {
-  const order = ['renderCheckin(today)', 'renderTeller(', 'Rezept des Tages', 'Tipp des Tages', 'renderBody('];
+  const order = ['renderCheckin(today, hints)', 'renderTeller(', 'Rezept des Tages', 'Tipp des Tages', 'renderBody('];
   const tpl = src.slice(src.indexOf('container.innerHTML = `'));
   let last = -1;
   for (const marker of order) {
@@ -117,6 +125,7 @@ test('dashboard.js: Startseite enthält KEINE Ampelfarben (--ok/--low/--high) un
 
 test('dashboard.js: Kernwerte nutzen die freundlichen Formulierungen aus coreNutrients.js', () => {
   assert.ok(src.includes('STATUS_TEXT[c.status]'));
+  assert.ok(src.includes('coreGaps(core)'), 'Rezeptvorschlag nur für echte Lücken, ohne Vitamin D');
   assert.ok(src.includes("from '../../domain/coreNutrients.js'"));
 });
 

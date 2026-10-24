@@ -55,7 +55,7 @@ export function renderToolsHub(c) {
       ${item('tool-activity', '🚶', 'Bewegung', 'Schritte, Sport und Schlaf festhalten')}
       ${item('tool-cravings', '🍫', 'Heißhunger-Tagebuch', 'Wann kommt der Hunger auf etwas Bestimmtes?', cravings.length > 0 ? `${cravings.length} Einträge` : 'Noch keine Einträge')}
       ${item('tool-fasting', '⏱️', 'Intervallfasten', '16:8, 14:10 oder 12:12 mit Timer', isPremium ? (streak > 0 ? `${streak} Tage in Folge` : '') : premiumMeta)}
-      ${item('tool-weekly-review', '🗓️', 'Wochenrückblick', 'Essen, Bewegung und Fasten der letzten 7 Tage', premiumMeta)}
+      ${item('tool-weekly-review', '🗓️', 'Wochenrückblick', 'Deine Woche, Schwerpunkte mit Rezepten und persönliche Muster', premiumMeta)}
     </div>
 
     <div class="w-group-title">Zyklus und Wechseljahre</div>

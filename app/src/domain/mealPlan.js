@@ -32,7 +32,7 @@ const INTAKE_KEY_TO_TAG = {
  * @param {object} dgeRef                  getDGERef(ageGroup, sex)
  * @returns {string[]} Rezept-Tag-IDs (z.B. ['vitamin_d', 'eisen'])
  */
-export function getUnderCoveredTags(last7DaysTotals, dgeRef, thresholdPct = 70) {
+export function getUnderCoveredTags(last7DaysTotals, dgeRef, thresholdPct = 80) {
   if (!last7DaysTotals?.length) return [];
 
   // Ohne jeden Ernährungstagebuch-Eintrag in der Woche sind alle Werte 0 -
@@ -49,7 +49,11 @@ export function getUnderCoveredTags(last7DaysTotals, dgeRef, thresholdPct = 70) 
   for (const [intakeKey, tag] of Object.entries(INTAKE_KEY_TO_TAG)) {
     const ref = dgeRef[intakeKey]?.ref;
     if (!ref) continue;
-    const avg = last7DaysTotals.reduce((sum, day) => sum + (day[intakeKey] || 0), 0) / last7DaysTotals.length;
+    // 2.2: Durchschnitt nur über Tage mit Einträgen (wie auf der Startseite) –
+    // ein vergessener Tag ist kein Mangel. Schwelle seit 2.2 überall 80 %.
+    const logged = last7DaysTotals.filter(day => (day.kcal || 0) > 0
+      || Object.keys(INTAKE_KEY_TO_TAG).some(k => (day[k] || 0) > 0));
+    const avg = logged.reduce((sum, day) => sum + (day[intakeKey] || 0), 0) / (logged.length || 1);
     if ((avg / ref) * 100 < thresholdPct) under.push(tag);
   }
   return under;

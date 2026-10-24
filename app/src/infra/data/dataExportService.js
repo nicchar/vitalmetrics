@@ -33,6 +33,7 @@ import { mealPlanRepo } from '../db/repositories/mealPlanRepo.js';
 import { hydrationRepo } from '../db/repositories/hydrationRepo.js';
 import { sleepRepo } from '../db/repositories/sleepRepo.js';
 import { checkinRepo } from '../db/repositories/checkinRepo.js';
+import { checkinHintsRepo } from '../db/repositories/checkinHintsRepo.js';
 import { customRecipeRepo } from '../db/repositories/customRecipeRepo.js';
 import { cycleSymptomsRepo } from '../db/repositories/cycleSymptomsRepo.js';
 import { storage } from '../db/sqlite.js';
@@ -60,6 +61,7 @@ export function gatherAllData() {
     hydration: hydrationRepo.getAll(),
     sleep: sleepRepo.getAll(),
     checkin: checkinRepo.getAll(),
+    checkinHints: checkinHintsRepo.getAll(),
     // Ergänzt 28.09.2026 (Datenschutz-Gap-Analyse): fehlten bisher im Export
     // -> Lücke beim Auskunfts-/Übertragbarkeitsrecht (Art. 15/20 DSGVO) und
     // Datenverlust beim Gerätewechsel.
@@ -82,6 +84,7 @@ export function applyAllData(data) {
   if (data.hydration) hydrationRepo.replaceAll(data.hydration);
   if (data.sleep) sleepRepo.replaceAll(data.sleep);
   if (data.checkin) checkinRepo.replaceAll(data.checkin);
+  if (data.checkinHints) checkinHintsRepo.replaceAll(data.checkinHints);
   if (data.customRecipes) customRecipeRepo.replaceAll(data.customRecipes);
   if (data.cycleSymptoms) cycleSymptomsRepo.saveAll(data.cycleSymptoms);
 }
@@ -112,6 +115,7 @@ export const USER_DATA_KEYS = [
   'vm_hydration',
   'vm_sleep',
   'vm_checkin',
+  'vm_checkin_hints',
   'vm_custom_recipes',
   'vm_install_date',
   'vm_entry_count',

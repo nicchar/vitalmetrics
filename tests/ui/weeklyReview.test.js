@@ -14,41 +14,39 @@ const src = readFileSync(path.resolve(__dirname, '../../app/src/ui/screens/weekl
  * Bewusst textbasiert statt jsdom-Rendering, siehe nutrition.test.js.
  */
 
-test('weeklyReview.js: importiert buildWeeklyRecommendations und die Kalenderwochen-Hilfsfunktionen', () => {
-  assert.ok(src.includes('buildWeeklyRecommendations'));
+test('weeklyReview.js (2.2): nutzt buildWeekFocus für die VORHERIGE Kalenderwoche', () => {
+  assert.ok(src.includes('buildWeekFocus(weekTotals, dgeRef, proteinRef)'));
+  assert.ok(src.includes('previousMonday(thisMonday)'));
+  assert.ok(src.includes('nutritionRepo.getTotalsForWeek(lastWeekMonday)'));
   assert.ok(src.includes("from '../../domain/dateUtils.js'"));
 });
 
-test('weeklyReview.js: berechnet die Empfehlungen für die VORHERIGE Kalenderwoche (previousMonday), nicht die laufende', () => {
-  assert.ok(src.includes('previousMonday(mondayOf(new Date()))'));
-  assert.ok(src.includes('nutritionRepo.getTotalsForWeek(lastWeekMonday)'));
+test('weeklyReview.js (2.2): Reihenfolge Woche → Schwerpunkte → Muster → Details', () => {
+  const tpl = src.slice(src.indexOf('container.innerHTML = `<div class="w-screen weeklyreview-screen">\n    <button class="w-link" id="btn-back-tools"'));
+  const order = ['renderWeekSummary(', 'renderFocus(', 'renderPatterns(', 'Die letzten 7 Tage im Detail'];
+  let last = -1;
+  for (const m of order) { const i = tpl.indexOf(m); assert.ok(i > last, m); last = i; }
 });
 
-test('weeklyReview.js: Empfehlungs-Sektion steht vor der Bewegungs-Sektion (zuerst das Wichtigste)', () => {
-  const idxRec = src.indexOf('renderRecommendations(weeklyRecap)');
-  const idxMovement = src.indexOf('🏃 Bewegung');
-  assert.notEqual(idxRec, -1);
-  assert.ok(idxRec < idxMovement);
+test('weeklyReview.js (2.2): Schwerpunkte mit Rezept und Lebensmitteln, ohne Mengenvorgabe, mit Hinweis "keine Therapieempfehlung"', () => {
+  const block = src.slice(src.indexOf('function renderFocus('), src.indexOf('function renderPatterns('));
+  assert.ok(block.includes('recipeForNutrient(pool, f.key, today)'));
+  assert.ok(block.includes('quickFoodsFor(f.key, diet, today)'));
+  assert.ok(block.includes('keine individuelle Therapieempfehlung'));
+  assert.ok(block.includes('im grünen Bereich'));
+  assert.ok(!/\d+\s*(g|Gramm|mg|µg)\b.*mehr/i.test(block));
 });
 
-test('weeklyReview.js: renderRecommendations() zeigt nichts, wenn letzte Woche gar nichts geloggt wurde', () => {
-  const idxFn = src.indexOf('function renderRecommendations');
-  const block = src.slice(idxFn, idxFn + 300);
-  assert.ok(/if\s*\(\s*!recap\.loggedDays\s*\)\s*return\s*''/.test(block));
+test('weeklyReview.js (2.2): Muster mit Mindestdauer und Beobachtungs-Hinweis', () => {
+  const block = src.slice(src.indexOf('function renderPatterns('));
+  assert.ok(block.includes('MIN_CHECKIN_DAYS'));
+  assert.ok(block.includes('PATTERN_NOTE'));
 });
 
-test('weeklyReview.js: Empfehlungstext nennt Lebensmittel-Beispiele, keine Dosierung/Gramm-Angabe (Wellness-Sprache)', () => {
-  const idxFn = src.indexOf('function renderRecommendations');
-  const idxEnd = src.indexOf('function renderWeekComparison');
-  const block = src.slice(idxFn, idxEnd);
-  assert.ok(block.includes('gute Quellen'));
-  assert.ok(!/\d+\s*(g|Gramm|mg|µg)\b.*mehr/i.test(block), 'Sollte keine Gramm-Dosierungsangabe enthalten');
+test('weeklyReview.js (2.2): Öffnen markiert den Montags-Hinweis als gesehen', () => {
+  assert.ok(src.includes('profileRepo.save({ lastWeeklyRecapShown: thisMonday })'));
 });
 
-test('weeklyReview.js: erklärt, dass es sich um allgemeine Hinweise handelt, keine individuelle Therapieempfehlung (healthClaims.js-Konvention)', () => {
-  assert.ok(src.includes('keine individuelle Therapieempfehlung'));
-});
-
-test('weeklyReview.js: positive Rückmeldung, wenn keine Nährstoffe niedrig waren', () => {
-  assert.ok(src.includes('im grünen Bereich'));
+test('weeklyReview.js (2.2): Verlaufsbalken ohne Ampelrot', () => {
+  assert.ok(!/#ef4444|#43A047/.test(src));
 });

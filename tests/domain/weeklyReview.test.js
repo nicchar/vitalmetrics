@@ -176,3 +176,19 @@ test('buildWeeklyRecommendations: fehlender Lebensmittel-Katalog-Eintrag liefert
   const result = buildWeeklyRecommendations(weekTotals, dgeRef, []); // kein Katalog
   assert.equal(result.recommendations[0].foods.length, 0);
 });
+
+test('2.2 buildWeekFocus: höchstens 3 Schwerpunkte, größte Lücke zuerst, Vitamin D nie als Schwerpunkt', async () => {
+  const { buildWeekFocus, checkinWeekAverage } = await import('../../app/src/domain/weeklyReview.js');
+  const { getDGERef } = await import('../../app/src/domain/nutrition.js');
+  const ref = getDGERef('25-50', 'f');
+  const day = { kcal: 1800, protein: 60, fiber: 12, eisen: 6, cal: 500, mag: 280, vit_d: 2, folat: 140, b12: 4 };
+  const week = [day, day, day, { kcal: 0 }, { kcal: 0 }, { kcal: 0 }, { kcal: 0 }];
+  const r = buildWeekFocus(week, ref, 48);
+  assert.equal(r.loggedDays, 3);
+  assert.ok(r.focus.length <= 3);
+  assert.ok(!r.focus.some(f => f.key === 'vit_d'));
+  assert.equal(r.vitDLow, true);
+  assert.deepEqual(r.focus.map(f => f.key), ['eisen', 'fiber', 'folat']); // 37 %, 40 %, 47 %
+  assert.equal(buildWeekFocus([{ kcal: 0 }], ref, 48).loggedDays, 0);
+  assert.deepEqual(checkinWeekAverage([{ energie: 2, stimmung: 1 }, { energie: 4 }, {}]), { energie: 3, schlaf: null, bauch: null });
+});

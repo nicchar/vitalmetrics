@@ -271,3 +271,59 @@ test('Zurück-Taste: Browser-Historie führt zur vorherigen Seite (Android-Hardw
   assert.equal(state.get('currentScreen'), 'recipe');
   assert.match($('.w-detail-title').textContent, new RegExp(r.title.slice(0, 10)));
 });
+
+test('Startseite: nach 3 schlechten Energie-Tagen erscheint ein Hinweis, Wegtippen blendet ihn 7 Tage aus', async () => {
+  const { checkinHintsRepo } = await import('../../app/src/infra/db/repositories/checkinHintsRepo.js');
+  for (let i = 1; i <= 2; i++) checkinRepo.setValue(new Date(Date.now() - i * 86400000).toISOString().slice(0, 10), 'energie', 1);
+  navigate('dashboard');
+  assert.equal(document.querySelectorAll('.w-checkin-hint').length, 0);
+  click($('.w-pebble[data-area="energie"][data-value="2"]'));
+  const hint = $('.w-checkin-hint[data-hint="energie"]');
+  assert.ok(hint, 'Hinweis sollte nach dem dritten Tag sofort erscheinen');
+  assert.match(hint.textContent, /Hausarztpraxis/);
+  click(hint.querySelector('.w-hint-dismiss'));
+  assert.equal(checkinHintsRepo.getAll().energie, today);
+  navigate('dashboard');
+  assert.equal($('.w-checkin-hint[data-hint="energie"]'), null);
+});
+
+test('Startseite: Stimmung erzeugt nie einen Hinweis', () => {
+  for (let i = 0; i < 4; i++) checkinRepo.setValue(new Date(Date.now() - i * 86400000).toISOString().slice(0, 10), 'stimmung', 1);
+  navigate('dashboard');
+  assert.equal(document.querySelectorAll('.w-checkin-hint').length, 0);
+});
+
+test('Startseite: Vitamine erst ab 3 Tagen bewertet, Lebensmittel-Zeile unter dem Rezeptvorschlag', () => {
+  nutritionRepo.addEntry(today, { food: { name: 'Brot', kal: 250, protein: 8, fat: 2, carbs: 45 }, grams: 100 });
+  navigate('dashboard');
+  assert.match($('[data-core="eisen"]').textContent, /Noch zu wenige Tage/);
+  for (let i = 1; i <= 2; i++) {
+    nutritionRepo.addEntry(new Date(Date.now() - i * 86400000).toISOString().slice(0, 10), { food: { name: 'Brot', kal: 250, protein: 8, fat: 2, carbs: 45 }, grams: 100 });
+  }
+  navigate('dashboard');
+  assert.match($('[data-core="eisen"]').textContent, /Da geht noch was/);
+  assert.match($('[data-core="vit_d"]').textContent, /Über Essen kaum zu schaffen/);
+  assert.ok($('#vitd-note'));
+  assert.match($('.w-quickfoods').textContent, /Oder einfach zwischendurch/);
+});
+
+test('Wochenrückblick (Premium): Schwerpunkte mit Rezept, Muster-Hinweis, Rezept öffnet sich', async () => {
+  const { entitlements } = await import('../../app/src/domain/entitlements.js');
+  const { mondayOf, previousMonday } = await import('../../app/src/domain/dateUtils.js');
+  entitlements.setPremium(true);
+  const lastMonday = previousMonday(mondayOf(new Date()));
+  for (let i = 0; i < 4; i++) {
+    const d = new Date(lastMonday + 'T12:00:00'); d.setDate(d.getDate() + i);
+    nutritionRepo.addEntry(d.toISOString().slice(0, 10), { food: { name: 'Brot', kal: 250, protein: 8, fat: 2, carbs: 45 }, grams: 100 });
+  }
+  navigate('weekly_review');
+  const screen = document.getElementById('screen-container');
+  assert.match(screen.textContent, /So war deine Woche/);
+  assert.match(screen.textContent, /Worauf du diese Woche achten kannst/);
+  assert.match(screen.textContent, /Ab 14 Tagen/);
+  const recipeBtn = screen.querySelector('.w-hint[data-open]');
+  assert.ok(recipeBtn);
+  click(recipeBtn);
+  assert.equal(state.get('currentScreen'), 'recipe');
+  entitlements.setPremium(false);
+});

@@ -29,9 +29,12 @@ import { entitlements } from '../../domain/entitlements.js';
 import { getSeasonalTip, getWildHerbTip, WILDHERB_SAFETY_NOTE } from '../../domain/seasonalTips.js';
 import { calcTDEERange, getProteinRefRange, calcWHR, getWHRRefLabel, estimateAge } from '../../domain/energyNeeds.js';
 import { mondayOf, previousMonday } from '../../domain/dateUtils.js';
-import { buildWeeklyRecommendations } from '../../domain/weeklyReview.js';
 import { CHECKIN_AREAS, dayAverage, isComplete } from '../../domain/checkin.js';
-import { coreStatus, STATUS_TEXT, defaultProteinRef } from '../../domain/coreNutrients.js';
+import { coreStatus, coreGaps, STATUS_TEXT, defaultProteinRef, vitaminDNote } from '../../domain/coreNutrients.js';
+import { quickFoodsFor, QUICK_TIPS } from '../../domain/quickFoods.js';
+import { buildCheckinHints, DOCTOR_NOTE, WINDOW_DAYS } from '../../domain/checkinHints.js';
+import { checkinHintsRepo } from '../../infra/db/repositories/checkinHintsRepo.js';
+import { buildWeekFocus } from '../../domain/weeklyReview.js';
 import { recipeOfTheDay, recipeForNutrient, personalPool } from '../../domain/dailyPicks.js';
 import { navigate } from '../../router.js';
 import { recipePictureHtml } from '../components/recipeArt.js';
@@ -51,7 +54,16 @@ function openRecipe(id) {
   navigate('recipe');
 }
 
-function renderCheckin(today) {
+function renderHints(hints) {
+  if (!hints.length) return '';
+  return hints.map(h => `<div class="w-card w-tip w-checkin-hint" data-hint="${h.area}">
+      <span class="w-tip-icon" aria-hidden="true">🌿</span>
+      <p><b>${h.title}</b><br>${h.body}${h.extra ? ` ${h.extra}` : ''}${h.foods?.length ? ` Zum Beispiel: ${h.foods.join(', ')}.` : ''}<small>${DOCTOR_NOTE}</small>
+        <button type="button" class="w-link w-hint-dismiss" data-area="${h.area}" style="margin-top:6px">Danke, ausblenden</button></p>
+    </div>`).join('');
+}
+
+function renderCheckin(today, hints = []) {
   const day = checkinRepo.getDay(today);
   const rows = CHECKIN_AREAS.map(a => `
     <div class="w-checkin-row"><b>${a.label}</b>
@@ -73,6 +85,7 @@ function renderCheckin(today) {
       <p class="w-small" id="checkin-done" ${isComplete(day) ? '' : 'hidden'}>Danke dir! Hier unten siehst du, wie deine Woche bisher war.</p>
       <div class="w-week" aria-label="Deine letzten 7 Tage">${week}</div>
     </div>
+    <div id="checkin-hints">${renderHints(hints)}</div>
   </section>`;
 }
 
@@ -80,18 +93,23 @@ function renderCheckin(today) {
  * "Heute auf deinem Teller" – Kalorien, alle drei Makros gemeinsam (Nicole:
  * Eiweiß nicht isoliert betrachten), Ballaststoffe und die 8 Kernwerte.
  */
-function renderTeller({ dayTotals, tdee, core, hint }) {
+function renderTeller({ dayTotals, tdee, core, hint, freeRecapTeaser }) {
   const hasEntries = (dayTotals.kcal || 0) > 0;
+  const showCore = core.some(c => c.status !== 'none');
   const kcalRef = tdee
     ? `<p class="w-small" style="margin-top:2px">Orientierung: ca. ${tdee.min}–${tdee.max} kcal am Tag · grobe Schätzung, kein Ziel</p>`
     : '';
-  const coreHtml = !hasEntries ? '' : core.map(c =>
-    `<div class="${c.status === 'more' ? 'more' : 'ok'}"><b>${c.label}</b><small>${STATUS_TEXT[c.status]}</small></div>`).join('');
+  const coreHtml = !showCore ? '' : core.map(c =>
+    `<div class="${c.status === 'more' ? 'more' : c.status === 'sun' ? 'sun' : 'ok'}" data-core="${c.key}"><b>${c.label}</b><small>${STATUS_TEXT[c.status]}</small></div>`).join('');
+  const vitD = core.find(c => c.key === 'vit_d');
   const hintHtml = hint
-    ? `<button type="button" class="w-hint" data-open="${hint.recipe.id}">
-        <span class="w-thumb">${recipePictureHtml(hint.recipe)}</span>
-        <p><b>Für mehr ${hint.label}</b>Wie wär's mit ${escapeHtml(hint.recipe.title)}?</p>
-      </button>`
+    ? `<div class="w-hint-box">
+        <button type="button" class="w-hint" data-open="${hint.recipe.id}">
+          <span class="w-thumb">${recipePictureHtml(hint.recipe)}</span>
+          <p><b>Für mehr ${hint.label}</b>Wie wär's mit ${escapeHtml(hint.recipe.title)}?</p>
+        </button>
+        ${hint.foods.length ? `<p class="w-small w-quickfoods">Oder einfach zwischendurch: ${hint.foods.map(f => escapeHtml(f.label)).join(', ')}.${hint.tip ? ` ${hint.tip}` : ''}</p>` : ''}
+      </div>`
     : '';
   return `<section class="w-block" id="heute-card">
     <div class="w-block-title">Heute auf deinem Teller</div>
@@ -107,8 +125,11 @@ function renderTeller({ dayTotals, tdee, core, hint }) {
         </div>
         ${kcalRef}` : `
         <p class="w-muted">Noch nichts eingetragen. Sobald du etwas einträgst, siehst du hier, was dein Teller schon geliefert hat – an Eiweiß, Ballaststoffen, Eisen, Calcium, Magnesium, Vitamin D, Folat und Vitamin B12.</p>`}
-      ${coreHtml ? `<div class="w-core">${coreHtml}</div>` : ''}
+      ${coreHtml ? `<div class="w-core">${coreHtml}</div>
+      <p class="w-small">Eiweiß und Ballaststoffe: heute. Vitamine und Mineralstoffe: Schnitt der letzten 7 Tage mit Einträgen – die schwanken von Tag zu Tag stark.</p>` : ''}
+      ${vitD?.status === 'sun' ? `<p class="w-small" id="vitd-note">${vitaminDNote()}</p>` : ''}
       ${hintHtml}
+      ${freeRecapTeaser ? `<p class="w-small" id="recap-teaser">Neue Woche: Dein Wochenrückblick mit Schwerpunkten und passenden Rezepten steht mit <button type="button" class="w-link" id="btn-recap-premium">Premium</button> bereit.</p>` : ''}
       <div class="w-btn-row"><button type="button" class="w-btn w-btn-ghost" id="btn-heute-nutrition">Essen eintragen</button></div>
     </div>
   </section>`;
@@ -160,38 +181,46 @@ export function renderDashboard(container) {
     : null;
   const whr = (waistEntry && hipEntry) ? calcWHR(waistEntry.value, hipEntry.value) : null;
 
-  const core = coreStatus(dayTotals, dgeRef, proteinRange ? proteinRange.min : defaultProteinRef(profile.sex));
+  const proteinRef = proteinRange ? proteinRange.min : defaultProteinRef(profile.sex);
+  const core = coreStatus({ dayTotals, last7Totals: nutritionRepo.getLast7DaysTotals(), dgeRef, proteinRef });
 
   // Rezepte passend zu Ernährungsform (aus dem Wochenplan) und Unverträglichkeiten
-  const pool = personalPool(recipes, mealPlanRepo.get()?.category || null, profile.intolerances || []);
+  const diet = mealPlanRepo.get()?.category || null;
+  const pool = personalPool(recipes, diet, profile.intolerances || []);
   const rdt = recipeOfTheDay(pool, today);
 
-  // Ein einziger Vorschlag für die größte Lücke – nur, wenn schon etwas
-  // eingetragen ist (sonst wäre "Lücke" nur fehlendes Tracking).
+  // Ein einziger Vorschlag für die größte Lücke (Vitamin D ausgenommen) –
+  // nur, wenn es eine echte Lücke gibt, nicht bei fehlenden Einträgen.
   let hint = null;
-  const gaps = core.filter(c => c.status === 'more').sort((a, b) => a.share - b.share);
-  for (const gap of gaps) {
+  for (const gap of coreGaps(core)) {
     const recipe = recipeForNutrient(pool, gap.key, today, rdt?.id);
-    if (recipe) { hint = { label: gap.label, recipe }; break; }
+    if (recipe) { hint = { key: gap.key, label: gap.label, recipe, foods: quickFoodsFor(gap.key, diet, today), tip: QUICK_TIPS[gap.key] || null }; break; }
   }
+
+  // Befindens-Hinweise nach mehreren schlechten Tagen (nie zur Stimmung)
+  const currentHints = () => buildCheckinHints({ recent: checkinRepo.getRecent(WINDOW_DAYS), dismissed: checkinHintsRepo.getAll(), today, core })
+    .map(h => ({ ...h, foods: h.nutrients.slice(0, 1).flatMap(k => quickFoodsFor(k, diet, today, 2).map(f => f.label)) }));
+  const hints = currentHints();
 
   // Automatischer Wochenrückblick (Premium): dezenter Hinweis statt Pop-up,
   // sobald eine neue Kalenderwoche begonnen hat und letzte Woche etwas
   // eingetragen wurde. Bleibt, bis er angetippt wird.
   const thisMonday = mondayOf(now);
-  let weeklyRecap = null;
-  if (isPremium && profile.lastWeeklyRecapShown !== thisMonday) {
-    const weekTotals = nutritionRepo.getTotalsForWeek(previousMonday(thisMonday));
-    const recap = buildWeeklyRecommendations(weekTotals, dgeRef, catalog.biomarkers);
-    if (recap.loggedDays > 0) weeklyRecap = recap;
+  const lastWeekTotals = nutritionRepo.getTotalsForWeek(previousMonday(thisMonday));
+  let weekFocus = null;
+  if (profile.lastWeeklyRecapShown !== thisMonday) {
+    const wf = buildWeekFocus(lastWeekTotals, dgeRef, proteinRef);
+    if (wf.loggedDays > 0) weekFocus = wf;
   }
+  // Gratis: nur ein dezenter Satz, und nur am Montag
+  const freeRecapTeaser = !isPremium && !!weekFocus && now.getDay() === 1;
   let recapHtml = '';
-  if (weeklyRecap) {
-    const top = weeklyRecap.recommendations.slice(0, 2);
+  if (isPremium && weekFocus) {
+    const top = weekFocus.focus;
     recapHtml = `<section class="w-block"><button type="button" class="w-card w-tip" id="weekly-recap-banner" style="width:100%;text-align:left;color:inherit">
       <span class="w-tip-icon">🗓️</span>
       <p><b>Dein Wochenrückblick ist da</b><br>${top.length
-        ? `Letzte Woche war weniger dabei von: ${top.map(r => r.label).join(', ')}${top[0].foods.length ? ` – zum Beispiel in ${top[0].foods.join(', ')}` : ''}.`
+        ? `Diese Woche lohnt sich ein Blick auf: ${top.map(r => r.label).join(', ')}. Passende Rezepte warten schon.`
         : 'Letzte Woche lag alles, was du eingetragen hast, im grünen Bereich. Schön!'}</p>
     </button></section>`;
   }
@@ -213,8 +242,8 @@ export function renderDashboard(container) {
   container.innerHTML = `<div class="w-screen" id="dashboard-screen">
     <h1 class="w-h1">${greeting(profile.name, now)}</h1>
     <p class="w-sub">${dateLine}</p>
-    ${renderCheckin(today)}
-    ${renderTeller({ dayTotals, tdee, core, hint })}
+    ${renderCheckin(today, hints)}
+    ${renderTeller({ dayTotals, tdee, core, hint, freeRecapTeaser })}
     ${recapHtml}
     ${rdt ? `<section class="w-block">
       <div class="w-block-title">Rezept des Tages <button type="button" class="w-link" id="btn-all-recipes">Alle Rezepte</button></div>
@@ -244,10 +273,21 @@ export function renderDashboard(container) {
         container.querySelector('.w-week').replaceWith(fresh.querySelector('.w-week'));
         done.hidden = false;
       }
+      // Hinweise neu berechnen (ein schlechter Tag kann den dritten machen)
+      container.querySelector('#checkin-hints').innerHTML = renderHints(currentHints());
+      wireDismiss();
     });
   });
 
   container.querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => openRecipe(b.dataset.open)));
+  function wireDismiss() {
+    container.querySelectorAll('.w-hint-dismiss').forEach(b => b.addEventListener('click', () => {
+      checkinHintsRepo.dismiss(b.dataset.area, today);
+      b.closest('.w-checkin-hint')?.remove();
+    }));
+  }
+  wireDismiss();
+  container.querySelector('#btn-recap-premium')?.addEventListener('click', () => navigate('premium'));
   container.querySelector('#btn-all-recipes')?.addEventListener('click', () => navigate('recipes'));
   container.querySelector('#btn-heute-nutrition')?.addEventListener('click', () => navigate('nutrition'));
   container.querySelector('#btn-heute-weight')?.addEventListener('click', () => navigate('entry', 'gewicht'));

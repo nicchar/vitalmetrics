@@ -32,10 +32,10 @@ Saisonale Gerichte für Frühstück, Mittag und Abend sowie kleine Snacks – ve
 Sieben Tage auf einen Blick, passend zu deiner Ernährungsform und Unverträglichkeiten (Laktose, Gluten, Nüsse). Die Einkaufsliste rechnet mit deinem Haushalt – Erwachsene und Kinder. Gegessen? Ein Tipp, und es steht im Tagebuch.
 
 🙂 WIE GEHT'S DIR HEUTE?
-Halte jeden Tag in Sekunden fest, wie es um Energie, Schlaf, Bauchgefühl und Stimmung steht – und sieh deine Woche auf einen Blick.
+Halte jeden Tag in Sekunden fest, wie es um Energie, Schlaf, Bauchgefühl und Stimmung steht – und sieh deine Woche auf einen Blick. Geht es dir ein paar Tage nicht so gut, gibt WellANNI dir behutsame Alltagstipps.
 
 🥗 TAGEBUCH, DAS SCHNELL GEHT
-Lebensmittel aus dem Bundeslebensmittelschlüssel, Online-Suche und Barcode-Scan, „wie gestern“ für wiederkehrende Mahlzeiten. Dazu der Vergleich mit den Referenzwerten der Deutschen Gesellschaft für Ernährung (DGE) – als Orientierung, nicht als Bewertung.
+Lebensmittel aus dem Bundeslebensmittelschlüssel, Online-Suche und Barcode-Scan, „wie gestern“ für wiederkehrende Mahlzeiten. Dazu der Vergleich mit den Referenzwerten der Deutschen Gesellschaft für Ernährung (DGE) – Vitamine und Mineralstoffe im 7-Tage-Schnitt, als Orientierung, nicht als Bewertung. Wo noch was geht, schlägt WellANNI ein Rezept und einfache Lebensmittel für zwischendurch vor.
 
 📊 ALLE WERTE AN EINEM ORT
 Gewicht und Maße sowie 45 Werte aus Selbsttests oder Laborberichten selbst eintragen, mit Lebensmittel-Tipps zu jedem Wert und PDF-Bericht.
@@ -44,7 +44,7 @@ Gewicht und Maße sowie 45 Werte aus Selbsttests oder Laborberichten selbst eint
 Zykluskalender mit Phasen, Beschwerden-Tagebuch und ein Bereich zum Nachlesen über PMS, Perimenopause und Menopause. Zu finden unter „Mehr“ und – wenn du „weiblich“ angibst – zusätzlich als eigener Tab.
 
 ⭐ PREMIUM (Monats- oder Jahresabo)
-Verläufe und farbliche Einordnung für alle Werte, Ernährungsverlauf über 12 Wochen für alle 15 Vitamine und Mineralstoffe, Wochenrückblick, Intervallfasten mit Timer sowie „Haut, Haare und Nägel“ mit Trink- und Schlafeinträgen.
+Wochenrückblick jeden Montag mit Schwerpunkten und passenden Rezepten, persönliche Muster (zum Beispiel ob du nach aktiven Tagen besser schläfst), Verläufe und farbliche Einordnung für alle Werte, Ernährungsverlauf über 12 Wochen für alle 15 Vitamine und Mineralstoffe, Intervallfasten mit Timer sowie „Haut, Haare und Nägel“ mit Trink- und Schlafeinträgen.
 
 🔒 DEINE DATEN BLEIBEN BEI DIR
 Kein Konto, keine Cloud, keine Werbung, keine Werbe- oder Analyse-Tracker. Deine Gesundheitsdaten werden nur auf deinem Gerät gespeichert. Nur bei der Online-Lebensmittelsuche bzw. dem Barcode-Scan wird der Suchbegriff bzw. Barcode an die offene Datenbank Open Food Facts gesendet.
@@ -54,7 +54,7 @@ Alle Daten jederzeit als Datei sichern oder auf ein neues Gerät übertragen.
 
 ## Was ist neu in 2.2 (Versionshinweis, max. 500 Zeichen)
 
-Neu: Startseite mit „Wie geht's dir heute?“, Rezept des Tages und deinem Teller in freundlichen Worten. Eigener Rezepte-Tab mit über 200 geprüften Rezepten und Portionsrechner. Wochenplan für deinen Haushalt mit „Gegessen“ per Tipp. „Wie gestern“ im Tagebuch. Ballaststoffe und Jod in den Nährwerten. Neues, wärmeres Design. Einmalig bitten wir um deine Zustimmung, weil das Befinden neu dazukommt.
+Neu: Startseite mit „Wie geht's dir heute?“, Rezept des Tages und deinem Teller in freundlichen Worten, Vitamine im 7-Tage-Schnitt. Über 200 geprüfte Rezepte mit Portionsrechner. Wochenplan für deinen Haushalt mit „Gegessen“ per Tipp. „Wie gestern“ im Tagebuch. Premium: neuer Wochenrückblick und persönliche Muster. Wärmeres Design. Einmalig bitten wir um deine Zustimmung, weil das Befinden neu dazukommt.
 
 ## Screenshots – Checkliste
 

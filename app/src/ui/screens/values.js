@@ -20,7 +20,7 @@ import { getRefRangeLabel } from '../../domain/ranges.js';
 import { entitlements } from '../../domain/entitlements.js';
 import { getAccessTierBadge } from '../../domain/biomarkerAccess.js';
 import { DISCLAIMER_SHORT, REFERENCE_VALUES_NOTE } from '../../domain/healthClaims.js';
-import { CORE_KEYS, coreStatus, STATUS_TEXT, defaultProteinRef } from '../../domain/coreNutrients.js';
+import { CORE_KEYS, coreStatus, STATUS_TEXT, defaultProteinRef, vitaminDNote } from '../../domain/coreNutrients.js';
 import { getProteinRefRange } from '../../domain/energyNeeds.js';
 import { navigate } from '../../router.js';
 import { exportService } from '../../infra/pdf/exportService.js';
@@ -91,14 +91,10 @@ export function renderValues(container) {
   const weightEntry = weightHistory[weightHistory.length - 1] || null;
   const proteinRange = weightEntry ? getProteinRefRange(weightEntry.value, profile.activityLevel, profile.ageGroup === '70+') : null;
   const proteinRef = proteinRange ? proteinRange.min : defaultProteinRef(profile.sex);
-  const core = coreStatus(dayTotals, dgeRef, proteinRef);
+  const core = coreStatus({ dayTotals, last7Totals: nutritionRepo.getLast7DaysTotals(), dgeRef, proteinRef });
 
-  const coreRows = core.map(c => {
-    const ref = c.key === 'protein' ? proteinRef : dgeRef[c.key].ref;
-    const unit = c.key === 'protein' ? 'g' : dgeRef[c.key].unit;
-    const amount = c.key === 'protein' ? dayTotals.protein : dayTotals[c.key];
-    return `<div class="${c.status === 'more' ? 'more' : 'ok'}"><b>${c.label}</b><small>${amountText(amount, ref, unit)}${c.status !== 'none' ? ` · ${STATUS_TEXT[c.status]}` : ''}</small></div>`;
-  }).join('');
+  // Eiweiß/Ballaststoffe: heute; Vitamine/Mineralstoffe: Schnitt der letzten 7 Tage
+  const coreRows = core.map(c => `<div class="${c.status === 'more' ? 'more' : c.status === 'sun' ? 'sun' : 'ok'}"><b>${c.label}</b><small>${c.scope === 'week' ? 'Ø 7 Tage: ' : 'Heute: '}${amountText(c.amount, c.ref, c.unit)}${c.status !== 'none' ? ` · ${STATUS_TEXT[c.status]}` : ''}</small></div>`).join('');
 
   const otherKeys = Object.keys(dgeRef).filter(k => !CORE_KEYS.includes(k));
   const otherRows = otherKeys.map(k => `<li><span class="q">${dgeRef[k].label}</span><span>${amountText(dayTotals[k], dgeRef[k].ref, dgeRef[k].unit)}</span></li>`).join('');
@@ -122,9 +118,10 @@ export function renderValues(container) {
     <p class="w-sub">Was heute auf deinem Teller war und was du gemessen hast</p>
 
     <section class="w-block">
-      <div class="w-block-title">Kernwerte heute</div>
+      <div class="w-block-title">Deine Kernwerte</div>
       <div class="w-card"><div class="w-core" style="margin-top:0">${coreRows}</div>
-      <p class="w-small">${weightEntry ? 'Eiweiß-Referenz nach deinem Gewicht.' : 'Eiweiß-Referenz für ein durchschnittliches Körpergewicht – trag dein Gewicht ein, dann rechnen wir genauer.'} Referenzwerte der Fachgesellschaften für Deutschland, Österreich und die Schweiz (D-A-CH).</p></div>
+      <p class="w-small">${weightEntry ? 'Eiweiß-Referenz nach deinem Gewicht.' : 'Eiweiß-Referenz für ein durchschnittliches Körpergewicht – trag dein Gewicht ein, dann rechnen wir genauer.'} Vitamine und Mineralstoffe als Schnitt der letzten 7 Tage mit Einträgen, bewertet ab 3 Tagen. Referenzwerte der Fachgesellschaften für Deutschland, Österreich und die Schweiz (D-A-CH).</p>
+      ${core.find(c => c.key === 'vit_d')?.status === 'sun' ? `<p class="w-small">${vitaminDNote()}</p>` : ''}</div>
     </section>
 
     <section class="w-block">

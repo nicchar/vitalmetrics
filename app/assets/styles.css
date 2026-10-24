@@ -1290,3 +1290,15 @@ ul { list-style: none; }
 .activity-btn-title { display: block; font-size: 15px; font-weight: 600; }
 .activity-btn-hint { display: block; font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
 .btn-onboarding-done:disabled { background: var(--border); color: var(--text-hint); }
+
+/* 2.2 Wochensicht, Lebensmittel, Befindens-Hinweise */
+.w-core .sun { background: var(--bg); }
+.w-core .sun small { color: var(--text-secondary); }
+.w-hint-box { margin-top: 12px; }
+.w-hint-box .w-hint { margin-top: 0; }
+.w-quickfoods { margin-top: 8px; }
+.w-checkin-hint { margin-top: 10px; }
+.w-checkin-hint .w-tip-icon { background: var(--primary-light); }
+.w-checkin-hint small { color: var(--text-secondary); }
+.w-week i { background: var(--primary); }
+.w-week i.w-week-empty { background: var(--bg); opacity: 1; }

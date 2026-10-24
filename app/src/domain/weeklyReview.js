@@ -13,6 +13,8 @@
  * mit Premium). Bewusst als eigene, benannte Konstante statt Zahl "5" im
  * Code, damit die Auswahl an einer Stelle dokumentiert und änderbar ist.
  */
+import { CORE_KEYS, CORE_LABELS, OK_THRESHOLD, isLoggedDay } from './coreNutrients.js';
+
 export const FREE_INTAKE_KEYS = ['vit_d', 'eisen', 'mag', 'zink', 'cal'];
 
 /**
@@ -118,7 +120,7 @@ export function buildWeeklyReview(activityDays, nutritionDays, fastingData, week
  * @param {object[]} biomarkers catalog.biomarkers (für die foods-Liste)
  * @returns {{loggedDays:number, recommendations:{intakeKey:string, label:string, foods:string[]}[]}}
  */
-export function buildWeeklyRecommendations(weekTotals, dgeRef, biomarkers, thresholdPct = 70) {
+export function buildWeeklyRecommendations(weekTotals, dgeRef, biomarkers, thresholdPct = 80) {
   const loggedDays = (weekTotals || []).filter(d => d.kcal > 0);
   if (!loggedDays.length) return { loggedDays: 0, recommendations: [] };
 
@@ -133,4 +135,39 @@ export function buildWeeklyRecommendations(weekTotals, dgeRef, biomarkers, thres
     }
   }
   return { loggedDays: loggedDays.length, recommendations };
+}
+
+/**
+ * 2.2: Neuer Wochenrückblick – "So war deine Woche" und "Worauf du diese
+ * Woche achten kannst". Alle 8 Kernwerte als Durchschnitt pro Tag mit
+ * Einträgen (gleiche Rechnung und gleiche 80-%-Schwelle wie die Startseite),
+ * höchstens 3 Schwerpunkte, Vitamin D nie als Schwerpunkt (eigener Hinweis).
+ *
+ * @param {object[]} weekTotals  nutritionRepo.getTotalsForWeek(montag)
+ * @param {object} dgeRef        getDGERef()
+ * @param {number} proteinRef    Eiweiß-Referenz in g
+ * @returns {{loggedDays:number, core:{key,label,share,amount,ref,unit,ok:boolean}[], focus:object[], vitDLow:boolean}}
+ */
+export function buildWeekFocus(weekTotals, dgeRef, proteinRef, { threshold = OK_THRESHOLD, max = 3 } = {}) {
+  const logged = (weekTotals || []).filter(isLoggedDay);
+  if (!logged.length) return { loggedDays: 0, core: [], focus: [], vitDLow: false };
+  const core = CORE_KEYS.map(key => {
+    const ref = key === 'protein' ? proteinRef : dgeRef[key]?.ref;
+    const unit = key === 'protein' ? 'g' : dgeRef[key]?.unit;
+    const amount = logged.reduce((s, d) => s + (d[key] || 0), 0) / logged.length;
+    const share = ref ? amount / ref : 0;
+    return { key, label: CORE_LABELS[key], amount, ref, unit, share, ok: share >= threshold };
+  });
+  const focus = core.filter(c => !c.ok && c.key !== 'vit_d').sort((a, b) => a.share - b.share).slice(0, max);
+  return { loggedDays: logged.length, core, focus, vitDLow: !core.find(c => c.key === 'vit_d').ok };
+}
+
+/** Wochenschnitt des Befindens (ohne Stimmung): { energie, schlaf, bauch } oder null je Bereich. */
+export function checkinWeekAverage(checkinDays) {
+  const out = {};
+  for (const area of ['energie', 'schlaf', 'bauch']) {
+    const vals = (checkinDays || []).map(d => d[area]).filter(v => typeof v === 'number');
+    out[area] = vals.length ? Math.round((vals.reduce((s, v) => s + v, 0) / vals.length) * 10) / 10 : null;
+  }
+  return out;
 }

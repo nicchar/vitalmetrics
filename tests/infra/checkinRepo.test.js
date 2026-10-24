@@ -62,3 +62,12 @@ test('checkin.js: dayAverage nur über ausgefüllte Bereiche, isComplete erst be
   assert.equal(isComplete({ energie: 2, schlaf: 4 }), false);
   assert.equal(isComplete({ energie: 2, schlaf: 4, bauch: 3, stimmung: 5 }), true);
 });
+
+test('Weggetippte Befindens-Hinweise sind Teil von Export und "Alle Daten löschen"', async () => {
+  const { checkinHintsRepo, CHECKIN_HINTS_KEY } = await import('../../app/src/infra/db/repositories/checkinHintsRepo.js');
+  assert.ok(USER_DATA_KEYS.includes(CHECKIN_HINTS_KEY));
+  checkinHintsRepo.dismiss('energie', today);
+  assert.equal(gatherAllData().checkinHints.energie, today);
+  deleteAllUserData();
+  assert.deepEqual(checkinHintsRepo.getAll(), {});
+});
