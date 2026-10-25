@@ -1,6 +1,20 @@
 # WellANNI — Nächste Schritte
 
-Zuletzt aktualisiert: Februar 2026
+Zuletzt aktualisiert: Oktober 2026
+
+---
+
+## Nach Release 2.2 (Stand 25.10.2026)
+
+### Für 2.2.1 vorgemerkt
+- [ ] **Zyklus-Bildschirm im neuen Design:** Die Phasen-Karte oben ist noch im alten Orange-Verlauf. Auf die 2.2-Farben umstellen (Salbei/Honig, Figtree, abgerundete Karten wie auf „Heute“), Texte prüfen (du-Form, keine Anglizismen), danach einen Zyklus-Screenshot für den Store ergänzen.
+
+### Release-Nachbereitung 2.2.0
+- [ ] Prüfung in der Play Console abwarten (Produktion + Store-Eintrag eingereicht am 25.10.)
+- [ ] Nach Freigabe: alte Tests beenden bzw. pausieren (Interner Test 2.0.1, Geschlossener Test „test2“ 2.0.5)
+- [ ] Versions-Tag setzen: `git tag v2.2.0` und `git push origin v2.2.0`
+- [ ] `npm audit` in Ruhe ansehen (5 Meldungen aus Build-Werkzeugen, nicht vor einem Release beheben)
+- [ ] Preisangaben in README und dieser Datei an die Play Console angleichen (alte Angabe 2,45 €/22,99 €/Lifetime ist überholt; Ersatzpreise in der App: 19,50 €/Jahr, 1,89 €/Monat)
 
 ---
 
