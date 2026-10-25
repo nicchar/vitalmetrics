@@ -6,7 +6,7 @@ Das Spec-Modul definiert POSTS (Liste von Dicts).
 import html, importlib, json, os, subprocess, sys, pathlib
 
 HERE = pathlib.Path(__file__).parent.resolve()
-SIZES = {'post': (1080, 1350), 'reel': (1080, 1920), 'story': (1080, 1920)}
+SIZES = {'pin': (1000, 1500), 'post': (1080, 1350), 'reel': (1080, 1920), 'story': (1080, 1920)}
 
 CSS = """
 @font-face{font-family:Figtree;font-weight:400;src:url(figtree-400.woff2)}
@@ -55,6 +55,7 @@ body.darkbody .page{color:rgba(243,244,238,.7)}
 .tag{font-size:26px;font-weight:600;background:var(--mint);color:var(--green-d);padding:10px 20px;border-radius:999px}
 .big{font-size:150px;font-weight:700;letter-spacing:-.04em;line-height:.95;color:var(--green)}
 .sticker{position:absolute;left:120px;right:120px;border:3px dashed rgba(91,123,92,.0);border-radius:40px}
+.item.more{background:transparent;border:3px dashed rgba(91,123,92,.45);box-shadow:none}.item.more .num{background:transparent;color:var(--green);border:3px solid var(--green)}
 .cta{display:inline-flex;align-self:flex-start;margin-top:44px;background:var(--green);color:#fff;font-weight:600;font-size:34px;padding:22px 36px;border-radius:999px}
 """
 
@@ -79,6 +80,8 @@ def slide_html(fmt, s, idx, total):
     cls = 'dark' if dark else ''
     page = f'<div class="page">{idx}/{total}</div>' if fmt == 'post' and total > 1 and idx > 1 else ''
     hint = s.get('hint', 'Wisch mal →' if (fmt == 'post' and total > 1 and idx == 1) else ('wellanni.de' if idx == total else ''))
+    if fmt == 'pin':
+        hint = s.get('hint', 'wellanni.de')
     size = s.get('size', 128 if fmt == 'post' else 132)
     kick = f'<div class="kicker">{esc(s["kicker"])}</div>' if s.get('kicker') else ''
     sub = f'<p class="sub">{esc(s["sub"])}</p>' if s.get('sub') else ''
@@ -92,15 +95,18 @@ def slide_html(fmt, s, idx, total):
         items = ''.join(
             f'<div class="item"><span class="num">{i+1 if not s.get("icons") else s["icons"][i]}</span><div><h3>{esc(a)}</h3>{f"<p>{esc(b)}</p>" if b else ""}</div></div>'
             for i, (a, b) in enumerate(s['items']))
-        body = f'{bg}<div class="pad center {cls}">{kick}<h1 style="font-size:{s.get("size",88 if fmt=="post" else 96)}px">{esc(s["title"])}</h1>{sub}<div class="items" style="gap:{s.get("gap",22)}px">{items}</div>{foot}</div>'
+        if s.get('more'):
+            items += f'<div class="item more"><span class="num">+</span><div><h3>{esc(s["more"])}</h3></div></div>'
+        cta = f'<div class="cta">{esc(s["cta"])}</div>' if s.get('cta') else ''
+        body = f'{bg}<div class="pad center {cls}">{kick}<h1 style="font-size:{s.get("size",88 if fmt=="post" else 96)}px">{esc(s["title"])}</h1>{sub}<div class="items" style="gap:{s.get("gap",22)}px">{items}</div>{cta}{foot}</div>'
     elif t == 'photo':
-        ph = s.get('photo_h', 0.62) if fmt == 'post' else 0.66
+        ph = s.get('photo_h', 0.62) if fmt in ('post', 'pin') else 0.66
         pos = s.get('pos', 'center')
         tags = ''.join(f'<span class="tag">{esc(x)}</span>' for x in s.get('tags', []))
         tags = f'<div class="tags">{tags}</div>' if tags else ''
-        card_bottom = s.get('card_bottom', 400 if fmt != 'post' else 120)
+        card_bottom = s.get('card_bottom', {'post': 120, 'pin': 130}.get(fmt, 400))
         body = (f'<div class="bg-soft"></div><div class="photo" style="height:{int(h*ph)}px;background-image:url(photos/{s["photo"]});background-position:{pos}"></div>'
-                f'<div class="card" style="bottom:{card_bottom}px">{kick}<h1 style="font-size:{s.get("size",78)}px">{esc(s["title"])}</h1>{sub.replace("sub","sub").replace("margin-top:32px","")}{tags}</div>')
+                f'<div class="card" style="bottom:{card_bottom}px">{kick}<h1 style="font-size:{s.get("size",78)}px">{esc(s["title"])}</h1>{sub}{tags}{f'<div class="cta" style="margin-top:30px">{esc(s["cta"])}</div>' if s.get('cta') else ''}</div>')
     elif t == 'end':
         cta = f'<div class="cta">{esc(s["cta"])}</div>' if s.get('cta') else ''
         body = f'{bg}<div class="pad center {cls}">{kick}<h1 style="font-size:{size}px">{esc(s["title"])}</h1>{sub}{cta}{foot}</div>'
