@@ -8,14 +8,23 @@ week_title = sys.argv[4]
 intro = pathlib.Path(sys.argv[5]).read_text(encoding='utf-8') if len(sys.argv) > 5 else ''
 
 KIND = {'reel': 'Reel', 'post': 'Post', 'story': 'Story'}
-lines = [f'# {week_title}', '', intro, '', '## Plan auf einen Blick', '', '| Tag | 12 Uhr Post | 18 Uhr Reel | Story |', '|---|---|---|---|']
 days = []
 for p in spec.POSTS:
     if p['day'] not in days:
         days.append(p['day'])
-for d in days:
-    ps = {p['fmt']: p for p in spec.POSTS if p['day'] == d}
-    lines.append(f"| {d} | {ps['post']['title']} | {ps['reel']['title'].replace('Reel: ', '')} | {ps['story']['title'].replace('Story: ', '')} ({ps['story']['time']}) |")
+if any(p['fmt'] == 'story' for p in spec.POSTS):
+    lines = [f'# {week_title}', '', intro, '', '## Plan auf einen Blick', '', '| Tag | 12 Uhr Post | 18 Uhr Reel | Story |', '|---|---|---|---|']
+    for d in days:
+        ps = {p['fmt']: p for p in spec.POSTS if p['day'] == d}
+        lines.append(f"| {d} | {ps['post']['title']} | {ps['reel']['title'].replace('Reel: ', '')} | {ps['story']['title'].replace('Story: ', '')} ({ps['story']['time']}) |")
+else:
+    times = sorted({p['time'] for p in spec.POSTS})
+    lines = [f'# {week_title}', '', intro, '', '## Plan auf einen Blick', '',
+             '| Tag | ' + ' | '.join(f"{t} Uhr" for t in times) + ' |', '|---' * (len(times) + 1) + '|']
+    for d in days:
+        ps = {p['time']: p for p in spec.POSTS if p['day'] == d}
+        cells = [ps[t]['title'] if t in ps else '' for t in times]
+        lines.append(f"| {d} | " + ' | '.join(cells) + ' |')
 lines += ['', '---', '']
 for d in days:
     lines += [f'## {d}', '']
