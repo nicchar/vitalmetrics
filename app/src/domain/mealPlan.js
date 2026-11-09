@@ -120,16 +120,16 @@ export function filterByIntolerances(recipes, activeIntolerances = []) {
  * Fisch verwendet, das muss nicht sein" / "Frühstück eine komplett eigene
  * Kategorie"): zwei Verhaltensänderungen gegenüber vorher.
  * 1. Frühstück ist jetzt IMMER von der gewählten Mittag/Abend-Kategorie
- *    entkoppelt - unabhängig von "Fleisch/Fisch"/"Vegetarisch"/"Keto"/
+ *    entkoppelt - unabhängig von "Fleisch/Fisch"/"Vegetarisch"/"Low Carb"/
  *    "Gemischt" kommen Frühstücksvorschläge aus dem GESAMTEN Frühstücks-Pool
  *    (Porridge/Quark/Obst/Gemüse ebenso wie die herzhaften Varianten).
  *    Vorher fielen z.B. bei "Fleisch/Fisch" alle Skyr-/Porridge-Rezepte weg,
- *    weil die nur unter "Vegetarisch"/"Keto" einsortiert sind.
+ *    weil die nur unter "Vegetarisch"/"Low Carb" einsortiert sind.
  * 2. "Fleisch/Fisch" ist für Mittag/Abend keine strikte Pflicht mehr, sondern
  *    eine Präferenz: der Pool umfasst jetzt ALLE Kategorien (wie "Gemischt"),
  *    die tatsächliche Fleisch/Fisch-Bevorzugung passiert als Gewichtung beim
  *    Würfeln in generatePlan() - siehe FLEISCH_FISCH_WEIGHT dort.
- *    "Vegetarisch" und "Keto" bleiben dagegen bewusst STRIKT (Nicole:
+ *    "Vegetarisch" und "Low Carb" bleiben dagegen bewusst STRIKT (Nicole:
  *    "bei vegetarisch ist Fleisch verboten") - dort wird weiterhin nur aus
  *    Rezepten der jeweiligen Kategorie gewählt.
  */
@@ -158,8 +158,10 @@ export function matchesDiet(recipe, category) {
   if (category === 'vegetarisch') {
     return typeof recipe.vegetarian === 'boolean' ? recipe.vegetarian : recipe.category === 'vegetarisch';
   }
-  if (category === 'keto') {
-    return typeof recipe.lowCarb === 'boolean' ? recipe.lowCarb : recipe.category === 'keto';
+  // Okt. 2026: "Keto" heißt jetzt "Low Carb" (max. 20 g KH pro Portion, nicht pro Tag).
+  // 'keto' bleibt als Altwert gültig, damit gespeicherte Pläne weiter funktionieren.
+  if (category === 'lowcarb' || category === 'keto') {
+    return typeof recipe.lowCarb === 'boolean' ? recipe.lowCarb : (recipe.category === 'lowcarb' || recipe.category === 'keto');
   }
   return recipe.category === category;
 }
@@ -187,7 +189,7 @@ export function isInSeason(recipe, season) {
 
 /**
  * Erzeugt einen neuen 7-Tage-Plan. `category` ist 'vegetarisch' | 'fleisch_fisch'
- * | 'keto' | 'gemischt'. Bei 'gemischt' wird über alle Kategorien gestreut;
+ * | 'lowcarb' | 'gemischt'. Bei 'gemischt' wird über alle Kategorien gestreut;
  * bei 'fleisch_fisch' seit Review 12 ebenfalls (siehe getEligiblePool()),
  * mit einer Ziehungs-Gewichtung Richtung Fleisch/Fisch (FLEISCH_FISCH_WEIGHT).
  *
@@ -241,7 +243,7 @@ export function generatePlan(recipes, category, weekStartIso, underCoveredTags =
   // "Fleisch/Fisch" ist seit Review 12 eine Präferenz, keine Pflicht mehr
   // (Nutzer-Feedback: bei durchgehender Fleisch/Fisch-Wahl enthielt vorher
   // buchstäblich JEDES Rezept Fleisch/Fisch). Der Pool (getEligiblePool)
-  // enthält jetzt auch vegetarische/Keto-Gerichte; hier wird nur noch die
+  // enthält jetzt auch vegetarische/Low-Carb-Gerichte; hier wird nur noch die
   // AUSWAHL innerhalb des Pools in Richtung Fleisch/Fisch gewichtet, nicht
   // mehr erzwungen. 65% ist eine bewusste Mitte zwischen "kaum merkbar" und
   // "de facto wieder Pflicht" - im Schnitt über Mittag+Abend ergibt das ca.
@@ -335,10 +337,74 @@ export function generatePlan(recipes, category, weekStartIso, underCoveredTags =
  * einen Tag/diese eine Mahlzeit, kein Einfluss auf Pins oder andere Tage.
  */
 export function setDaySlot(plan, dateIso, mealType, recipeId) {
+  // 2.2.1: Ein Rezept in einen freigelassenen Platz setzen hebt "frei" wieder auf.
+  const freeSlots = { ...(plan.freeSlots || {}) };
+  delete freeSlots[eatenKey(dateIso, mealType)];
   return {
     ...plan,
+    freeSlots,
     days: plan.days.map(day => (day.date === dateIso ? { ...day, [mealType]: recipeId } : day)),
   };
+}
+
+/**
+ * 2.2.1 (Nicoles Wunsch 08.11.2026: "ich will nicht alles aus dem Plan essen"):
+ * Eine Mahlzeit freilassen, z. B. "Auswärts" oder "Reste". Der Platz bleibt
+ * leer (null) und zählt damit nicht in die Einkaufsliste.
+ */
+export const FREE_SLOT_LABELS = ['Auswärts essen', 'Reste vom Vortag', 'Eigenes Gericht'];
+
+export function freeSlot(plan, dateIso, mealType, label = FREE_SLOT_LABELS[0]) {
+  const freeSlots = { ...(plan.freeSlots || {}), [eatenKey(dateIso, mealType)]: label };
+  const eaten = { ...(plan.eaten || {}) };
+  delete eaten[eatenKey(dateIso, mealType)];
+  return {
+    ...plan,
+    freeSlots,
+    eaten,
+    days: plan.days.map(day => (day.date === dateIso ? { ...day, [mealType]: null } : day)),
+  };
+}
+
+export function freeSlotLabel(plan, dateIso, mealType) {
+  return plan?.freeSlots?.[eatenKey(dateIso, mealType)] || null;
+}
+
+/**
+ * 2.2.1: Tausch-Vorschläge für eine Mahlzeit – passende Rezepte (gleicher Pool
+ * wie beim Erstellen), bevorzugt solche, die diese Woche noch nicht vorkommen.
+ * `rng` ist für Tests austauschbar.
+ */
+export function swapSuggestions(pool, mealType, plan, currentId = null, n = 4, rng = Math.random) {
+  const options = (pool?.[mealType] || []).filter(r => r.id !== currentId);
+  const used = new Set((plan?.days || []).flatMap(d => [d.breakfast, d.lunch, d.dinner]).filter(Boolean));
+  const fresh = options.filter(r => !used.has(r.id));
+  const list = (fresh.length >= n ? fresh : options).slice();
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [list[i], list[j]] = [list[j], list[i]];
+  }
+  return list.slice(0, n);
+}
+
+/** 2.2.1: Rezeptsuche beim Tauschen (Titel, Groß-/Kleinschreibung egal). */
+export function searchSwapOptions(pool, mealType, query, currentId = null, max = 8) {
+  const q = String(query || '').trim().toLowerCase();
+  if (q.length < 2) return [];
+  return (pool?.[mealType] || [])
+    .filter(r => r.id !== currentId && r.title.toLowerCase().includes(q))
+    .slice(0, max);
+}
+
+/**
+ * 2.2.1: Abgehakte Einträge der Einkaufsliste dauerhaft im Plan speichern
+ * (vorher nur bis zum Schließen der App). Ein neuer Plan startet leer.
+ */
+export function setShoppingChecked(plan, label, value) {
+  const shoppingChecked = { ...(plan.shoppingChecked || {}) };
+  if (value) shoppingChecked[label] = true;
+  else delete shoppingChecked[label];
+  return { ...plan, shoppingChecked };
 }
 
 /**

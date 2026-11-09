@@ -59,6 +59,7 @@ export function renderPremium(container) {
           <div class="feature-item"><span class="feature-check">✅</span><span>Intervallfasten mit Timer und Tagen in Folge</span></div>
           <div class="feature-item"><span class="feature-check">✅</span><span>Persönliche Muster: was dein Befinden mit Schlaf, Bewegung und Essen zu tun haben könnte</span></div>
           <div class="feature-item"><span class="feature-check">✅</span><span>Wochenrückblick jeden Montag: worauf du achten kannst, mit passenden Rezepten</span></div>
+          <div class="feature-item"><span class="feature-check">✅</span><span>Dein Rückblick im Tagebuch: Befinden, Gewicht und gute Momente vor 1, 3 und 6 Monaten neben heute</span></div>
         </div>
       </div>
 
@@ -67,6 +68,7 @@ export function renderPremium(container) {
         <div class="feature-list">
           <div class="feature-item"><span class="feature-check">🆓</span><span>Über 200 geprüfte Rezepte, Wochenplan mit Einkaufsliste für deinen Haushalt</span></div>
           <div class="feature-item"><span class="feature-check">🆓</span><span>Tägliches Befinden und Tagebuch mit „Gegessen“ und „wie gestern“</span></div>
+          <div class="feature-item"><span class="feature-check">🆓</span><span>Achtsamkeitsimpuls für jeden Tag und dein Tagebuch „Was war heute gut?“</span></div>
           <div class="feature-item"><span class="feature-check">🆓</span><span>Lebensmittelquellen, Tipps & passende Rezepte bei niedriger dokumentierter Zufuhr</span></div>
           <div class="feature-item"><span class="feature-check">🆓</span><span>Heimtest-Hinweise zu jedem Biomarker</span></div>
           <div class="feature-item"><span class="feature-check">🆓</span><span>PDF-Bericht exportieren</span></div>

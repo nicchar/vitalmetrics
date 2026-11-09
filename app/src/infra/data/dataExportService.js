@@ -36,6 +36,7 @@ import { checkinRepo } from '../db/repositories/checkinRepo.js';
 import { checkinHintsRepo } from '../db/repositories/checkinHintsRepo.js';
 import { customRecipeRepo } from '../db/repositories/customRecipeRepo.js';
 import { cycleSymptomsRepo } from '../db/repositories/cycleSymptomsRepo.js';
+import { journalRepo } from '../db/repositories/journalRepo.js';
 import { storage } from '../db/sqlite.js';
 
 export const EXPORT_FORMAT_VERSION = 1;
@@ -67,6 +68,7 @@ export function gatherAllData() {
     // Datenverlust beim Gerätewechsel.
     customRecipes: customRecipeRepo.getAll(),
     cycleSymptoms: cycleSymptomsRepo.getAll(),
+    journal: journalRepo.getAll(),
   };
 }
 
@@ -87,6 +89,7 @@ export function applyAllData(data) {
   if (data.checkinHints) checkinHintsRepo.replaceAll(data.checkinHints);
   if (data.customRecipes) customRecipeRepo.replaceAll(data.customRecipes);
   if (data.cycleSymptoms) cycleSymptomsRepo.saveAll(data.cycleSymptoms);
+  if (data.journal) journalRepo.replaceAll(data.journal);
 }
 
 /**
@@ -116,6 +119,7 @@ export const USER_DATA_KEYS = [
   'vm_sleep',
   'vm_checkin',
   'vm_checkin_hints',
+  'vm_journal',
   'vm_custom_recipes',
   'vm_install_date',
   'vm_entry_count',

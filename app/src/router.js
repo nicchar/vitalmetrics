@@ -20,6 +20,7 @@ import { renderHealthConsent } from './ui/screens/healthConsent.js';
 import { renderRecipes } from './ui/screens/recipes.js';
 import { renderRecipe } from './ui/screens/recipe.js';
 import { renderValues } from './ui/screens/values.js';
+import { renderJournal } from './ui/screens/journal.js';
 import { profileRepo } from './infra/db/repositories/profileRepo.js';
 
 const screenRenderers = {
@@ -44,6 +45,7 @@ const screenRenderers = {
   recipes: renderRecipes,
   recipe: renderRecipe,
   values: renderValues,
+  journal: renderJournal,
 };
 
 // 2.2-Navigation: Heute · Rezepte · Tagebuch · Zyklus · Mehr.
@@ -53,7 +55,7 @@ const screenRenderers = {
 const TOOLS_SUBSCREENS = ['fasting', 'cravings', 'mealplan', 'weekly_review', 'skin_vitality', 'cycle_wellness', 'my_recipes', 'activity', 'profile', 'premium'];
 
 // "Eintragen"/"Verlauf" und die Seite "Alle Werte" gehören zu "Heute".
-const DASHBOARD_SUBSCREENS = ['entry', 'trend', 'values'];
+const DASHBOARD_SUBSCREENS = ['entry', 'trend', 'values', 'journal'];
 
 // Die Rezept-Detailseite gehört zum Tab "Rezepte".
 const RECIPES_SUBSCREENS = ['recipe'];

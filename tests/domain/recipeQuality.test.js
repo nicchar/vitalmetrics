@@ -100,7 +100,7 @@ test('Wochenplan "Vegetarisch": kein Fleisch und kein Fisch – auch nicht zum F
 });
 
 test('Wochenplan Low Carb: nur kohlenhydratarme Rezepte (höchstens 20 g pro Portion)', () => {
-  const plan = generatePlan(recipes, 'keto', '2026-10-19');
+  const plan = generatePlan(recipes, 'lowcarb', '2026-10-19');
   const byId = Object.fromEntries(recipes.map(r => [r.id, r]));
   for (const day of plan.days) {
     for (const meal of ['breakfast', 'lunch', 'dinner']) {

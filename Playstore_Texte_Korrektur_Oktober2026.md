@@ -23,7 +23,7 @@ Woher weißt du eigentlich, ob du genug Vitamin D, Eisen oder Magnesium isst? We
 WellANNI ist kein Medizinprodukt und ersetzt keine ärztliche Beratung, Diagnose oder Behandlung. Die App dient der persönlichen Beobachtung und allgemeinen Ernährungsinformation.
 
 🥗 ERNÄHRUNG, DIE ZU DIR PASST
-Ernährungstagebuch mit dem Bundeslebensmittelschlüssel, Online-Suche und Barcode-Scan. Über 300 Rezepte (vegetarisch, mit Fleisch/Fisch, Keto), Wochenplan mit automatischer Einkaufsliste und Filter für Laktose, Gluten und Nüsse. Ein Rezept gekocht? Mit einem Tippen ins Tagebuch übernehmen.
+Ernährungstagebuch mit dem Bundeslebensmittelschlüssel, Online-Suche und Barcode-Scan. Über 300 Rezepte (vegetarisch, mit Fleisch/Fisch, Low Carb), Wochenplan mit automatischer Einkaufsliste und Filter für Laktose, Gluten und Nüsse. Ein Rezept gekocht? Mit einem Tippen ins Tagebuch übernehmen.
 
 📊 45 WERTE SELBST ERFASSEN
 Trag Vitamin- und Mineralstoffwerte aus Selbsttests oder Laborberichten sowie Gewicht, BMI und Taillenumfang ein – mit Lebensmittel-Tipps zu jedem Wert.

@@ -8,6 +8,8 @@ import { searchOpenFoodFacts, fetchProductByBarcode } from '../../infra/external
 import { rankFoodMatches } from '../../domain/foodSearch.js';
 import { MEAL_TYPES, guessMealTypeByTime, groupEntriesByMealType, mealTypeMeta } from '../../domain/mealType.js';
 import { showToast } from '../components/toast.js';
+import { journalRepo } from '../../infra/db/repositories/journalRepo.js';
+import { navigate } from '../../router.js';
 
 // Modul-Status für die Ernährungssuche (übersteht Re-Renders innerhalb des Screens).
 // mealType wird ABSICHTLICH nicht bei jedem renderNutrition()-Aufruf zurückgesetzt
@@ -168,6 +170,11 @@ export function renderNutrition(c) {
   c.innerHTML = `<div class="screen">
     <div class="screen-header"><h1 class="screen-title">Tagebuch</h1></div>
 
+    <button type="button" class="w-card w-tip" id="btn-open-journal" style="width:100%;text-align:left;color:inherit;margin-bottom:12px">
+      <span class="w-tip-icon" aria-hidden="true">📔</span>
+      <p><b>Dein Tag in Worten</b><br>${journalRepo.getDay(new Date().toISOString().slice(0, 10)).good ? 'Heute schon festgehalten. Ergänzen oder zurückblicken' : 'Was war heute gut? Eigene Einträge und dein Rückblick über Monate'}</p>
+    </button>
+
     <div class="activity-hero">
       <div class="activity-hero-left">
         <div style="font-size:13px;opacity:.85;margin-bottom:4px">Heute gegessen</div>
@@ -299,6 +306,7 @@ export function renderNutrition(c) {
     });
   });
 
+  c.querySelector('#btn-open-journal').addEventListener('click', () => navigate('journal'));
   c.querySelector('#btn-like-yesterday').addEventListener('click', () => {
     const n = nutritionRepo.copyMeal(yesterdayDate, today, _nutrState.mealType);
     if (n) showToast(`${mealTypeMeta(_nutrState.mealType).label} von gestern übernommen`);

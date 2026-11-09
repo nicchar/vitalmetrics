@@ -4,6 +4,14 @@ MODS=['rec_nicole','rec_fr','rec_suppen','rec_eintopf','rec_ofen','rec_pfanne','
 CH={}
 for m in MODS:
     mod=importlib.import_module(m); CH.update(mod.CH)
+# 2.2.1: Fotos aus Instagram Woche 2 (Content-Strategie/Bilder/w2_*), als 640x368-WebP in app/assets/recipes/
+EXTRA_PHOTOS={'shakshuka':'shakshuka.webp','linsen_dal_spinat_kokos':'linsen-dal-spinat-kokos.webp','ruehrei_raeucherlachs':'ruehrei-raeucherlachs.webp',
+ 'kuerbis_pasta_salbei':'kuerbis-pasta-salbei.webp','lachsfilet_spinat':'lachsfilet-spinat.webp','gebackene_eier_spinat_feta':'gebackene-eier-spinat-feta.webp',
+ 'buddha_bowl_kichererbsen_tahini':'buddha-bowl-kichererbsen-tahini.webp','champignon_ruehrei':'champignon-ruehrei.webp',
+ 'haehnchenschenkel_wurzelgemuese':'haehnchenschenkel-wurzelgemuese.webp','fischsuppe_kabeljau_fenchel':'fischsuppe-kabeljau-fenchel.webp',
+ 'ofenaepfel_hafer_nuss':'ofenaepfel-hafer-nuss.webp','linsensuppe_zitrone':'linsensuppe-zitrone.webp'}
+for _r in build.RECIPES:
+    if _r['id'] in EXTRA_PHOTOS and not _r['photo']: _r['photo']=EXTRA_PHOTOS[_r['id']]
 OUT=[build.finalize(r) for r in build.RECIPES]
 if __name__=='__main__':
     import os,sys

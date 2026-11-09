@@ -13,7 +13,7 @@ function dayNumber(isoDate) {
 }
 
 /**
- * @param {string|null} diet Ernährungsform aus dem Wochenplan ('vegetarisch', 'keto', …)
+ * @param {string|null} diet Ernährungsform aus dem Wochenplan ('vegetarisch', 'lowcarb', …)
  * @param {string[]} intolerances Unverträglichkeiten aus dem Profil
  */
 export function personalPool(recipes, diet = null, intolerances = []) {

@@ -230,7 +230,7 @@ R('caesar_salad_haehnchen','Caesar Salad mit Hähnchen','lunch','salat','g',2,15
 300 g | Hähnchenbrust | haehnchenbrust
 1 | Romanasalat | romana
 30 g | Parmesan | parmesan
-1 Scheiben | Vollkornbrot für Croûtons | vk_brot
+1 Scheibe | Vollkornbrot für Croûtons | vk_brot
 150 g | griechischer Joghurt | joghurt_griech
 1 TL | Senf | senf
 1 | Knoblauchzehe | knoblauch=4

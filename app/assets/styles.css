@@ -1302,3 +1302,13 @@ ul { list-style: none; }
 .w-checkin-hint small { color: var(--text-secondary); }
 .w-week i { background: var(--primary); }
 .w-week i.w-week-empty { background: var(--bg); opacity: 1; }
+
+/* 2.2.1 Wochenplan: Tauschen als Knopf, Vorschläge, Suche, Freilassen */
+.w-meal-more summary.w-swap-btn { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; padding: 5px 12px; border-radius: 999px; border: 1.5px solid var(--border); background: var(--surface); font-size: 13px; }
+.w-meal-more[open] summary.w-swap-btn { background: var(--primary-light, #E3EBDD); border-color: transparent; }
+.w-swap-panel { margin-top: 6px; }
+.w-swap-sugg { display: flex; flex-wrap: wrap; gap: 6px; }
+.w-swap-option { border: 1px solid var(--border); background: var(--surface); border-radius: 10px; padding: 7px 10px; font: inherit; font-size: 13px; text-align: left; color: var(--text); cursor: pointer; }
+.w-swap-option.w-swap-free { color: var(--text-secondary); border-style: dashed; }
+.mealplan-swap-search { width: 100%; margin: 8px 0 4px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; font: inherit; font-size: 14px; background: var(--surface); }
+.mealplan-swap-results { display: flex; flex-direction: column; gap: 6px; }

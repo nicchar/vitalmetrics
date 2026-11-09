@@ -11,7 +11,10 @@ const SCHEMA_VERSION = 1;
 
 export const mealPlanRepo = {
   get() {
-    return storage.getVersioned(KEY, SCHEMA_VERSION) || null;
+    const plan = storage.getVersioned(KEY, SCHEMA_VERSION) || null;
+    // Okt. 2026: Kategorie "keto" in "lowcarb" umbenannt – alte Pläne übernehmen.
+    if (plan && plan.category === 'keto') plan.category = 'lowcarb';
+    return plan;
   },
   save(plan) {
     storage.setVersioned(KEY, plan, SCHEMA_VERSION);

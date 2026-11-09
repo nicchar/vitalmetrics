@@ -7,6 +7,9 @@
  * - "Gegessen ✓" mit einem Tipp pro Mahlzeit: trägt eine Portion ins
  *   Tagebuch des jeweiligen Tages ein, ein zweiter Tipp nimmt es zurück.
  * - Rezepte öffnen die Rezeptseite (Zutaten, Zubereitung, Portionsrechner).
+ * 2.2.1: Tauschen als sichtbarer Knopf mit Vorschlägen und Suche, Mahlzeit
+ * freilassen (Auswärts, Reste, Eigenes Gericht – zählt nicht in die
+ * Einkaufsliste), Haken der Einkaufsliste bleiben dauerhaft gespeichert.
  * Unverändert: Tauschen ("keine Forelle mag"), fest einplanen ("immer das
  * Porridge"), sanfte Bevorzugung von Rezepten für Nährstoffe, die laut
  * Tagebuch zuletzt zu kurz kamen.
@@ -20,6 +23,7 @@ import {
   generatePlan, resolvePlan, buildShoppingList,
   getUnderCoveredTags, INTOLERANCE_LABELS,
   getEligiblePool, setDaySlot, setPin, repairPlan, isEaten, setEaten,
+  freeSlot, freeSlotLabel, swapSuggestions, searchSwapOptions, setShoppingChecked, FREE_SLOT_LABELS,
 } from '../../domain/mealPlan.js';
 import { household, householdPortions, householdLabel, MAX_ADULTS, MAX_KIDS } from '../../domain/household.js';
 import { recipeToFoodEntry } from '../../domain/recipeLogging.js';
@@ -29,7 +33,7 @@ import { showToast } from '../components/toast.js';
 import { mondayOf } from '../../domain/dateUtils.js';
 import { navigate } from '../../router.js';
 
-const CATEGORY_LABEL = { gemischt: 'Gemischt', vegetarisch: 'Vegetarisch', fleisch_fisch: 'Gern mit Fleisch und Fisch', keto: 'Low Carb' };
+const CATEGORY_LABEL = { gemischt: 'Gemischt', vegetarisch: 'Vegetarisch', fleisch_fisch: 'Gern mit Fleisch und Fisch', lowcarb: 'Low Carb' };
 const MEAL_LABEL = { breakfast: 'Frühstück', lunch: 'Mittag', dinner: 'Abend' };
 const SHOPPING_KEY = 'mealplanShoppingChecked';
 
@@ -70,7 +74,7 @@ function renderScreen(container, recipes, plan, isStale, thisMonday) {
   const activeIntolerances = profile.intolerances || [];
   const pool = plan ? getEligiblePool(recipes, plan.category, activeIntolerances) : null;
   const category = plan?.category || 'gemischt';
-  const checked = state.get(SHOPPING_KEY) || {};
+  const checked = plan?.shoppingChecked || {};
   const shopItem = i => `<li><label><input type="checkbox" data-item="${escapeHtml(i.label)}" ${checked[i.label] ? 'checked' : ''}> ${escapeHtml(i.label)}</label></li>`;
 
   const daysHtml = resolved ? resolved.days.map(day => `
@@ -207,14 +211,35 @@ function renderScreen(container, recipes, plan, isStale, thisMonday) {
     });
   });
 
-  // ── Rezept tauschen (nur dieser eine Tag) ────────────────────────────────
-  container.querySelectorAll('.mealplan-swap-select').forEach(sel => {
-    sel.addEventListener('change', () => {
-      const newRecipeId = sel.value;
-      if (!newRecipeId) return; // Platzhalter-Option gewählt
-      const newPlan = setEaten(setDaySlot(plan, sel.dataset.date, sel.dataset.mealtype, newRecipeId), sel.dataset.date, sel.dataset.mealtype, false);
+  // ── Rezept tauschen (nur dieser eine Tag) – 2.2.1: Vorschläge, Suche, Freilassen ──
+  const swapTo = (date, mealType, newRecipeId) => {
+    if (!newRecipeId) return;
+    const newPlan = setEaten(setDaySlot(plan, date, mealType, newRecipeId), date, mealType, false);
+    mealPlanRepo.save(newPlan);
+    const r = recipes.find(x => x.id === newRecipeId);
+    showToast(r ? `${r.title} ist eingeplant, die Einkaufsliste ist aktualisiert` : 'Getauscht');
+    rerender(newPlan);
+  };
+  container.querySelectorAll('[data-swap-id]').forEach(btn => {
+    btn.addEventListener('click', () => swapTo(btn.dataset.date, btn.dataset.mealtype, btn.dataset.swapId));
+  });
+  container.querySelectorAll('[data-free-label]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const newPlan = freeSlot(plan, btn.dataset.date, btn.dataset.mealtype, btn.dataset.freeLabel);
       mealPlanRepo.save(newPlan);
+      showToast(`${btn.dataset.freeLabel} – fällt aus der Einkaufsliste`);
       rerender(newPlan);
+    });
+  });
+  container.querySelectorAll('.mealplan-swap-search').forEach(input => {
+    const out = input.parentElement.querySelector('.mealplan-swap-results');
+    input.addEventListener('input', () => {
+      const { date, mealtype: mealType, current } = input.dataset;
+      const hits = searchSwapOptions(pool, mealType, input.value, current || null);
+      out.innerHTML = input.value.trim().length < 2 ? ''
+        : hits.length ? hits.map(r => `<button type="button" class="w-swap-option" data-date="${date}" data-mealtype="${mealType}" data-pick="${r.id}">${escapeHtml(r.title)}</button>`).join('')
+          : '<p class="w-small">Nichts gefunden – versuch ein anderes Wort.</p>';
+      out.querySelectorAll('[data-pick]').forEach(b => b.addEventListener('click', () => swapTo(b.dataset.date, b.dataset.mealtype, b.dataset.pick)));
     });
   });
 
@@ -232,20 +257,43 @@ function renderScreen(container, recipes, plan, isStale, thisMonday) {
     });
   });
 
-  // Einkaufsliste: Haken bleiben während der Sitzung erhalten
+  // Einkaufsliste: 2.2.1 – Haken werden im Plan gespeichert und bleiben auch
+  // nach dem Schließen der App erhalten (ein neuer Plan startet leer).
   container.querySelectorAll('#shopping-list input[type=checkbox]').forEach(cb => {
     cb.addEventListener('change', () => {
-      state.set(SHOPPING_KEY, { ...(state.get(SHOPPING_KEY) || {}), [cb.dataset.item]: cb.checked });
+      plan = setShoppingChecked(plan, cb.dataset.item, cb.checked);
+      mealPlanRepo.save(plan);
     });
   });
 }
 
+function swapPanel(mealType, day, currentId, plan, pool) {
+  const sugg = swapSuggestions(pool, mealType, plan, currentId, 4);
+  const attrs = `data-date="${day.date}" data-mealtype="${mealType}"`;
+  return `<details class="w-meal-more">
+        <summary class="w-swap-btn">${currentId ? '⇄ Tauschen' : '+ Rezept wählen'}</summary>
+        <div class="w-swap-panel">
+          ${sugg.length ? `<p class="w-small" style="margin:6px 0 4px">Vorschläge</p>
+          <div class="w-swap-sugg">${sugg.map(r => `<button type="button" class="w-swap-option" ${attrs} data-swap-id="${r.id}">${escapeHtml(r.title)}</button>`).join('')}</div>` : ''}
+          <input type="search" class="mealplan-swap-search" ${attrs} data-current="${currentId || ''}" placeholder="Oder Rezept suchen …" aria-label="Rezept suchen">
+          <div class="mealplan-swap-results"></div>
+          <p class="w-small" style="margin:8px 0 4px">Oder freilassen</p>
+          <div class="w-swap-sugg">${FREE_SLOT_LABELS.map(l => `<button type="button" class="w-swap-option w-swap-free" ${attrs} data-free-label="${escapeHtml(l)}">${escapeHtml(l)}</button>`).join('')}</div>
+          ${currentId ? `<button type="button" class="w-link mealplan-pin-btn" style="margin-top:8px" data-mealtype="${mealType}" data-recipe-id="${currentId}">
+            ${plan.pins?.[mealType] === currentId ? 'Nicht mehr fest einplanen' : `Jeden Tag zum ${MEAL_LABEL[mealType]}`}
+          </button>` : ''}
+        </div>
+      </details>`;
+}
+
 function mealRow(mealType, day, recipe, plan, pool, today) {
   if (!recipe) {
-    return `<div class="w-meal"><div class="w-meal-body"><span class="w-meal-label">${MEAL_LABEL[mealType]}</span><span class="w-muted">Für diese Auswahl haben wir gerade kein passendes Rezept.</span></div></div>`;
+    const free = freeSlotLabel(plan, day.date, mealType);
+    return `<div class="w-meal"><div class="w-meal-body"><span class="w-meal-label">${MEAL_LABEL[mealType]}</span>
+      <span class="${free ? '' : 'w-muted'}">${free ? `${escapeHtml(free)} <small class="w-muted">· nicht auf der Einkaufsliste</small>` : 'Für diese Auswahl haben wir gerade kein passendes Rezept.'}</span>
+      ${swapPanel(mealType, day, null, plan, pool)}</div></div>`;
   }
   const isPinned = plan.pins?.[mealType] === recipe.id;
-  const alternatives = (pool?.[mealType] || []).filter(r => r.id !== recipe.id);
   const eaten = isEaten(plan, day.date, mealType);
   const canEat = day.date <= today;
   return `<div class="w-meal">
@@ -253,16 +301,7 @@ function mealRow(mealType, day, recipe, plan, pool, today) {
     <div class="w-meal-body">
       <span class="w-meal-label">${MEAL_LABEL[mealType]}${isPinned ? ' · fest eingeplant' : ''}</span>
       <button type="button" class="w-meal-title" data-open="${recipe.id}">${escapeHtml(recipe.title)}</button>
-      <details class="w-meal-more">
-        <summary>Tauschen</summary>
-        <select class="mealplan-swap-select" data-date="${day.date}" data-mealtype="${mealType}" aria-label="Anderes Rezept wählen">
-          <option value="">Anderes Rezept wählen …</option>
-          ${alternatives.map(r => `<option value="${r.id}">${escapeHtml(r.title)}</option>`).join('')}
-        </select>
-        <button type="button" class="w-link mealplan-pin-btn" data-mealtype="${mealType}" data-recipe-id="${recipe.id}">
-          ${isPinned ? 'Nicht mehr fest einplanen' : `Jeden Tag zum ${MEAL_LABEL[mealType]}`}
-        </button>
-      </details>
+      ${swapPanel(mealType, day, recipe.id, plan, pool)}
     </div>
     ${canEat ? `<button type="button" class="w-eaten" data-date="${day.date}" data-mealtype="${mealType}" data-recipe-id="${recipe.id}" aria-pressed="${eaten}" aria-label="${eaten ? 'Gegessen, antippen zum Rückgängigmachen' : 'Als gegessen eintragen'}">${eaten ? '✓' : 'Gegessen'}</button>` : ''}
   </div>`;

@@ -52,6 +52,7 @@ export function renderToolsHub(c) {
 
     <div class="w-group-title">Dein Alltag</div>
     <div class="w-list">
+      ${item('tool-journal', '📔', 'Mein Tagebuch', 'Was war heute gut? Eigene Einträge und dein Rückblick über Monate')}
       ${item('tool-activity', '🚶', 'Bewegung', 'Schritte, Sport und Schlaf festhalten')}
       ${item('tool-cravings', '🍫', 'Heißhunger-Tagebuch', 'Wann kommt der Hunger auf etwas Bestimmtes?', cravings.length > 0 ? `${cravings.length} Einträge` : 'Noch keine Einträge')}
       ${item('tool-fasting', '⏱️', 'Intervallfasten', '16:8, 14:10 oder 12:12 mit Timer', isPremium ? (streak > 0 ? `${streak} Tage in Folge` : '') : premiumMeta)}
@@ -76,6 +77,7 @@ export function renderToolsHub(c) {
     </div>
   </div>`;
 
+  c.querySelector('#tool-journal').addEventListener('click', () => navigate('journal'));
   c.querySelector('#tool-fasting').addEventListener('click', () => navigate('fasting'));
   c.querySelector('#tool-cravings').addEventListener('click', () => navigate('cravings'));
   c.querySelector('#tool-mealplan').addEventListener('click', () => navigate('mealplan'));

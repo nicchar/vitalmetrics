@@ -20,6 +20,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 RECIPES = json.loads((ROOT / 'app/src/data/recipes.json').read_text(encoding='utf-8'))
+for _r in RECIPES:
+    _r['ingredients'] = [i.replace('1 Scheiben ', '1 Scheibe ') for i in _r['ingredients']]
 BY_ID = {r['id']: r for r in RECIPES}
 
 # Slug auf der Website -> Rezept-ID in der App, plus passende Kollektion
@@ -38,6 +40,17 @@ PAGES = [
     ('rezept-overnight-oats-chia', 'overnight_oats_chia_beeren', 'echtes-essen'),
     ('rezept-buchweizen-porridge', 'buchweizen_porridge_apfel_zimt', 'wechseljahre'),
     ('rezept-energy-balls', 'haferflocken_energy_balls', 'echtes-essen'),
+    # Nov. 2026: Rezepte mit Fotos aus Instagram Woche 2 (für Pinterest ab 12.11.)
+    ('rezept-shakshuka', 'shakshuka', 'echtes-essen'),
+    ('rezept-linsen-dal-spinat', 'linsen_dal_spinat_kokos', 'darm-immunsystem'),
+    ('rezept-ruehrei-raeucherlachs', 'ruehrei_raeucherlachs', 'herbst-winter-immunsystem'),
+    ('rezept-kuerbis-pasta-salbei', 'kuerbis_pasta_salbei', 'echtes-essen'),
+    ('rezept-gebackene-eier-spinat-feta', 'gebackene_eier_spinat_feta', 'echtes-essen'),
+    ('rezept-buddha-bowl-kichererbsen', 'buddha_bowl_kichererbsen_tahini', 'darm-immunsystem'),
+    ('rezept-champignon-ruehrei', 'champignon_ruehrei', 'echtes-essen'),
+    ('rezept-haehnchen-blech-wurzelgemuese', 'haehnchenschenkel_wurzelgemuese', 'echtes-essen'),
+    ('rezept-fischsuppe-kabeljau-fenchel', 'fischsuppe_kabeljau_fenchel', 'herbst-winter-immunsystem'),
+    ('rezept-bratapfel-hafer-nuss', 'ofenaepfel_hafer_nuss', 'echtes-essen'),
 ]
 
 COLLECTIONS = {
@@ -46,6 +59,8 @@ COLLECTIONS = {
     'clean-girl-morgenroutine': 'Morgenroutine &amp; Haut',
     'pms-zyklus': 'Zyklus Phasen &amp; PMS',
     'wechseljahre': 'Wechseljahre &amp; Perimenopause',
+    'darm-immunsystem': 'Darm &amp; Immunsystem',
+    'bewegung-achtsamkeit': 'Bewegung &amp; Achtsamkeit',
 }
 
 SUGAR = re.compile(r'\b(zucker|rohrzucker|puderzucker|honig|ahornsirup|agavendicksaft|dattelsirup|reissirup|sirup)\b', re.I)
@@ -161,6 +176,43 @@ def footer(social_links):
     return FOOTER.replace('{social}', social)
 
 
+
+# Nov. 2026: Merken-/Teilen-Knöpfe ohne Fremd-Skript und ohne Cookies.
+# Pinterest und WhatsApp sind einfache Links (Daten gehen erst beim Klick an den Dienst),
+# "Teilen" nutzt das Teilen-Menü des Geräts bzw. kopiert den Link.
+from urllib.parse import quote
+
+ICON_PIN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5a6.5 6.5 0 0 0-6.5 6.5c0 4.6 6.5 12.5 6.5 12.5s6.5-7.9 6.5-12.5A6.5 6.5 0 0 0 12 2.5Zm0 9a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z" fill="currentColor"/></svg>'
+ICON_CHAT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4h0A1.5 1.5 0 0 1 4 14.5v-9Z" fill="currentColor"/></svg>'
+ICON_SHARE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l4.5 4.5-1.4 1.4L13 6.8V15h-2V6.8L8.9 8.9 7.5 7.5 12 3Zm-7 9h2v7h10v-7h2v9H5v-9Z" fill="currentColor"/></svg>'
+
+SHARE_SCRIPT = """<script>document.querySelectorAll('[data-share]').forEach(function(b){b.addEventListener('click',function(){var d={title:b.dataset.title,url:b.dataset.url};if(navigator.share){navigator.share(d).catch(function(){});}else if(navigator.clipboard){navigator.clipboard.writeText(d.url).then(function(){b.querySelector('span').textContent='Link kopiert';});}});});</script>
+"""
+
+
+ICON_CAM = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5Zm4 5a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm0 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4Zm5-3.2a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4Z" fill="currentColor"/></svg>'
+INSTAGRAM = 'https://www.instagram.com/wellanni_/'
+PINTEREST = 'https://de.pinterest.com/wellanni_de/'
+
+
+def follow_html():
+    return (f'<div class="share"><a class="share-btn" href="{INSTAGRAM}" target="_blank" rel="noopener">{ICON_CAM}<span>WellANNI auf Instagram</span></a>'
+            f'<a class="share-btn" href="{PINTEREST}" target="_blank" rel="noopener">{ICON_PIN}<span>WellANNI auf Pinterest</span></a></div>')
+
+
+def share_html(url, title, media=None, description=None):
+    t = html.escape(title)
+    pin = ''
+    if media:
+        q = f'url={quote(url, safe="")}&media={quote(media, safe="")}&description={quote(description or title, safe="")}'
+        pin = (f'<a class="share-btn" href="https://www.pinterest.com/pin/create/button/?{html.escape(q)}" target="_blank" rel="noopener nofollow">'
+               f'{ICON_PIN}<span>Auf Pinterest merken</span></a>')
+    wa = f'https://wa.me/?text={quote(title + " – " + url, safe="")}'
+    return (f'<div class="share" aria-label="Teilen">{pin}'
+            f'<a class="share-btn" href="{html.escape(wa)}" target="_blank" rel="noopener nofollow">{ICON_CHAT}<span>Per WhatsApp schicken</span></a>'
+            f'<button type="button" class="share-btn" data-share data-url="{html.escape(url)}" data-title="{t}">{ICON_SHARE}<span>Teilen</span></button></div>')
+
+
 def recipe_page(site, slug, r, collection, others, social):
     n = r['nutritionPerServing']
     title = r['title']
@@ -202,6 +254,14 @@ def recipe_page(site, slug, r, collection, others, social):
         f'<a href="{s}.html"><span class="icon-tile"><i class="ph-duotone {icon(o)}" aria-hidden="true"></i></span>{html.escape(o["title"])}</a>'
         for s, o in others)
     tip = f'<p class="body-txt tip"><i class="ph-duotone ph-lightbulb" aria-hidden="true"></i> {html.escape(r["tip"])}</p>' if r.get('tip') else ''
+    page_url = f'https://wellanni.de/{slug}.html'
+    pin_desc = f"{title}: {r['highlight']} Rezept mit Nährwerten auf wellanni.de"
+    media = img_abs if img and not img.endswith('.svg') else None
+    share = share_html(page_url, f'{title} – Rezept', media, pin_desc)
+    pin_pill = ''
+    if media:
+        q = f'url={quote(page_url, safe="")}&media={quote(media, safe="")}&description={quote(pin_desc, safe="")}'
+        pin_pill = (f'<a class="pin-pill" href="https://www.pinterest.com/pin/create/button/?{html.escape(q)}" target="_blank" rel="noopener nofollow" aria-label="Bild auf Pinterest merken">{ICON_PIN}<span>Merken</span></a>')
     visual = (f'<img src="{img}" alt="{html.escape(title)}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 70%" loading="eager">'
               if img else f'<i class="ph-duotone {icon(r)} big-icon" aria-hidden="true"></i>')
     return (head(f'{html.escape(title)} – Rezept mit Nährwerten | WellANNI', desc, f'https://wellanni.de/{slug}.html', img_abs, extra)
@@ -215,9 +275,10 @@ def recipe_page(site, slug, r, collection, others, social):
           <h1>{html.escape(title)}</h1>
           <p class="lead">{html.escape(r['highlight'])}</p>
           <div class="tags">{''.join(tags)}</div>
+          {share}
         </div>
         <div class="c-visual" style="aspect-ratio:4/5;min-height:420px">
-          {visual}
+          {visual}{pin_pill}
           <div class="note"><i class="ph-duotone ph-chart-bar" aria-hidden="true"></i><div><strong>Nährwerte pro Portion</strong><div class="nuts">{nuts_html}</div></div></div>
         </div>
       </section>
@@ -232,6 +293,8 @@ def recipe_page(site, slug, r, collection, others, social):
           <p class="body-txt">Dieses Rezept stammt aus der WellANNI-App{' (Foto KI-generiert)' if img and img.endswith('.jpg') else ''}. Dort findest du über 200 geprüfte Rezepte, planst deine Woche für den ganzen Haushalt samt Einkaufsliste und siehst, was dein Teller schon geliefert hat.</p>
           <a class="btn btn-primary" href="{play_link(slug)}" target="_blank" rel="noopener">WellANNI App holen</a>
           <p class="body-txt" style="margin-top:18px">Passende Kollektion: <a href="{collection}.html">{COLLECTIONS[collection]}</a></p>
+          <p class="body-txt" style="margin-top:18px">Jede Woche neue Rezepte und Ideen:</p>
+          {follow_html()}
         </div>
         <div>
           <h2>Weitere Rezepte</h2>
@@ -241,7 +304,7 @@ def recipe_page(site, slug, r, collection, others, social):
         </div>
       </section>
     </main>
-''' + footer(social))
+''' + SHARE_SCRIPT + footer(social))
 
 
 def overview_page(site, social):

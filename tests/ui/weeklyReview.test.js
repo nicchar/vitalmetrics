@@ -22,7 +22,9 @@ test('weeklyReview.js (2.2): nutzt buildWeekFocus für die VORHERIGE Kalenderwoc
 });
 
 test('weeklyReview.js (2.2): Reihenfolge Woche → Schwerpunkte → Muster → Details', () => {
-  const tpl = src.slice(src.indexOf('container.innerHTML = `<div class="w-screen weeklyreview-screen">\n    <button class="w-link" id="btn-back-tools"'));
+  // Zeilenenden normalisieren (Windows-Checkout mit CRLF ließ den Test bisher fehlschlagen)
+  const lf = src.replace(/\r\n/g, '\n');
+  const tpl = lf.slice(lf.indexOf('container.innerHTML = `<div class="w-screen weeklyreview-screen">\n    <button class="w-link" id="btn-back-tools"'));
   const order = ['renderWeekSummary(', 'renderFocus(', 'renderPatterns(', 'Die letzten 7 Tage im Detail'];
   let last = -1;
   for (const m of order) { const i = tpl.indexOf(m); assert.ok(i > last, m); last = i; }

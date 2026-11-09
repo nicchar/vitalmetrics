@@ -231,11 +231,11 @@ function renderTraditionalSection(bm) {
 
 function renderFoodsSection(bm, status) {
   // Dynamische Rezeptsuche über recipes.json (272 Rezepte: vegetarisch,
-  // Fleisch/Fisch, Keto) statt der frueheren hardcoded 8-Rezept-Map.
+  // Fleisch/Fisch, Low Carb) statt der frueheren hardcoded 8-Rezept-Map.
   const allRecipes = state.get('recipes') || [];
   const matches = getRecipesForBiomarkers(allRecipes, [bm.id], 6);
 
-  const categoryLabel = { vegetarisch: '🥬 Vegetarisch', fleisch_fisch: '🍗 Fleisch/Fisch', keto: '🥑 Keto' };
+  const categoryLabel = { vegetarisch: '🥬 Vegetarisch', fleisch_fisch: '🍗 Fleisch/Fisch', lowcarb: '🥑 Low Carb', keto: '🥑 Low Carb' };
   const recipesHtml = matches.length
     ? matches.map(r => `
         <div class="recipe-card">

@@ -67,7 +67,7 @@ def finalize(r):
     alls=sorted({ALLERG[a] for a in flags.split() if a in ALLERG} | set(x for x in r['ax'].split(',') if x))
     vegetarian=not meat and not fish; vegan=vegetarian and not animal
     lowcarb=per['carbs']<=20
-    cat='keto' if lowcarb and r['meal']!='snack' else ('vegetarisch' if vegetarian else 'fleisch_fisch')
+    cat='lowcarb' if lowcarb and r['meal']!='snack' else ('vegetarisch' if vegetarian else 'fleisch_fisch')
     tags=[TAG[k] for k in TAG if per[k]>=0.25*REF[k]]
     focus=[]
     for k in ['protein','fiber','eisen','folat','mag','cal','vit_d','b12','jod','vit_c','zink','vit_a']:

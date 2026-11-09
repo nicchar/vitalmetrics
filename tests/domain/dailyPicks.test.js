@@ -87,6 +87,8 @@ test('recipeForNutrient: liefert ein Rezept, das den Nährstoff im Fokus hat, un
 
 test('personalPool: Vegetarisch, Low Carb und Unverträglichkeiten werden berücksichtigt', () => {
   assert.ok(personalPool(recipes, 'vegetarisch').every(r => r.vegetarian));
+  assert.ok(personalPool(recipes, 'lowcarb').every(r => r.lowCarb));
+  // Altwert aus gespeicherten Plänen bleibt gültig
   assert.ok(personalPool(recipes, 'keto').every(r => r.lowCarb));
   assert.ok(personalPool(recipes, null, ['laktose']).every(r => !(r.allergens || []).includes('milk')));
   assert.equal(personalPool(recipes, null).length, recipes.length);

@@ -4,7 +4,9 @@
  * Aufbau von oben nach unten:
  * 1. Begrüßung
  * 2. "Wie geht's dir heute?" – Check-in mit vier Bereichen (Energie, Schlaf,
- *    Bauchgefühl, Stimmung), 5-stufig, mit Wochenstreifen
+ *    Bauchgefühl, Stimmung), 5-stufig, mit Wochenstreifen, dazu
+ *    "Was war heute gut?" (2.3) und Link zu "Mein Tagebuch"
+ * 2b. Impuls für heute: täglicher Achtsamkeitstipp (2.3)
  * 3. "Heute auf deinem Teller" – Kalorien, Makros und die 8 Kernwerte in
  *    freundlichen Worten statt Ampel-Prozenten, dazu EIN Rezeptvorschlag für
  *    den Kernwert mit der größten Lücke
@@ -23,6 +25,8 @@ import { profileRepo } from '../../infra/db/repositories/profileRepo.js';
 import { nutritionRepo } from '../../infra/db/repositories/nutritionRepo.js';
 import { hydrationRepo } from '../../infra/db/repositories/hydrationRepo.js';
 import { checkinRepo } from '../../infra/db/repositories/checkinRepo.js';
+import { journalRepo, JOURNAL_MAX_LENGTH } from '../../infra/db/repositories/journalRepo.js';
+import { getMindfulnessTip } from '../../domain/mindfulnessTips.js';
 import { mealPlanRepo } from '../../infra/db/repositories/mealPlanRepo.js';
 import { getDGERef } from '../../domain/nutrition.js';
 import { entitlements } from '../../domain/entitlements.js';
@@ -84,6 +88,9 @@ function renderCheckin(today, hints = []) {
       ${rows}
       <p class="w-small" id="checkin-done" ${isComplete(day) ? '' : 'hidden'}>Danke dir! Hier unten siehst du, wie deine Woche bisher war.</p>
       <div class="w-week" aria-label="Deine letzten 7 Tage">${week}</div>
+      <label for="checkin-good" style="display:block;margin-top:14px"><b>Was war heute gut?</b></label>
+      <textarea id="checkin-good" rows="2" maxlength="${JOURNAL_MAX_LENGTH}" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;resize:vertical;margin-top:6px" placeholder="Ein schöner Moment, ein kleiner Erfolg …">${escapeHtml(journalRepo.getDay(today).good || '')}</textarea>
+      <div class="w-btn-row"><button type="button" class="w-btn w-btn-ghost" id="btn-journal">Mein Tagebuch und Rückblick</button></div>
     </div>
     <div id="checkin-hints">${renderHints(hints)}</div>
   </section>`;
@@ -237,12 +244,16 @@ export function renderDashboard(container) {
     tipHtml = `<div class="w-card w-tip" id="seasonal-tip-banner"><span class="w-tip-icon">${seasonal.icon}</span><p>${seasonal.text}</p></div>`;
   }
 
+  const mindful = getMindfulnessTip(now);
   const dateLine = now.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
 
   container.innerHTML = `<div class="w-screen" id="dashboard-screen">
     <h1 class="w-h1">${greeting(profile.name, now)}</h1>
     <p class="w-sub">${dateLine}</p>
     ${renderCheckin(today, hints)}
+    <section class="w-block"><div class="w-block-title">Dein Impuls für heute</div>
+      <div class="w-card w-tip" id="mindfulness-tip"><span class="w-tip-icon" aria-hidden="true">${mindful.icon}</span><p>${mindful.text}</p></div>
+    </section>
     ${renderTeller({ dayTotals, tdee, core, hint, freeRecapTeaser })}
     ${recapHtml}
     ${rdt ? `<section class="w-block">
@@ -278,6 +289,14 @@ export function renderDashboard(container) {
       wireDismiss();
     });
   });
+
+  // "Was war heute gut?" – speichert beim Tippen ins Tagebuch (2.3)
+  const good = container.querySelector('#checkin-good');
+  let goodTimer = null;
+  const saveGood = () => journalRepo.setField(today, 'good', good.value);
+  good.addEventListener('input', () => { clearTimeout(goodTimer); goodTimer = setTimeout(saveGood, 500); });
+  good.addEventListener('blur', saveGood);
+  container.querySelector('#btn-journal').addEventListener('click', () => { saveGood(); navigate('journal'); });
 
   container.querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => openRecipe(b.dataset.open)));
   function wireDismiss() {

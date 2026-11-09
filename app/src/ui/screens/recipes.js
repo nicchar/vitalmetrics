@@ -24,7 +24,7 @@ function defaultFilters() {
   const diet = mealPlanRepo.get()?.category;
   const tags = ['saison'];
   if (diet === 'vegetarisch') tags.push('veg');
-  if (diet === 'keto') tags.push('lowcarb');
+  if (diet === 'lowcarb' || diet === 'keto') tags.push('lowcarb');
   return { meal: 'alle', tags, query: '', shown: PAGE };
 }
 

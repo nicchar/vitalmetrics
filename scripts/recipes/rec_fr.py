@@ -304,7 +304,7 @@ R('champignon_ruehrei','Champignon-Rührei auf Vollkornbrot','breakfast','ei','g
 2 | Eier | ei
 100 g | Champignons | champignons
 1 TL | Butter | butter
-1 Scheiben | Vollkornbrot | vk_brot
+1 Scheibe | Vollkornbrot | vk_brot
 1 EL | Schnittlauch | schnittlauch
 | Salz, Pfeffer | salz=0.8
 """,["Champignons in Scheiben schneiden und in der Butter bei starker Hitze 4 Minuten goldbraun braten.",
@@ -366,7 +366,7 @@ R('ruehrei_tomaten_schnittlauch','Rührei mit Tomaten und Schnittlauch','breakfa
 1 | Tomate | tomate
 1 TL | Butter | butter
 1 EL | Schnittlauch | schnittlauch
-1 Scheiben | Vollkornbrot | vk_brot
+1 Scheibe | Vollkornbrot | vk_brot
 | Salz, Pfeffer | salz=0.8
 """,["Tomate würfeln. Eier mit Salz und Pfeffer verquirlen.",
 "Butter in einer Pfanne schmelzen, Eier hineingeben und bei kleiner Hitze langsam stocken lassen. Kurz vor Schluss die Tomaten unterheben.",
@@ -493,7 +493,7 @@ R('ruehrei_raeucherlachs','Rührei mit Räucherlachs und Schnittlauch','breakfas
 40 g | Räucherlachs | raeucherlachs
 1 TL | Butter | butter
 1 EL | Schnittlauch | schnittlauch
-1 Scheiben | Vollkornbrot | vk_brot
+1 Scheibe | Vollkornbrot | vk_brot
 | Pfeffer | pfeffer
 """,["Eier verquirlen und pfeffern (der Lachs bringt genug Salz mit).",
 "Butter schmelzen und die Eier bei kleiner Hitze langsam zu cremigem Rührei stocken lassen.",

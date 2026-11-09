@@ -15,7 +15,7 @@ async function init() {
   const foodDb = await foodResp.json();
   state.set('foodDb', foodDb);
 
-  // ── Rezept-Datenbank laden (272 Rezepte: vegetarisch/Fleisch-Fisch/Keto) ──
+  // ── Rezept-Datenbank laden (272 Rezepte: vegetarisch/Fleisch-Fisch/Low Carb) ──
   const recipesResp = await fetch('./src/data/recipes.json');
   const recipes = await recipesResp.json();
   state.set('recipes', recipes);

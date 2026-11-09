@@ -16,7 +16,7 @@ R('lachs_ofenbrokkoli_zitronenjoghurt','Lachs mit Ofenbrokkoli und Zitronenjoghu
 "Mit Mandeln bestreuen und mit dem Zitronenjoghurt servieren."],
 "Knusprig gerösteter Brokkoli, zarter Lachs und frischer Zitronenjoghurt – leicht und sättigend.",
 occ='feierabend')
-CH['lachs_ofenbrokkoli_zitronenjoghurt']='Neu (Low Carb, ergänzt für den Keto-Wochenplan).'
+CH['lachs_ofenbrokkoli_zitronenjoghurt']='Neu (Low Carb, ergänzt für den Low-Carb-Wochenplan).'
 
 R('haehnchenspiesse_tzatziki','Hähnchenspieße mit Tzatziki und Tomatensalat','lunch','pfanne','s',4,20,15,"""
 600 g | Hähnchenbrust | haehnchenbrust

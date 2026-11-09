@@ -27,17 +27,26 @@ test('mealPlan.js: Tausch-Auswahl nutzt denselben gefilterten Pool wie die Plan-
   assert.ok(!src.includes('customRecipeRepo'), 'Eigene Rezepte sind laut Nicole (03.08.2026) bewusst NICHT in den Wochenplan integriert');
 });
 
-test('mealPlan.js: mealplan-swap-select ruft setDaySlot() für genau den Tag/die Mahlzeit des Selects auf', () => {
-  const idx = src.indexOf("querySelectorAll('.mealplan-swap-select')");
+test('mealPlan.js (2.2.1): Tauschen per Vorschlag oder Suche ruft setDaySlot() für genau den Tag/die Mahlzeit auf', () => {
+  const idx = src.indexOf('const swapTo = (date, mealType, newRecipeId)');
+  assert.ok(idx > 0, 'swapTo() fehlt');
   const block = src.slice(idx, idx + 500);
-  assert.ok(block.includes('setDaySlot(plan, sel.dataset.date, sel.dataset.mealtype'));
+  assert.ok(block.includes('setDaySlot(plan, date, mealType, newRecipeId)'));
   assert.ok(block.includes('mealPlanRepo.save'));
+  assert.ok(src.includes("querySelectorAll('[data-swap-id]')"), 'Vorschlags-Knöpfe müssen verdrahtet sein');
+  assert.ok(src.includes('searchSwapOptions(pool, mealType'), 'Suche muss denselben gefilterten Pool nutzen');
 });
 
-test('mealPlan.js: leere Platzhalter-Option im Tausch-Select löst keinen Tausch aus', () => {
-  const idx = src.indexOf("querySelectorAll('.mealplan-swap-select')");
-  const block = src.slice(idx, idx + 300);
-  assert.ok(/if\s*\(\s*!newRecipeId\s*\)\s*return/.test(block), 'Sollte bei leerer Auswahl früh zurückkehren');
+test('mealPlan.js (2.2.1): ohne Rezept-ID kein Tausch; Freilassen nutzt freeSlot()', () => {
+  const idx = src.indexOf('const swapTo = (date, mealType, newRecipeId)');
+  const block = src.slice(idx, idx + 200);
+  assert.ok(/if\s*\(\s*!newRecipeId\s*\)\s*return/.test(block), 'Sollte ohne Rezept-ID früh zurückkehren');
+  assert.ok(src.includes('freeSlot(plan, btn.dataset.date, btn.dataset.mealtype, btn.dataset.freeLabel)'));
+});
+
+test('mealPlan.js (2.2.1): Haken der Einkaufsliste werden im Plan gespeichert', () => {
+  assert.ok(src.includes('setShoppingChecked(plan, cb.dataset.item, cb.checked)'));
+  assert.ok(src.includes('plan?.shoppingChecked'));
 });
 
 test('mealPlan.js: mealplan-pin-btn togglet zwischen Pinnen und Lösen für DIESELBE Mahlzeit-Kategorie', () => {
