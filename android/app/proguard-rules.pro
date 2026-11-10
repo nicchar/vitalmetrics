@@ -66,3 +66,17 @@
     public static **[] values();
     public static ** valueOf(java.lang.String);
 }
+
+# ------------------------------------------------------------------------------
+# Ab 2.2.1 (minifyEnabled true): alle genutzten Plugins vollstaendig behalten.
+# ------------------------------------------------------------------------------
+# In-App-Kauf (cordova-plugin-purchase)
+-keep class cc.fovea.** { *; }
+-dontwarn cc.fovea.**
+# Capacitor-Plugins: Filesystem, Share, Local Notifications
+-keep class com.capacitorjs.plugins.** { *; }
+# Barcode-Scanner (ML Kit)
+-keep class io.capawesome.capacitorjs.plugins.mlkit.** { *; }
+-dontwarn com.google.mlkit.**
+# Eigene App-Klassen
+-keep class com.vitalmetrics.app.** { *; }
