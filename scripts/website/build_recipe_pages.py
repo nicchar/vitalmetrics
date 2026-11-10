@@ -162,7 +162,7 @@ def header(current, campaign):
 FOOTER = '''    <footer class="site-footer">
       <p>Werbung/Anzeige: Produktempfehlungen auf dieser Seite enthalten Affiliate-Links — kommt ein Kauf über diese Links zustande, erhält WellANNI ggf. eine Provision, für dich entstehen keine Mehrkosten. Als Amazon-Partner verdiene ich an qualifizierten Verkäufen. WellANNI ist kein Medizinprodukt und ersetzt keine ärztliche Beratung, Diagnose oder Behandlung.</p>
       <p>WellANNI gibt es für Android. Eine iPhone-Version ist in Planung – sobald sie da ist, erfährst du es hier.</p>
-      <p>© 2026 Nicole Doehring · WellANNI · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a>{social}</p>
+      <p>© 2026 Nicole Doehring · WellANNI · <a href="ueber-wellanni.html">Über WellANNI</a> · <a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a>{social}</p>
     </footer>
   </div>
 </div>
