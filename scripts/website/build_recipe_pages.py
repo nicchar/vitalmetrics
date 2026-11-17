@@ -63,6 +63,47 @@ COLLECTIONS = {
     'bewegung-achtsamkeit': 'Bewegung &amp; Achtsamkeit',
 }
 
+
+# Amazon-Partnerlinks (nur Website, keine Produktbilder – Amazon-Richtlinien; „Werbung“ direkt am Link)
+AMAZON_TAG = 'vitalmetric55-21'
+TOOL = {
+    'stabmixer': ('B007KIVDLK', 'Stabmixer', 'püriert die Suppe direkt im Topf – cremig ohne Sahne.'),
+    'schmortopf': ('B073Q9VDCS', 'Schmortopf aus Gusseisen', 'hält die Wärme lange, ideal für Eintopf und Dal.'),
+    'fritteuse': ('B09ZYLM43B', 'Heißluftfritteuse', 'macht Gemüse knusprig, ohne den Ofen vorzuheizen.'),
+    'waage': ('B0113UZJE2', 'Digitale Küchenwaage', 'für genaue Mengen – praktisch auch fürs Ernährungstagebuch.'),
+    'moerser': ('B00MQSMT0I', 'Mörser aus Granit', 'Gewürze frisch zerstoßen – schmeckt intensiver.'),
+    'glasdosen': ('B07RNQQMT3', 'Meal-Prep-Glasdosen', 'zum Vorkochen und Mitnehmen, ohne Plastikgeschmack.'),
+    'thermo': ('B0BTPJZHH6', 'Thermobehälter', 'hält das Essen bis mittags warm – für Büro, Schule oder Uni.'),
+}
+TOOLS_FOR = {
+    'rezept-rote-linsensuppe': ['stabmixer', 'thermo'],
+    'rezept-karotten-ingwer-suppe': ['stabmixer', 'thermo'],
+    'rezept-kuerbis-pasta-salbei': ['stabmixer'],
+    'rezept-energy-balls': ['stabmixer'],
+    'rezept-kichererbsen-gruenkohl-eintopf': ['schmortopf', 'glasdosen'],
+    'rezept-linsen-dal-spinat': ['schmortopf', 'moerser'],
+    'rezept-tempeh-curry': ['schmortopf', 'moerser'],
+    'rezept-halloumi-rosenkohl-eintopf': ['schmortopf'],
+    'rezept-fischsuppe-kabeljau-fenchel': ['schmortopf'],
+    'rezept-geroesteter-rosenkohl': ['fritteuse'],
+    'rezept-quinoa-salat-rotkohl': ['glasdosen'],
+    'rezept-buddha-bowl-kichererbsen': ['glasdosen'],
+    'rezept-overnight-oats-chia': ['glasdosen', 'waage'],
+}
+
+
+def tools_html(slug):
+    keys = TOOLS_FOR.get(slug)
+    if not keys:
+        return ''
+    items = ''.join(
+        f'<li><a href="https://www.amazon.de/dp/{TOOL[k][0]}?tag={AMAZON_TAG}&amp;linkCode=ll1" target="_blank" rel="noopener sponsored nofollow">'
+        f'{html.escape(TOOL[k][1])}</a> <span class="ad-label">Werbung</span><br><span class="muted">{html.escape(TOOL[k][2])}</span></li>'
+        for k in keys)
+    return (f'<div class="tools-box"><h3>Das brauchst du</h3><ul>{items}</ul>'
+            f'<p class="footnote">Werbung: Amazon-Partnerlinks. Kaufst du darüber, erhält WellANNI eine kleine Provision – am Preis ändert sich nichts. '
+            f'<a href="geschenke-fuer-hobbykoeche.html">Mehr Küchenhelfer</a></p></div>')
+
 SUGAR = re.compile(r'\b(zucker|rohrzucker|puderzucker|honig|ahornsirup|agavendicksaft|dattelsirup|reissirup|sirup)\b', re.I)
 
 PLAY = 'https://play.google.com/store/apps/details?id=com.vitalmetrics.app'
@@ -284,7 +325,7 @@ def recipe_page(site, slug, r, collection, others, social):
       </section>
       <section class="recipe-grid">
         <div class="panel"><h2>Zutaten <span class="muted">für {r['servings']} Portion{'en' if r['servings'] > 1 else ''}</span></h2><ul class="ing">{''.join(f'<li>{html.escape(i)}</li>' for i in r['ingredients'])}</ul>
-          <p class="footnote">{('Enthält: ' + allergens + '. ') if allergens else ''}Nährwerte berechnet mit dem Bundeslebensmittelschlüssel (BLS 4.0), {round(n['kal'])} kcal · {de(n['carbs'])} g Kohlenhydrate · {de(n['fat'])} g Fett pro Portion.</p></div>
+          <p class="footnote">{('Enthält: ' + allergens + '. ') if allergens else ''}Nährwerte berechnet mit dem Bundeslebensmittelschlüssel (BLS 4.0), {round(n['kal'])} kcal · {de(n['carbs'])} g Kohlenhydrate · {de(n['fat'])} g Fett pro Portion.</p>{tools_html(slug)}</div>
         <div class="panel"><h2>Zubereitung</h2><ol class="steps">{''.join(f'<li>{html.escape(s)}</li>' for s in r['steps'])}</ol>{tip}</div>
       </section>
       <section class="c-bottom">
