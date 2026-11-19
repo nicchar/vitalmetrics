@@ -7,6 +7,8 @@
  *    Bauchgefühl, Stimmung), 5-stufig, mit Wochenstreifen, dazu
  *    "Was war heute gut?" (2.3) und Link zu "Mein Tagebuch"
  * 2b. Impuls für heute: täglicher Achtsamkeitstipp (2.3)
+ * 2c. Fakt des Tages (2.2.1): Ernährungsfakt mit Rezept, wie die Fakt-Reels
+ * 2d. Bewertungs-Karte (2.2.1): nach 7 Einträgen und 7 Tagen, „Später“ = 30 Tage Ruhe
  * 3. "Heute auf deinem Teller" – Kalorien, Makros und die 8 Kernwerte in
  *    freundlichen Worten statt Ampel-Prozenten, dazu EIN Rezeptvorschlag für
  *    den Kernwert mit der größten Lücke
@@ -27,6 +29,8 @@ import { hydrationRepo } from '../../infra/db/repositories/hydrationRepo.js';
 import { checkinRepo } from '../../infra/db/repositories/checkinRepo.js';
 import { journalRepo, JOURNAL_MAX_LENGTH } from '../../infra/db/repositories/journalRepo.js';
 import { getMindfulnessTip } from '../../domain/mindfulnessTips.js';
+import { getDailyFact } from '../../domain/dailyFacts.js';
+import { feedbackService } from '../../infra/feedback/feedbackService.js';
 import { mealPlanRepo } from '../../infra/db/repositories/mealPlanRepo.js';
 import { getDGERef } from '../../domain/nutrition.js';
 import { entitlements } from '../../domain/entitlements.js';
@@ -245,6 +249,19 @@ export function renderDashboard(container) {
   }
 
   const mindful = getMindfulnessTip(now);
+  const fact = getDailyFact(now);
+  const factTarget = fact.recipeId && recipes.some(r => r.id === fact.recipeId) ? fact.recipeId : null;
+  const factHtml = `<section class="w-block"><div class="w-block-title">Fakt des Tages</div>
+      <div class="w-card w-tip" id="daily-fact"><span class="w-tip-icon" aria-hidden="true">${fact.icon}</span>
+        <p><b>${escapeHtml(fact.title)}</b><br>${escapeHtml(fact.text)}
+        ${factTarget ? `<br><button type="button" class="w-link" data-open="${factTarget}">Zum Rezept →</button>`
+          : (fact.route ? `<br><button type="button" class="w-link" id="btn-fact-route" data-route="${fact.route}">${escapeHtml(fact.cta || 'Mehr dazu')} →</button>` : '')}</p></div>
+    </section>`;
+  const reviewHtml = feedbackService.isReviewPromptDue() ? `<section class="w-block" id="review-card">
+      <div class="w-card w-tip"><span class="w-tip-icon" aria-hidden="true">⭐</span>
+        <p><b>Gefällt dir WellANNI?</b><br>Eine kurze Bewertung im Play Store hilft sehr, damit mehr Menschen WellANNI finden. Danke dir!
+        <br><button type="button" class="w-link" id="btn-review-yes">Jetzt bewerten</button> · <button type="button" class="w-link" id="btn-review-later">Später</button></p></div>
+    </section>` : '';
   const dateLine = now.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
 
   container.innerHTML = `<div class="w-screen" id="dashboard-screen">
@@ -254,6 +271,8 @@ export function renderDashboard(container) {
     <section class="w-block"><div class="w-block-title">Dein Impuls für heute</div>
       <div class="w-card w-tip" id="mindfulness-tip"><span class="w-tip-icon" aria-hidden="true">${mindful.icon}</span><p>${mindful.text}</p></div>
     </section>
+    ${factHtml}
+    ${reviewHtml}
     ${renderTeller({ dayTotals, tdee, core, hint, freeRecapTeaser })}
     ${recapHtml}
     ${rdt ? `<section class="w-block">
@@ -278,6 +297,7 @@ export function renderDashboard(container) {
       checkinRepo.setValue(today, area, Number(btn.dataset.value));
       container.querySelectorAll(`.w-pebble[data-area="${area}"]`).forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
       if (isComplete(checkinRepo.getDay(today))) {
+        if (done.hidden) feedbackService.trackEntryAdded(); // zählt für die Bewertungs-Karte
         // Wochenstreifen aktualisieren
         const fresh = document.createElement('div');
         fresh.innerHTML = renderCheckin(today);
@@ -306,6 +326,15 @@ export function renderDashboard(container) {
     }));
   }
   wireDismiss();
+  container.querySelector('#btn-fact-route')?.addEventListener('click', e => navigate(e.currentTarget.dataset.route));
+  container.querySelector('#btn-review-yes')?.addEventListener('click', () => {
+    feedbackService.requestReview();
+    container.querySelector('#review-card')?.remove();
+  });
+  container.querySelector('#btn-review-later')?.addEventListener('click', () => {
+    feedbackService.snoozeReviewPrompt();
+    container.querySelector('#review-card')?.remove();
+  });
   container.querySelector('#btn-recap-premium')?.addEventListener('click', () => navigate('premium'));
   container.querySelector('#btn-all-recipes')?.addEventListener('click', () => navigate('recipes'));
   container.querySelector('#btn-heute-nutrition')?.addEventListener('click', () => navigate('nutrition'));

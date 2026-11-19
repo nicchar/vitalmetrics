@@ -8,8 +8,10 @@
  *
  * 2. FEEDBACK  → Mail-App öffnen mit vorausgefüllter Betreffzeile
  *
- * Außerdem: automatische Bewertungsanfrage nach 10 Einträgen und 7 Tagen Nutzung.
- * Wird nur einmal gezeigt – danach nicht mehr nerven.
+ * Außerdem: freundliche Bewertungs-Karte auf der Startseite nach 7 Einträgen
+ * und 7 Tagen Nutzung (seit 2.2.1 – vorher sprang die App ungefragt in den
+ * Play Store, weil das In-App-Review-Plugin nicht installiert ist).
+ * „Später“ blendet die Karte 30 Tage aus, nach dem Bewerten nie wieder.
  */
 
 import { storage } from '../db/sqlite.js';
@@ -21,6 +23,9 @@ const FEEDBACK_MAIL = 'doehring.nicole@gmail.com';
 const STORAGE_KEY_REVIEW      = 'vm_review_requested';
 const STORAGE_KEY_INSTALL_DATE = 'vm_install_date';
 const STORAGE_KEY_ENTRY_COUNT  = 'vm_entry_count';
+const STORAGE_KEY_REVIEW_SNOOZE = 'vm_review_snooze_until';
+const REVIEW_MIN_ENTRIES = 7;
+const REVIEW_MIN_DAYS    = 7;
 
 // ─── Öffentliche API ──────────────────────────────────────────────────────────
 export const feedbackService = {
@@ -34,7 +39,23 @@ export const feedbackService = {
     _ensureInstallDate();
     const count = (storage.get(STORAGE_KEY_ENTRY_COUNT) || 0) + 1;
     storage.set(STORAGE_KEY_ENTRY_COUNT, count);
-    _maybeRequestReview();
+  },
+
+  /** Soll die Startseite die Bewertungs-Karte zeigen? */
+  isReviewPromptDue(now = Date.now()) {
+    _ensureInstallDate();
+    if (storage.get(STORAGE_KEY_REVIEW)) return false;
+    const snooze = storage.get(STORAGE_KEY_REVIEW_SNOOZE);
+    if (snooze && now < new Date(snooze).getTime()) return false;
+    const entryCount = storage.get(STORAGE_KEY_ENTRY_COUNT) || 0;
+    const installDate = storage.get(STORAGE_KEY_INSTALL_DATE);
+    const days = installDate ? (now - new Date(installDate).getTime()) / 86400000 : 0;
+    return entryCount >= REVIEW_MIN_ENTRIES && days >= REVIEW_MIN_DAYS;
+  },
+
+  /** „Später“: Karte 30 Tage ausblenden. */
+  snoozeReviewPrompt(now = Date.now()) {
+    storage.set(STORAGE_KEY_REVIEW_SNOOZE, new Date(now + 30 * 86400000).toISOString());
   },
 
   /**
@@ -106,19 +127,3 @@ function _ensureInstallDate() {
   }
 }
 
-function _maybeRequestReview() {
-  // Nicht nochmal fragen wenn bereits angefragt
-  if (storage.get(STORAGE_KEY_REVIEW)) return;
-
-  const entryCount   = storage.get(STORAGE_KEY_ENTRY_COUNT) || 0;
-  const installDate  = storage.get(STORAGE_KEY_INSTALL_DATE);
-  const daysSinceInstall = installDate
-    ? (Date.now() - new Date(installDate).getTime()) / (1000 * 60 * 60 * 24)
-    : 0;
-
-  // Erst nach 10 Einträgen UND 7 Tagen Nutzung fragen
-  if (entryCount >= 10 && daysSinceInstall >= 7) {
-    // Kurze Verzögerung – nicht sofort nach dem Speichern aufpoppen
-    setTimeout(() => feedbackService.requestReview(), 1500);
-  }
-}

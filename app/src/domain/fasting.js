@@ -6,11 +6,13 @@
  */
 
 export const FASTING_STAGES = [
-  { h: 4,  emoji: '🍬', name: 'Zuckerverdauung', desc: 'Insulin sinkt, Glykogen wird verbraucht.' },
-  { h: 8,  emoji: '🔥', name: 'Fettverbrennung', desc: 'Körper wechselt auf Fettverbrennung.' },
-  { h: 12, emoji: '🧹', name: 'Umstellung', desc: 'Der Stoffwechsel stellt sich weiter um.' },
-  { h: 16, emoji: '♻️', name: 'Tiefere Fastenphase', desc: 'Viele berichten hier von mehr Energie und Klarheit.' },
-  { h: 20, emoji: '⚡', name: 'Ketose & Fokus', desc: 'Ketone steigen — mentale Klarheit.' },
+  // Bewusst ohne Wirkaussagen (Health-Claims-VO, Google-Richtlinien):
+  // reine Zeitmarken mit Alltagshinweisen statt „Fettverbrennung“ oder „mentale Klarheit“.
+  { h: 4,  emoji: '🍽️', name: 'Nach der Mahlzeit', desc: 'Die letzte Mahlzeit liegt hinter dir – Wasser oder ungesüßter Tee sind jetzt deine Begleiter.' },
+  { h: 8,  emoji: '🌙', name: 'Fastenpause', desc: 'Jetzt beginnt die eigentliche Fastenpause. Hunger kommt oft in Wellen und geht wieder.' },
+  { h: 12, emoji: '🧘', name: '12 Stunden', desc: 'Halbe Strecke bei 16:8 überschritten – trinken nicht vergessen.' },
+  { h: 16, emoji: '⭐', name: '16 Stunden', desc: 'Das Ziel von 16:8 ist erreicht. Wie fühlst du dich gerade?' },
+  { h: 20, emoji: '🏁', name: 'Lange Fastenpause', desc: 'Hör auf deinen Körper: Wenn dir schwindelig wird oder es dir nicht gut geht, brich das Fasten ab.' },
 ];
 
 export const FASTING_PROTOCOLS = { '16:8': 16, '14:10': 14, '12:12': 12 };

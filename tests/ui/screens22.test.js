@@ -168,16 +168,34 @@ test('Rezeptseite: "Gegessen ✓" trägt das Rezept ins Tagebuch ein', () => {
   assert.equal(entries[0].food.recipeId, r.id);
 });
 
+import { mondayOf as mondayOfForTest } from '../../app/src/domain/dateUtils.js';
+const addDaysIso = (iso, n) => { const d = new Date(iso); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
+
 test('Rezeptseite: "In den Wochenplan" legt das Rezept in den gewählten Tag', () => {
   const r = recipes.find(x => x.mealType === 'lunch');
-  const days = Array.from({ length: 7 }, (_, i) => ({ date: `2026-10-${String(19 + i).padStart(2, '0')}`, breakfast: null, lunch: null, dinner: null }));
-  mealPlanRepo.save({ weekStart: '2026-10-19', category: 'gemischt', pins: {}, days });
+  const monday = mondayOfForTest(new Date());
+  const days = Array.from({ length: 7 }, (_, i) => ({ date: addDaysIso(monday, i), breakfast: null, lunch: null, dinner: null }));
+  mealPlanRepo.save({ weekStart: monday, category: 'gemischt', pins: {}, days });
   state.set('currentRecipeId', r.id);
   navigate('recipe');
   click($('#recipe-plan'));
   click($('[data-slot="lunch"]'));
-  click($('[data-day="2026-10-21"]'));
+  click($(`[data-day="${days[2].date}"]`));
   assert.equal(mealPlanRepo.get().days[2].lunch, r.id);
+});
+
+test('Rezeptseite 2.2.1: ohne Plan wird eine leere Woche angelegt (selbst zusammenstellen)', () => {
+  const r = recipes.find(x => x.mealType === 'lunch');
+  mealPlanRepo.clear();
+  state.set('currentRecipeId', r.id);
+  navigate('recipe');
+  click($('#recipe-plan'));
+  const first = document.querySelector('[data-day]');
+  click(first);
+  const plan = mealPlanRepo.get();
+  assert.equal(plan.selfBuilt, true);
+  assert.equal(plan.weekStart, mondayOfForTest(new Date()));
+  assert.equal(plan.days[0].dinner, r.id);
 });
 
 test('Rezeptseite: Snacks haben keinen Wochenplan-Button, unbekannte ID zeigt einen freundlichen Hinweis', () => {

@@ -5,17 +5,21 @@
  * Zubereitung, Nährwerte pro Portion und zwei Aktionen:
  * "Gegessen ✓" (ins Tagebuch, mit Mahlzeit und Portionsgröße) und
  * "In den Wochenplan" (Tag und Mahlzeit wählen).
+ * 2.2.1: "Rezept teilen" – Bildkarte + Kurztext über den Teilen-Dialog;
+ * "In den Wochenplan" legt bei Bedarf eine leere Woche an.
  */
 import { state } from '../../appState.js';
 import { mealPlanRepo } from '../../infra/db/repositories/mealPlanRepo.js';
 import { profileRepo } from '../../infra/db/repositories/profileRepo.js';
-import { setDaySlot } from '../../domain/mealPlan.js';
+import { setDaySlot, ensureCurrentPlan } from '../../domain/mealPlan.js';
+import { mondayOf } from '../../domain/dateUtils.js';
 import { householdServings } from '../../domain/household.js';
 import { navigate } from '../../router.js';
 import { recipePictureHtml } from '../components/recipeArt.js';
 import { renderLogConfirm } from '../components/recipeLogControl.js';
 import { ALLERGEN_LABELS, scaledLine, fmtNum, escapeHtml, sourceName } from '../components/recipeFormat.js';
 import { showToast } from '../components/toast.js';
+import { shareRecipe } from '../../infra/share/recipeShare.js';
 
 const SLOT_LABEL = { breakfast: 'Frühstück', lunch: 'Mittag', dinner: 'Abend' };
 
@@ -59,6 +63,7 @@ export function renderRecipe(container) {
     <h1 class="w-detail-title">${escapeHtml(r.title)}</h1>
     ${r.highlight ? `<p class="w-taste">${escapeHtml(r.highlight)}</p>` : ''}
     <div class="w-facts">${facts}</div>
+    <div class="w-btn-row" style="margin-top:4px"><button type="button" class="w-btn w-btn-ghost" id="recipe-share">Rezept teilen ↗</button></div>
 
     <section class="w-block">
       <div class="w-block-title">Zutaten
@@ -114,6 +119,12 @@ export function renderRecipe(container) {
     navigate(state.get('recipeBackTo') || 'recipes');
   });
 
+  container.querySelector('#recipe-share').addEventListener('click', async () => {
+    const res = await shareRecipe(r);
+    if (res.mode === 'clipboard') showToast('Rezept kopiert – füg es in WhatsApp oder eine Nachricht ein');
+    else if (!res.ok && res.mode === 'none') showToast('Teilen geht auf diesem Gerät gerade nicht');
+  });
+
   const sheet = container.querySelector('#recipe-sheet');
   container.querySelector('#recipe-eaten').addEventListener('click', () => {
     sheet.innerHTML = `<div class="w-sheet"><b>Ins Tagebuch eintragen</b><div class="recipe-log-box"></div></div>`;
@@ -124,12 +135,9 @@ export function renderRecipe(container) {
   });
 
   container.querySelector('#recipe-plan')?.addEventListener('click', () => {
-    const plan = mealPlanRepo.get();
-    if (!plan?.days?.length) {
-      showToast('Erstell zuerst deinen Wochenplan – dann kannst du Rezepte hineinlegen.');
-      navigate('mealplan');
-      return;
-    }
+    // 2.2.1: Ohne Plan (oder mit Plan einer alten Woche) wird eine leere Woche
+    // angelegt – so lässt sich der Plan komplett selbst zusammenstellen.
+    const { plan, created } = ensureCurrentPlan(mealPlanRepo.get(), mondayOf(new Date()));
     const slots = r.mealType === 'breakfast' ? ['breakfast'] : ['lunch', 'dinner'];
     let slot = slots[slots.length - 1];
     const fmtDay = d => new Date(d.date + 'T12:00:00').toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'numeric' });
@@ -148,7 +156,7 @@ export function renderRecipe(container) {
     sheet.querySelectorAll('[data-day]').forEach(b => b.addEventListener('click', () => {
       mealPlanRepo.save(setDaySlot(plan, b.dataset.day, slot, r.id));
       sheet.innerHTML = '';
-      showToast(`Im Wochenplan: ${b.textContent}, ${SLOT_LABEL[slot]}`);
+      showToast(created ? `Neue Woche angelegt – im Plan: ${b.textContent}, ${SLOT_LABEL[slot]}` : `Im Wochenplan: ${b.textContent}, ${SLOT_LABEL[slot]}`);
     }));
     sheet.scrollIntoView?.({ behavior: 'smooth', block: 'center' });
   });

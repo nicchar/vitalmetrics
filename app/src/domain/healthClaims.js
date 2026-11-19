@@ -38,3 +38,23 @@ export const PREFERRED_TERMS = {
  */
 export const MARKETING_TAGLINE =
   'Behalte deine Vitalstoffe im Blick – für mehr Energie im Alltag.';
+
+/**
+ * Zugelassene gesundheitsbezogene Angaben (VO (EU) 432/2012), WORTGLEICH.
+ * Nur diese Sätze dürfen in App-Texten (Fakt des Tages, Rezept-Hinweise),
+ * auf wellanni.de und in Social-Media-Beiträgen als Nährstoff-Aussage stehen.
+ * Neue Angabe? Wortlaut im EU-Register prüfen und hier ergänzen.
+ */
+export const APPROVED_CLAIMS = [
+  'Vitamin C erhöht die Eisenaufnahme.',
+  'Vitamin C trägt zu einer normalen Funktion des Immunsystems bei.',
+  'Vitamin D trägt zu einer normalen Funktion des Immunsystems bei.',
+  'Eiweiß trägt zur Erhaltung von Muskelmasse bei.',
+  'Calcium wird für die Erhaltung normaler Knochen benötigt.',
+  'Vitamin B12 trägt zu einem normalen Energiestoffwechsel bei.',
+  'Magnesium trägt zur Verringerung von Müdigkeit und Ermüdung bei.',
+  'Eisen trägt zur Verringerung von Müdigkeit und Ermüdung bei.',
+  'Folat trägt zur Verringerung von Müdigkeit und Ermüdung bei.',
+  'Jod trägt zu einer normalen Schilddrüsenfunktion bei.',
+  'Vitamin B6 trägt zur Regulierung der Hormontätigkeit bei.',
+];

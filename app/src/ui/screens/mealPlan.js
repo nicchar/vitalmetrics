@@ -10,6 +10,8 @@
  * 2.2.1: Tauschen als sichtbarer Knopf mit Vorschlägen und Suche, Mahlzeit
  * freilassen (Auswärts, Reste, Eigenes Gericht – zählt nicht in die
  * Einkaufsliste), Haken der Einkaufsliste bleiben dauerhaft gespeichert.
+ * 2.2.1 (19.11.): Plan selbst zusammenstellen (leerer Plan), eigene Einträge
+ * auf der Einkaufsliste, Me-Time je Tag („Zeit für dich“).
  * Unverändert: Tauschen ("keine Forelle mag"), fest einplanen ("immer das
  * Porridge"), sanfte Bevorzugung von Rezepten für Nährstoffe, die laut
  * Tagebuch zuletzt zu kurz kamen.
@@ -24,6 +26,8 @@ import {
   getUnderCoveredTags, INTOLERANCE_LABELS,
   getEligiblePool, setDaySlot, setPin, repairPlan, isEaten, setEaten,
   freeSlot, freeSlotLabel, swapSuggestions, searchSwapOptions, setShoppingChecked, FREE_SLOT_LABELS,
+  emptyPlan, addCustomShoppingItem, removeCustomShoppingItem, CUSTOM_ITEM_MAX,
+  ME_TIME_IDEAS, ME_TIME_MAX, setMeTime, meTimeFor,
 } from '../../domain/mealPlan.js';
 import { household, householdPortions, householdLabel, MAX_ADULTS, MAX_KIDS } from '../../domain/household.js';
 import { recipeToFoodEntry } from '../../domain/recipeLogging.js';
@@ -83,7 +87,11 @@ function renderScreen(container, recipes, plan, isStale, thisMonday) {
       ${mealRow('breakfast', day, day.breakfastRecipe, plan, pool, today)}
       ${mealRow('lunch', day, day.lunchRecipe, plan, pool, today)}
       ${mealRow('dinner', day, day.dinnerRecipe, plan, pool, today)}
+      ${meTimeRow(day, plan)}
     </div>`).join('') : '';
+  const custom = plan?.customShopping || [];
+  const customItem = t => `<li style="display:flex;align-items:center;justify-content:space-between;gap:8px"><label><input type="checkbox" data-item="${escapeHtml(t)}" ${checked[t] ? 'checked' : ''}> ${escapeHtml(t)}</label>
+    <button type="button" class="w-link shop-custom-remove" data-remove="${escapeHtml(t)}" aria-label="${escapeHtml(t)} entfernen">✕</button></li>`;
 
   container.innerHTML = `<div class="w-screen" id="mealplan-screen">
     <h1 class="w-h1">Wochenplan</h1>
@@ -119,7 +127,9 @@ function renderScreen(container, recipes, plan, isStale, thisMonday) {
       </details>
       ${isStale ? '<p class="w-small" style="color:var(--accent-dark)">Dieser Plan ist aus einer früheren Woche. Erstell einfach einen neuen.</p>' : ''}
       ${underCoveredTags.length ? `<p class="w-small">Nach deinem Tagebuch der letzten 7 Tage kommen etwas öfter Rezepte mit ${underCoveredTags.map(bmName).join(', ')} dran.</p>` : ''}
-      <div class="w-btn-row"><button type="button" class="w-btn w-btn-primary" id="btn-generate-plan">${plan ? 'Neuen Plan erstellen' : 'Plan erstellen'}</button></div>
+      <div class="w-btn-row"><button type="button" class="w-btn w-btn-primary" id="btn-generate-plan">${plan ? 'Neuen Plan erstellen' : 'Plan erstellen'}</button>
+        ${!plan || isStale ? '<button type="button" class="w-btn w-btn-ghost" id="btn-empty-plan">Selbst zusammenstellen</button>' : ''}</div>
+      ${!plan || isStale ? '<p class="w-small">„Selbst zusammenstellen“ startet mit einer leeren Woche: Du wählst jedes Gericht selbst – hier oder auf der Rezeptseite mit „In den Wochenplan“.</p>' : ''}
     </section>
 
     ${plan ? `
@@ -129,10 +139,15 @@ function renderScreen(container, recipes, plan, isStale, thisMonday) {
       </section>
 
       <section class="w-block">
-        <div class="w-block-title">Einkaufsliste <span class="w-muted">${shoppingList.filter(i => !i.pantry).length} Dinge</span></div>
+        <div class="w-block-title">Einkaufsliste <span class="w-muted">${shoppingList.filter(i => !i.pantry).length + custom.length} Dinge</span></div>
         <div class="w-card" id="shopping-list">
           <p class="w-small" style="margin-top:0">Für ${hh.isSet ? householdLabel(profile) : `${fmtNum(portions)} Person${portions !== 1 ? 'en' : ''}`}, alle Rezepte der Woche zusammengerechnet.</p>
           <ul class="shopping-list">${shoppingList.filter(i => !i.pantry).map(shopItem).join('')}</ul>
+          ${custom.length ? `<p class="w-small" style="margin:10px 0 4px">Eigene Einträge</p><ul class="shopping-list" id="shopping-custom">${custom.map(customItem).join('')}</ul>` : ''}
+          <form class="w-shop-add" id="shop-add-form" style="display:flex;gap:8px;margin-top:10px">
+            <input type="text" id="shop-add-input" maxlength="${CUSTOM_ITEM_MAX}" placeholder="Eigenen Eintrag hinzufügen, z. B. Kaffee" aria-label="Eigenen Eintrag hinzufügen" style="flex:1">
+            <button type="submit" class="w-btn w-btn-ghost" style="flex:none">+</button>
+          </form>
           ${shoppingList.some(i => i.pantry) ? `<details class="w-details" style="margin-top:12px">
             <summary>Vorrat prüfen: Gewürze, Öl und Co. <span aria-hidden="true">›</span></summary>
             <ul class="shopping-list">${shoppingList.filter(i => i.pantry).map(shopItem).join('')}</ul>
@@ -171,9 +186,18 @@ function renderScreen(container, recipes, plan, isStale, thisMonday) {
     // Fest eingeplante Mahlzeiten überleben einen neuen Plan; generatePlan()
     // prüft selbst, ob das Rezept noch existiert.
     const existingPins = plan?.pins || {};
-    const newPlan = { ...generatePlan(recipes, chosenCategory, thisMonday, underCoveredTags, activeIntolerancesNow, existingPins), portions: plan?.portions || 1 };
+    const sameWeek = plan && plan.weekStart === thisMonday;
+    const newPlan = { ...generatePlan(recipes, chosenCategory, thisMonday, underCoveredTags, activeIntolerancesNow, existingPins), portions: plan?.portions || 1,
+      ...(sameWeek ? { customShopping: plan.customShopping || [], meTime: plan.meTime || {} } : {}) };
     mealPlanRepo.save(newPlan);
     state.set(SHOPPING_KEY, {});
+    renderScreen(container, recipes, newPlan, false, thisMonday);
+  });
+
+  container.querySelector('#btn-empty-plan')?.addEventListener('click', () => {
+    const newPlan = { ...emptyPlan(thisMonday, chosenCategory), portions: plan?.portions || 1 };
+    mealPlanRepo.save(newPlan);
+    showToast('Deine Woche ist leer – such dir die Gerichte aus, die du kochen willst');
     renderScreen(container, recipes, newPlan, false, thisMonday);
   });
 
@@ -265,6 +289,56 @@ function renderScreen(container, recipes, plan, isStale, thisMonday) {
       mealPlanRepo.save(plan);
     });
   });
+
+  // 2.2.1: eigene Einträge auf der Einkaufsliste
+  container.querySelector('#shop-add-form')?.addEventListener('submit', e => {
+    e.preventDefault();
+    const input = container.querySelector('#shop-add-input');
+    const next = addCustomShoppingItem(plan, input.value);
+    if (next === plan) { input.value = ''; return; }
+    mealPlanRepo.save(next);
+    rerender(next);
+    container.querySelector('#shop-add-input')?.focus();
+  });
+  container.querySelectorAll('.shop-custom-remove').forEach(b => b.addEventListener('click', () => {
+    const next = removeCustomShoppingItem(plan, b.dataset.remove);
+    mealPlanRepo.save(next);
+    rerender(next);
+  }));
+
+  // 2.2.1: Me-Time je Tag
+  const saveMeTime = (date, text) => {
+    const next = setMeTime(plan, date, text);
+    mealPlanRepo.save(next);
+    if (text) showToast(`Eingeplant: ${text}`);
+    rerender(next);
+  };
+  container.querySelectorAll('[data-metime-pick]').forEach(b => b.addEventListener('click', () => saveMeTime(b.dataset.date, b.dataset.metimePick)));
+  container.querySelectorAll('[data-metime-remove]').forEach(b => b.addEventListener('click', () => saveMeTime(b.dataset.metimeRemove, null)));
+  container.querySelectorAll('.metime-own').forEach(form => form.addEventListener('submit', e => {
+    e.preventDefault();
+    const v = form.querySelector('input').value.trim();
+    if (v) saveMeTime(form.dataset.date, v);
+  }));
+}
+
+function meTimeRow(day, plan) {
+  const mt = meTimeFor(plan, day.date);
+  if (mt) {
+    return `<div class="w-meal w-metime"><div class="w-meal-body"><span class="w-meal-label">Zeit für dich</span>
+      <span>🌿 ${escapeHtml(mt)}</span>
+      <button type="button" class="w-link" data-metime-remove="${day.date}" aria-label="Zeit für dich entfernen">Entfernen</button></div></div>`;
+  }
+  return `<div class="w-meal w-metime"><div class="w-meal-body">
+      <details class="w-meal-more"><summary class="w-swap-btn">🌿 + Zeit für dich</summary>
+        <div class="w-swap-panel">
+          <div class="w-swap-sugg">${ME_TIME_IDEAS.map(t => `<button type="button" class="w-swap-option" data-date="${day.date}" data-metime-pick="${escapeHtml(t)}">${escapeHtml(t)}</button>`).join('')}</div>
+          <form class="metime-own" data-date="${day.date}" style="display:flex;gap:8px;margin-top:8px">
+            <input type="text" maxlength="${ME_TIME_MAX}" placeholder="Oder eigene Idee …" aria-label="Eigene Me-Time-Idee" style="flex:1">
+            <button type="submit" class="w-btn w-btn-ghost" style="flex:none">OK</button>
+          </form>
+        </div>
+      </details></div></div>`;
 }
 
 function swapPanel(mealType, day, currentId, plan, pool) {
@@ -290,7 +364,7 @@ function mealRow(mealType, day, recipe, plan, pool, today) {
   if (!recipe) {
     const free = freeSlotLabel(plan, day.date, mealType);
     return `<div class="w-meal"><div class="w-meal-body"><span class="w-meal-label">${MEAL_LABEL[mealType]}</span>
-      <span class="${free ? '' : 'w-muted'}">${free ? `${escapeHtml(free)} <small class="w-muted">· nicht auf der Einkaufsliste</small>` : 'Für diese Auswahl haben wir gerade kein passendes Rezept.'}</span>
+      <span class="${free ? '' : 'w-muted'}">${free ? `${escapeHtml(free)} <small class="w-muted">· nicht auf der Einkaufsliste</small>` : (plan.selfBuilt ? 'Noch nichts geplant' : 'Für diese Auswahl haben wir gerade kein passendes Rezept.')}</span>
       ${swapPanel(mealType, day, null, plan, pool)}</div></div>`;
   }
   const isPinned = plan.pins?.[mealType] === recipe.id;

@@ -1,33 +1,32 @@
-# Play Store · Texte und Screenshots für 2.2.1 (Stand 09.11.2026)
+# Play Store · Texte und Screenshots für 2.2.1 (Stand 19.11.2026)
 
-Erst einreichen, wenn die Store-Änderung vom 05.11. (neuer Titel und Kurzbeschreibung) freigegeben ist. Titel und Kurzbeschreibung bleiben gleich:
-
-- **Titel:** WellANNI: Rezepte & Wochenplan
-- **Kurzbeschreibung:** Gesunde Rezepte, Wochenplan & Einkaufsliste: Vitamine im Blick, ohne Konto.
+Store-Änderung ist freigegeben (19.11.). **Titel und Kurzbeschreibung so lassen, wie sie jetzt im Store stehen** – Titel: „WellANNI: Kalorien & Ernährung“ (Nicoles Änderung). Nur Versionshinweise und Beschreibung ersetzen.
+Bauen mit `npm run release -- --no-bump` (2.2.1 / versionCode 23 wurde noch nie hochgeladen).
 
 ## Neu in dieser Version (Feld „Versionshinweise“, max. 500 Zeichen)
 
 <de-DE>
 Neu in WellANNI 2.2.1:
-• Mein Tagebuch: Was war heute gut? Mit täglichem Achtsamkeitsimpuls
-• Wochenplan flexibel: Gerichte tauschen mit Vorschlägen und Suche, Mahlzeiten freilassen (auswärts, Reste) – die Einkaufsliste passt sich an
-• Abgehakte Einkäufe bleiben gespeichert
-• „Keto“ heißt jetzt „Low Carb“
-• Neue Rezeptfotos
+• Wochenplan selbst zusammenstellen, Gerichte tauschen oder freilassen
+• Zeit für dich: Me-Time direkt im Wochenplan einplanen
+• Eigene Einträge auf der Einkaufsliste, Haken bleiben gespeichert
+• Rezepte als Karte teilen, z. B. per WhatsApp
+• Fakt des Tages und Tagebuch „Was war heute gut?“
+• „Keto“ heißt jetzt „Low Carb“, neue Rezeptfotos
 </de-DE>
 
-## Vollständige Beschreibung (3972 Zeichen)
+## Vollständige Beschreibung (3985 Zeichen)
 
 ```
-Gesunde Rezepte, ein Wochenplan mit Einkaufsliste und ein Blick auf Eiweiß, Ballaststoffe, Vitamine und Mineralstoffe – in einer App, ohne Konto und ohne Cloud. WellANNI ist kein Medizinprodukt und ersetzt keine ärztliche Beratung, Diagnose oder Behandlung; die App dient der persönlichen Beobachtung und allgemeinen Ernährungsinformation.
+Gesunde Rezepte, ein Wochenplan mit Einkaufsliste und ein Blick auf Kalorien, Eiweiß, Ballaststoffe, Vitamine und Mineralstoffe – in einer App, ohne Konto und ohne Cloud. WellANNI ist kein Medizinprodukt und ersetzt keine ärztliche Beratung, Diagnose oder Behandlung; die App dient der persönlichen Beobachtung und allgemeinen Ernährungsinformation.
 
 Gesundes Essen soll schmecken – und nicht in Arbeit und Frust ausarten. WellANNI bringt dir jeden Tag ein saisonales Rezept, plant deine Woche und zeigt dir freundlich, was dein Teller heute schon geliefert hat.
 
 🍲 ÜBER 200 GESUNDE REZEPTE
-Saisonale Rezepte für Frühstück, Mittagessen, Abendessen und Snacks – vegetarisch, vegan, mit Fleisch oder Fisch und Low Carb. Alle Rezepte sind geprüft und mit Nährwerten nach dem Bundeslebensmittelschlüssel berechnet, inklusive Kalorien, Eiweiß, Ballaststoffen und Jod. Mit Portionsrechner und Filtern wie „Schnell“, „Familie“, „Vorkochen“ (Meal Prep) oder „Für Gäste“.
+Saisonale Rezepte für Frühstück, Mittagessen, Abendessen und Snacks – vegetarisch, vegan, mit Fleisch oder Fisch und Low Carb. Lieblingsrezepte teilst du als Karte, z. B. per WhatsApp. Alle Rezepte sind geprüft und mit Nährwerten nach dem Bundeslebensmittelschlüssel berechnet, inklusive Kalorien, Eiweiß, Ballaststoffen und Jod. Mit Portionsrechner und Filtern wie „Schnell“, „Familie“, „Vorkochen“ (Meal Prep) oder „Für Gäste“.
 
 📅 ESSENSPLANER: WOCHENPLAN UND EINKAUFSLISTE
-Sieben Tage auf einen Blick, passend zu deiner Ernährungsform und Unverträglichkeiten (Laktose, Gluten, Nüsse). Keine Lust auf ein Gericht? Tauschen – mit passenden Vorschlägen oder über die Suche. Isst du auswärts oder gibt es Reste, lässt du die Mahlzeit einfach frei. Die Einkaufsliste rechnet sich immer neu, mit deinem Haushalt – Erwachsene und Kinder –, und abgehakte Einträge bleiben gespeichert. Gegessen? Ein Tipp, und es steht im Ernährungstagebuch.
+Sieben Tage auf einen Blick, passend zu deiner Ernährungsform und Unverträglichkeiten (Laktose, Gluten, Nüsse) – oder du stellst die Woche selbst zusammen. Tauschen mit Vorschlägen oder Suche, Mahlzeiten freilassen bei Resten oder Auswärtsessen, und mit „Zeit für dich“ planst du auch deine Me-Time ein. Die Einkaufsliste rechnet mit deinem Haushalt, eigene Einträge kommen dazu, Haken bleiben gespeichert. Gegessen? Ein Tipp, und es steht im Tagebuch.
 
 ⚖️ GEWICHT UND MASSE IM BLICK
 Gewicht und Maße eintragen und den Verlauf über Wochen und Monate sehen. Kalorien und Eiweiß siehst du bei den Rezepten und im Tagebuch – als Orientierung, ohne Diätstress.
@@ -36,7 +35,7 @@ Gewicht und Maße eintragen und den Verlauf über Wochen und Monate sehen. Kalor
 Halte jeden Tag in Sekunden fest, wie es um Energie, Schlaf, Bauchgefühl und Stimmung steht – und sieh deine Woche auf einen Blick. Geht es dir ein paar Tage nicht so gut, gibt WellANNI dir behutsame Alltagstipps.
 
 📝 MEIN TAGEBUCH: WAS WAR HEUTE GUT?
-Jeden Tag ein kleiner Impuls für mehr Achtsamkeit – atmen, rausgehen, Zeit für dich. Halte fest, was heute gut war, und schreib so viel oder so wenig, wie du magst. Alles bleibt auf deinem Handy.
+Jeden Tag ein kleiner Impuls für mehr Achtsamkeit und ein Ernährungsfakt zum Mitnehmen. Halte fest, was heute gut war, und schreib so viel oder so wenig, wie du magst. Alles bleibt auf deinem Handy.
 
 🥗 ERNÄHRUNGSTAGEBUCH, DAS SCHNELL GEHT
 Lebensmittel aus dem Bundeslebensmittelschlüssel, Online-Suche und Barcode-Scan, „wie gestern“ für wiederkehrende Mahlzeiten. Dazu der Vergleich mit den Referenzwerten der Deutschen Gesellschaft für Ernährung (DGE) – Vitamine und Mineralstoffe im 7-Tage-Schnitt, als Orientierung, nicht als Bewertung. Wo noch was geht, schlägt WellANNI ein Rezept und einfache Lebensmittel für zwischendurch vor.
@@ -56,7 +55,7 @@ Kein Konto, keine Cloud, keine Werbung, keine Werbe- oder Analyse-Tracker. Deine
 📄 PDF-EXPORT UND BACKUP
 PDF-Bericht für deine Ernährungsberatung, Daten als Datei sichern oder aufs neue Gerät übertragen.
 
-Lade WellANNI jetzt herunter: gesunde Rezepte, dein Essensplan für die Woche und ein Gefühl dafür, worauf es bei deiner Ernährung wirklich ankommt – weit über Kalorien hinaus.
+Lade WellANNI jetzt herunter: gesunde Rezepte, dein Wochenplan und ein Gefühl dafür, worauf es bei deiner Ernährung ankommt.
 ```
 
 ## Neue Screenshots (auf dem Handy aufnehmen, 9:16)

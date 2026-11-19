@@ -688,3 +688,70 @@ export function setEaten(plan, dateIso, mealType, value) {
   else delete eaten[eatenKey(dateIso, mealType)];
   return { ...plan, eaten };
 }
+
+// ─── 2.2.1 (19.11.2026): Plan selbst zusammenstellen, eigene Einkäufe, Me-Time ───
+
+/**
+ * Leerer Plan für eine Woche – zum Selbst-Zusammenstellen (Rezept für Rezept
+ * über „In den Wochenplan“ oder „+ Rezept wählen“). Leere Plätze zählen nicht
+ * in die Einkaufsliste.
+ */
+export function emptyPlan(weekStartIso, category = 'gemischt') {
+  const start = new Date(weekStartIso);
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(start);
+    d.setDate(d.getDate() + i);
+    days.push({ date: d.toISOString().slice(0, 10), weekday: WEEKDAYS[i], breakfast: null, lunch: null, dinner: null });
+  }
+  return { weekStart: weekStartIso, category, pins: {}, days, selfBuilt: true };
+}
+
+/** Aktueller Plan dieser Woche – fehlt er oder ist er alt, ein leerer neuer. */
+export function ensureCurrentPlan(plan, weekStartIso) {
+  if (plan?.days?.length && plan.weekStart === weekStartIso) return { plan, created: false };
+  return { plan: { ...emptyPlan(weekStartIso, plan?.category || 'gemischt'), portions: plan?.portions || 1 }, created: true };
+}
+
+export const CUSTOM_ITEM_MAX = 60;
+
+/** Eigener Eintrag auf der Einkaufsliste (z. B. „Kaffee“, „Spülmittel“). */
+export function addCustomShoppingItem(plan, text) {
+  const t = String(text || '').trim().replace(/\s+/g, ' ').slice(0, CUSTOM_ITEM_MAX);
+  const list = plan.customShopping || [];
+  if (!t || list.some(x => x.toLowerCase() === t.toLowerCase())) return plan;
+  return { ...plan, customShopping: [...list, t] };
+}
+
+export function removeCustomShoppingItem(plan, text) {
+  const shoppingChecked = { ...(plan.shoppingChecked || {}) };
+  delete shoppingChecked[text];
+  return { ...plan, shoppingChecked, customShopping: (plan.customShopping || []).filter(x => x !== text) };
+}
+
+/**
+ * Me-Time im Wochenplan (Nicole 19.11.2026: „nicht nur Rezepte planen, auch
+ * die Me-Time“). Kleine Einladungen ohne Wirkversprechen.
+ */
+export const ME_TIME_IDEAS = [
+  '10 Minuten Tee ohne Handy',
+  '30 Minuten raus',
+  'Abend ohne Kochen',
+  'Was war gut diese Woche?',
+  'Ein Kapitel lesen',
+  'Jemanden anrufen',
+  'Früher ins Bett',
+  'Baden oder warm duschen',
+];
+export const ME_TIME_MAX = 60;
+
+export function setMeTime(plan, dateIso, text) {
+  const meTime = { ...(plan.meTime || {}) };
+  const t = String(text || '').trim().slice(0, ME_TIME_MAX);
+  if (t) meTime[dateIso] = t; else delete meTime[dateIso];
+  return { ...plan, meTime };
+}
+
+export function meTimeFor(plan, dateIso) {
+  return plan?.meTime?.[dateIso] || null;
+}
